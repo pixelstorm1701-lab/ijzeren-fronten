@@ -5,61 +5,64 @@
 <meta name="description" content="IJzeren Fronten: een strategiespel over industrie, legers, vloten en luchtmacht.">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>IJzeren Fronten</title>
-<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;600;700&family=Stardos+Stencil:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Old+Standard+TT:wght@700&family=Special+Elite&display=swap" rel="stylesheet">
 <style>
-:root{--sea:#2c4a55;--ink:#1e2a2b;--paper:#dcdfd5;--paper2:#c9cdc1;--alert:#b23a2a;--ok:#4f7d43}
+:root{--ink:#121517;--steel:#262c30;--steel2:#1a1e21;--steel3:#323a3f;--bronze:#7d6642;--gold:#d6b46c;--parch:#e2dac4;--muted:#a49c87;--alert:#a8352a;--ok:#5f8a46}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--sea);color:var(--ink);font-family:'Saira Condensed','Arial Narrow',sans-serif;font-size:16px;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
-#app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:820px;margin:0 auto}
-header{display:flex;align-items:center;gap:7px;padding:6px 8px;background:var(--ink);color:var(--paper)}
-#flag{width:16px;height:16px;border:2px solid var(--paper);flex:none}
-#nname{font-family:'Stardos Stencil',serif;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#date{margin-left:auto;font-size:14px;font-variant-numeric:tabular-nums;opacity:.85;white-space:nowrap}
+html,body{margin:0;height:100%;background:#0f1214;color:var(--parch);font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-size:16px;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:820px;margin:0 auto;background:var(--steel2)}
+header{display:flex;align-items:center;gap:7px;padding:6px 8px;background:linear-gradient(#353d42,#1c2023);border-bottom:2px solid var(--bronze);box-shadow:0 2px 6px rgba(0,0,0,.5);position:relative;z-index:1}
+#flag{width:26px;height:18px;border:1.5px solid var(--gold);box-shadow:0 0 0 1px #000,inset 0 0 6px rgba(0,0,0,.45);flex:none}
+#nname{font-family:'Old Standard TT',Georgia,serif;font-weight:700;font-size:17px;min-width:0;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 #000}
+#date{margin-left:auto;font-family:'Special Elite','Courier New',monospace;font-size:12px;white-space:nowrap;background:#0d1011;border:1px solid var(--bronze);padding:3px 7px;color:var(--parch)}
 .hbtns{display:flex;gap:2px}
-.hbtns button{background:transparent;color:var(--paper);border:1px solid #4a5859;padding:4px 6px;font:600 13px 'Saira Condensed',sans-serif;min-width:30px}
-.hbtns button.on{background:var(--paper);color:var(--ink)}
-#res{display:flex;gap:13px;padding:5px 10px;background:#2a3738;color:var(--paper);font-size:14px;overflow-x:auto;white-space:nowrap}
-#res b{font-variant-numeric:tabular-nums}
-#res span{opacity:.72}
-#mapwrap{position:relative;flex:1 1 auto;min-height:220px;overflow:hidden}
+.hbtns button{background:linear-gradient(#3d454a,#22272a);color:var(--gold);border:1px solid #5b4a2e;padding:4px 6px;font:700 13px 'Barlow Condensed',sans-serif;min-width:30px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.hbtns button.on{background:linear-gradient(#e2c27c,#a9884a);color:#1a1408;border-color:#e2c27c}
+#res{display:flex;gap:14px;padding:5px 10px;background:linear-gradient(#171b1d,#111416);border-bottom:1px solid #3a3226;font-size:15px;overflow-x:auto;white-space:nowrap}
+#res div{display:flex;align-items:center;gap:4px}
+#res svg{color:var(--gold);flex:none}
+#res b{font-variant-numeric:tabular-nums;font-weight:600}
+#mapwrap{position:relative;flex:1 1 auto;min-height:220px;overflow:hidden;background:#1d3a45}
 canvas{display:block;touch-action:none}
 #zoom{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:4px}
-#zoom button{width:34px;height:34px;background:rgba(220,223,213,.92);border:1.5px solid var(--ink);font:700 18px 'Saira Condensed',sans-serif;color:var(--ink);padding:0}
-#ticker{position:absolute;left:8px;bottom:6px;right:50px;font-size:13px;color:var(--paper);pointer-events:none;text-shadow:0 1px 2px #000}
-#tabs{display:flex;background:var(--paper2);border-top:3px solid var(--ink);overflow-x:auto;scrollbar-width:none}
+#zoom button{width:34px;height:34px;background:linear-gradient(#3d454a,#22272a);border:1px solid var(--bronze);font:700 18px 'Barlow Condensed',sans-serif;color:var(--gold);padding:0;box-shadow:0 2px 4px rgba(0,0,0,.5)}
+#ticker{position:absolute;left:8px;bottom:6px;right:50px;font-size:13px;color:var(--parch);pointer-events:none;text-shadow:0 1px 2px #000}
+#tabs{display:flex;background:var(--steel2);border-top:2px solid var(--bronze);overflow-x:auto;scrollbar-width:none}
 #tabs::-webkit-scrollbar{display:none}
-#tabs button{flex:1 0 auto;background:none;border:none;padding:9px 11px;font:600 15px 'Saira Condensed',sans-serif;color:#4a5450}
-#tabs button.on{background:var(--paper);color:var(--ink);box-shadow:inset 0 3px 0 var(--ink)}
-#panel{height:36vh;overflow-y:auto;background:var(--paper);padding:10px 12px 18px;font-size:15px;line-height:1.35}
-#panel h3{font-family:'Stardos Stencil',serif;font-size:18px;margin:6px 0}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--paper2)}
+#tabs button{flex:1 0 auto;background:none;border:none;border-right:1px solid #2c2620;padding:9px 11px;font:600 15px 'Barlow Condensed',sans-serif;color:var(--muted)}
+#tabs button.on{background:var(--steel3);color:var(--gold);box-shadow:inset 0 -3px 0 var(--gold)}
+#panel{height:36vh;overflow-y:auto;background:linear-gradient(#252b2e,#1a1e20);padding:10px 12px 18px;font-size:15px;line-height:1.35}
+#panel h3{font-family:'Old Standard TT',Georgia,serif;font-size:17px;color:var(--gold);margin:8px 0 6px;padding-bottom:3px;border-bottom:1px solid var(--bronze)}
+#panel b{color:#f0e8d2}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(125,102,66,.3)}
 .row:last-child{border-bottom:none}
 .grow{flex:1;min-width:0}
-.hint{color:#5c6560;font-size:14px;margin:3px 0}
+.hint{color:var(--muted);font-size:14px;margin:3px 0}
 .seg{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
-button.act{background:var(--ink);color:var(--paper);border:none;padding:7px 11px;font:600 14px 'Saira Condensed',sans-serif;white-space:nowrap}
-button.act.alt{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
-button.act.war{background:var(--alert)}
-button.act.on{background:var(--ok)}
+button.act{background:linear-gradient(#41494e,#262b2e);color:var(--gold);border:1px solid var(--bronze);padding:7px 11px;font:600 14px 'Barlow Condensed',sans-serif;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 1px 2px rgba(0,0,0,.4)}
+button.act.alt{background:rgba(0,0,0,.2);color:var(--parch);border-color:#4f5355}
+button.act.war{background:linear-gradient(#a3372a,#6a1e17);color:#f4e4c8;border-color:#c25444}
+button.act.on{background:linear-gradient(#6d9a50,#3f6330);color:#f0f4e6;border-color:#88b06a}
 button.act:disabled{opacity:.35}
-.bar{height:6px;background:var(--paper2);margin-top:4px}
-.bar i{display:block;height:100%;background:var(--ink)}
-.sw{display:inline-block;width:12px;height:12px;vertical-align:-1px;margin-right:6px;border:1px solid var(--ink)}
+.bar{height:7px;background:#0d1011;border:1px solid #3a3226;margin-top:4px}
+.bar i{display:block;height:100%;background:linear-gradient(#e2c27c,#9d7d42)}
+.sw{display:inline-block;width:14px;height:10px;vertical-align:0;margin-right:6px;border:1px solid #000;box-shadow:0 0 0 1px rgba(214,180,108,.4)}
 .tag{font-size:13px;padding:1px 6px;border:1px solid currentColor;margin-left:6px}
-.tag.war{color:var(--alert)}.tag.ally{color:var(--ok)}
+.tag.war{color:#e06a55}.tag.ally{color:#8fbd6f}
 .done{opacity:.5}
-#overlay{position:fixed;inset:0;background:rgba(20,30,31,.82);display:flex;align-items:center;justify-content:center;padding:16px;z-index:5}
+#overlay{position:fixed;inset:0;background:radial-gradient(rgba(10,12,13,.7),rgba(5,6,7,.92));display:flex;align-items:center;justify-content:center;padding:16px;z-index:5}
 #overlay.hide{display:none}
-.card{background:var(--paper);max-width:440px;width:100%;padding:20px 18px;max-height:92vh;overflow:auto}
-.card h1{font-family:'Stardos Stencil',serif;font-size:42px;line-height:1;margin:0 0 8px}
+.card{background:linear-gradient(#2a3034,#191d1f);border:2px solid var(--bronze);box-shadow:0 0 0 1px #000,0 12px 40px rgba(0,0,0,.7);color:var(--parch);max-width:440px;width:100%;padding:20px 18px;max-height:92vh;overflow:auto}
+.card h1{font-family:'Old Standard TT',Georgia,serif;font-size:40px;color:var(--gold);line-height:1;margin:0 0 4px;text-shadow:0 2px 0 #000}
+.card .sub{font-family:'Special Elite','Courier New',monospace;color:var(--muted);font-size:14px;margin:0 0 12px}
 .card p{margin:0 0 14px}
 .card .act{margin:0 6px 8px 0}
-.pick{display:flex;align-items:center;width:100%;gap:10px;padding:9px 10px;margin:0 0 6px;background:var(--paper2);border:none;text-align:left;font:15px 'Saira Condensed',sans-serif;color:var(--ink)}
-.pick .sw{width:22px;height:22px;flex:none}
-.pick b{font-family:'Stardos Stencil',serif;font-size:19px;display:block}
-#toast{position:fixed;left:50%;top:84px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 14px;font-size:15px;max-width:90vw;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6;border-left:4px solid var(--alert)}
+.pick{display:flex;align-items:center;width:100%;gap:10px;padding:9px 10px;margin:0 0 6px;background:rgba(0,0,0,.3);border:1px solid #3a3226;text-align:left;font:15px 'Barlow Condensed',sans-serif;color:var(--parch)}
+.pick .sw{width:30px;height:20px;flex:none}
+.pick b{font-family:'Old Standard TT',Georgia,serif;font-size:18px;color:var(--gold);display:block}
+#toast{position:fixed;left:50%;top:86px;transform:translateX(-50%);background:linear-gradient(#2a3034,#191d1f);color:var(--parch);padding:8px 14px;font-size:15px;max-width:90vw;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6;border:1px solid var(--bronze);border-left:4px solid var(--alert);box-shadow:0 4px 14px rgba(0,0,0,.6)}
 #toast.show{opacity:1}
-button:focus-visible{outline:2px solid #e8c547;outline-offset:2px}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){#toast{transition:none}}
 </style>
 </head>
@@ -457,49 +460,81 @@ function hexPath(i,r){ctx.beginPath();for(let k=0;k<6;k++){const a=Math.PI/3*k-M
 function corner(i,k){const a=Math.PI/3*k-Math.PI/6;return[L.cx[i]+L.R*Math.cos(a),L.cy[i]+L.R*Math.sin(a)]}
 function star(x,y,r,K){ctx.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr=k%2?r*.45:r;ctx.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a))}ctx.closePath();ctx.fillStyle='#f1efe6';ctx.fill();ctx.strokeStyle='#1e2a2b';ctx.lineWidth=K;ctx.stroke()}
 function arrow(x1,y1,x2,y2,col,w){const a=Math.atan2(y2-y1,x2-x1),h=L.R*.28;ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2-Math.cos(a)*h*.6,y2-Math.sin(a)*h*.6);ctx.stroke();ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-h*Math.cos(a-.5),y2-h*Math.sin(a-.5));ctx.lineTo(x2-h*Math.cos(a+.5),y2-h*Math.sin(a+.5));ctx.closePath();ctx.fill()}
+const hash=i=>{let x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)};
+function shade(hex,f){const n=parseInt(hex.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;if(f<0){r*=1+f;g*=1+f;b*=1+f}else{r+=(255-r)*f;g+=(255-g)*f;b+=(255-b)*f}return`rgb(${r|0},${g|0},${b|0})`}
+const TERRAIN={vlak:'#8d9862',bos:'#5d7444',berg:'#8a7e66'};
+const SEA=['#4a7c86','#3b6b77','#305d69','#29505c','#22444f'];
+function seaDepth(){const d=new Array(N).fill(99),q=[];for(let i=0;i<N;i++)if(S.provs[i].land){d[i]=0;q.push(i)}let h=0;while(h<q.length){const c=q[h++];for(const j of NB[c])if(d[j]>d[c]+1){d[j]=d[c]+1;q.push(j)}}return d}
+function natoBox(x,y,w,h,col,mine){
+  ctx.fillStyle='#e6dfc9';ctx.fillRect(x,y,w,h);
+  ctx.fillStyle=col;ctx.fillRect(x,y,w,h*.3);
+  ctx.strokeStyle='#1a1a17';ctx.lineWidth=Math.max(.8,w*.05);
+  ctx.beginPath();ctx.moveTo(x+w*.12,y+h*.38);ctx.lineTo(x+w*.88,y+h*.92);ctx.moveTo(x+w*.88,y+h*.38);ctx.lineTo(x+w*.12,y+h*.92);ctx.stroke();
+  ctx.lineWidth=Math.max(1,w*.06);ctx.strokeStyle=mine?'#e2c27c':'#151515';ctx.strokeRect(x,y,w,h);
+}
+function ship(x,y,w,h,col,mine){
+  ctx.beginPath();ctx.moveTo(x,y+h*.45);ctx.lineTo(x+w,y+h*.45);ctx.lineTo(x+w*.86,y+h);ctx.lineTo(x+w*.1,y+h);ctx.closePath();
+  ctx.fillStyle=col;ctx.fill();ctx.lineWidth=Math.max(1,w*.05);ctx.strokeStyle=mine?'#e2c27c':'#121212';ctx.stroke();
+  ctx.fillStyle=shade(col,-.35);ctx.fillRect(x+w*.3,y+h*.2,w*.32,h*.25);ctx.fillRect(x+w*.42,y,w*.07,h*.22);
+  ctx.strokeRect(x+w*.3,y+h*.2,w*.32,h*.25);
+}
+function tabNum(x,y,n,s){const w=s*(n>9?1.25:.9),h=s;ctx.fillStyle='#14181a';ctx.fillRect(x,y,w,h);ctx.strokeStyle='#7d6642';ctx.lineWidth=Math.max(.6,s*.07);ctx.strokeRect(x,y,w,h);
+  ctx.fillStyle='#e2c27c';ctx.font=`700 ${Math.round(s*.85)}px 'Barlow Condensed',sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n,x+w/2,y+h*.55)}
 function draw(){
   if(!S||!L.R)return;const R=L.R,K=1/Math.sqrt(V.z),d=L.dpr;
-  ctx.setTransform(d,0,0,d,0,0);ctx.fillStyle='#2c4a55';ctx.fillRect(0,0,L.W,L.H);
-  ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;for(let y=6;y<L.H;y+=9){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(L.W,y);ctx.stroke()}
+  if(!L.depth||L.depthFor!==S.provs)L.depth=seaDepth(),L.depthFor=S.provs;
+  ctx.setTransform(d,0,0,d,0,0);ctx.fillStyle='#1d3a45';ctx.fillRect(0,0,L.W,L.H);
   ctx.setTransform(d*V.z,0,0,d*V.z,d*V.x,d*V.y);
-  for(const p of S.provs){if(!p.land)continue;const i=p.i;
-    hexPath(i,R+.5);ctx.fillStyle=S.nations[p.owner].color;ctx.fill();
-    if(p.owner!==p.core){ctx.save();hexPath(i,R);ctx.clip();ctx.strokeStyle=S.nations[p.core].color;ctx.lineWidth=R*.16;for(let t=-3;t<=3;t++){ctx.beginPath();ctx.moveTo(L.cx[i]-R+t*R*.5,L.cy[i]+R);ctx.lineTo(L.cx[i]+R+t*R*.5,L.cy[i]-R);ctx.stroke()}ctx.restore()}
-    const x=L.cx[i],y=L.cy[i];ctx.strokeStyle='rgba(20,25,25,.28)';ctx.fillStyle='rgba(20,25,25,.22)';ctx.lineWidth=1.2*K;
-    if(p.terrain==='berg'){ctx.beginPath();ctx.moveTo(x-R*.5,y-R*.25);ctx.lineTo(x-R*.25,y-R*.6);ctx.lineTo(x,y-R*.25);ctx.moveTo(x-R*.1,y-R*.4);ctx.lineTo(x+R*.15,y-R*.65);ctx.lineTo(x+R*.4,y-R*.25);ctx.stroke()}
-    else if(p.terrain==='bos'){for(const[dx,dy]of[[-.3,-.45],[0,-.55],[.3,-.45]]){ctx.beginPath();ctx.arc(x+dx*R,y+dy*R,R*.1,0,7);ctx.fill()}}
-    if(p.dock){ctx.strokeStyle='rgba(20,25,25,.55)';ctx.lineWidth=1.3*K;const ax=x-R*.45,ay=y+R*.5;ctx.beginPath();ctx.moveTo(ax,ay-R*.22);ctx.lineTo(ax,ay+R*.08);ctx.moveTo(ax-R*.12,ay-R*.02);ctx.arc(ax,ay-R*.02,R*.12,Math.PI,0,true);ctx.stroke()}
+  /* zee */
+  for(const p of S.provs){if(p.land)continue;const dep=Math.min(4,L.depth[p.i]-1);hexPath(p.i,R+.6);ctx.fillStyle=SEA[dep];ctx.fill();
+    const x=L.cx[p.i],y=L.cy[p.i],hh=hash(p.i);ctx.strokeStyle='rgba(200,225,225,.10)';ctx.lineWidth=K;
+    for(let k=0;k<2;k++){const ox=(hash(p.i*3+k)-.5)*R,oy=(hash(p.i*7+k)-.5)*R;ctx.beginPath();ctx.arc(x+ox,y+oy,R*.18,Math.PI*1.1,Math.PI*1.9);ctx.stroke()}}
+  /* land: terrein + natiekleur */
+  for(const p of S.provs){if(!p.land)continue;const i=p.i,x=L.cx[i],y=L.cy[i],hh=hash(i);
+    hexPath(i,R+.6);ctx.fillStyle=shade(TERRAIN[p.terrain],(hh-.5)*.16);ctx.fill();
+    ctx.globalAlpha=.52;ctx.fillStyle=S.nations[p.owner].color;ctx.fill();ctx.globalAlpha=1;
+    if(p.owner!==p.core){ctx.save();hexPath(i,R);ctx.clip();ctx.globalAlpha=.55;ctx.strokeStyle=S.nations[p.core].color;ctx.lineWidth=R*.14;for(let t=-3;t<=3;t++){ctx.beginPath();ctx.moveTo(x-R+t*R*.5,y+R);ctx.lineTo(x+R+t*R*.5,y-R);ctx.stroke()}ctx.restore();ctx.globalAlpha=1}
+    if(p.terrain==='berg'){for(const[dx,s]of[[-.28,.34],[.12,.42],[.42,.26]]){const bx=x+dx*R,by=y-R*.2;ctx.beginPath();ctx.moveTo(bx-s*R*.8,by);ctx.lineTo(bx,by-s*R);ctx.lineTo(bx,by);ctx.closePath();ctx.fillStyle='rgba(255,248,230,.32)';ctx.fill();
+      ctx.beginPath();ctx.moveTo(bx,by-s*R);ctx.lineTo(bx+s*R*.8,by);ctx.lineTo(bx,by);ctx.closePath();ctx.fillStyle='rgba(30,22,12,.35)';ctx.fill()}}
+    else if(p.terrain==='bos'){for(let k=0;k<6;k++){const tx=x+(hash(i*11+k)-.5)*R*1.1,ty=y-R*.15+(hash(i*13+k)-.5)*R*.7;ctx.beginPath();ctx.arc(tx,ty,R*.11,0,7);ctx.fillStyle='rgba(22,40,18,.42)';ctx.fill()}}
+    else if(hh>.6){ctx.strokeStyle='rgba(40,36,20,.18)';ctx.lineWidth=K;for(let k=0;k<3;k++){ctx.beginPath();ctx.moveTo(x-R*.4,y-R*.3+k*R*.14);ctx.lineTo(x+R*.1,y-R*.3+k*R*.14);ctx.stroke()}}
+    if(p.dock){const ax=x-R*.48,ay=y+R*.48;ctx.strokeStyle='#1a1a17';ctx.lineWidth=1.4*K;ctx.beginPath();ctx.moveTo(ax,ay-R*.22);ctx.lineTo(ax,ay+R*.08);ctx.moveTo(ax-R*.12,ay-R*.02);ctx.arc(ax,ay-R*.02,R*.12,Math.PI,0,true);ctx.moveTo(ax-R*.08,ay-R*.16);ctx.lineTo(ax+R*.08,ay-R*.16);ctx.stroke()}
   }
-  for(const p of S.provs){if(!p.land)continue;for(let k=0;k<6;k++){const j=L.edge[p.i][k];const[a,b]=corner(p.i,k),[c,e]=corner(p.i,(k+1)%6);
-    if(j<0||!S.provs[j].land){ctx.strokeStyle='#17282d';ctx.lineWidth=2*K}
-    else if(S.provs[j].owner!==p.owner){ctx.strokeStyle='#1e2a2b';ctx.lineWidth=2.6*K}
-    else{if(j<p.i)continue;ctx.strokeStyle='rgba(0,0,0,.16)';ctx.lineWidth=.8*K}
-    ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,e);ctx.stroke()}}
-  for(const n of S.nations)if(n.alive){const p=S.provs[n.cap];if(p.land&&p.owner===n.id)star(L.cx[p.i]+R*.45,L.cy[p.i]-R*.4,R*.26,K)}
-  if(S.sel!=null){
-    const sel=S.units.filter(u=>S.selUnits.has(u.id));
-    if(sel.length)for(const j of NB[S.sel])if(sel.some(u=>canEnterU(u,j))){hexPath(j,R*.92);ctx.fillStyle='rgba(255,255,255,.28)';ctx.fill()}
-    hexPath(S.sel,R*.9);ctx.strokeStyle='#fff';ctx.lineWidth=3*K;ctx.stroke();
-  }
+  /* grenzen */
+  const seg=(i,k)=>{const[a,b]=corner(i,k),[c,e]=corner(i,(k+1)%6);ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,e);ctx.stroke()};
+  for(const p of S.provs){if(!p.land)continue;for(let k=0;k<6;k++){const j=L.edge[p.i][k];
+    if(j<0||!S.provs[j].land){ctx.strokeStyle='rgba(205,225,215,.35)';ctx.lineWidth=4*K;seg(p.i,k);ctx.strokeStyle='#1b2a26';ctx.lineWidth=1.4*K;seg(p.i,k)}
+    else if(S.provs[j].owner===p.owner&&j>p.i){ctx.strokeStyle='rgba(20,18,10,.22)';ctx.lineWidth=.7*K;seg(p.i,k)}}}
+  for(const p of S.provs){if(!p.land)continue;for(let k=0;k<6;k++){const j=L.edge[p.i][k];if(j<0||!S.provs[j].land||S.provs[j].owner===p.owner||j<p.i)continue;
+    ctx.strokeStyle='#14120e';ctx.lineWidth=3.2*K;seg(p.i,k);ctx.strokeStyle='rgba(240,225,190,.35)';ctx.lineWidth=.8*K;seg(p.i,k)}}
+  /* hoofdsteden */
+  for(const n of S.nations)if(n.alive){const p=S.provs[n.cap];if(!p.land||p.owner!==n.id)continue;const x=L.cx[p.i]+R*.42,y=L.cy[p.i]-R*.42,r=R*.27;
+    ctx.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr=k%2?r*.42:r;ctx.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a))}ctx.closePath();
+    ctx.fillStyle='#e4c26a';ctx.fill();ctx.strokeStyle='#2a1f0c';ctx.lineWidth=1.2*K;ctx.stroke()}
+  /* selectie */
+  if(S.sel!=null){const sel=S.units.filter(u=>S.selUnits.has(u.id));
+    if(sel.length)for(const j of NB[S.sel])if(sel.some(u=>canEnterU(u,j))){hexPath(j,R*.9);ctx.fillStyle='rgba(226,194,124,.22)';ctx.fill();ctx.strokeStyle='rgba(226,194,124,.6)';ctx.lineWidth=1.2*K;ctx.stroke()}
+    hexPath(S.sel,R*.9);ctx.strokeStyle='#e2c27c';ctx.lineWidth=3*K;ctx.stroke()}
+  /* bewegingen */
   for(const u of S.units){
-    if(u.move){const f=1-u.move.left/u.move.total,t=u.move.to;arrow(L.cx[u.prov],L.cy[u.prov],L.cx[u.prov]+(L.cx[t]-L.cx[u.prov])*(.35+.5*f),L.cy[u.prov]+(L.cy[t]-L.cy[u.prov])*(.35+.5*f),'rgba(245,245,235,.85)',2*K)}
-    if(u.attack!=null){const t=u.attack;arrow(L.cx[u.prov],L.cy[u.prov],L.cx[u.prov]+(L.cx[t]-L.cx[u.prov])*.78,L.cy[u.prov]+(L.cy[t]-L.cy[u.prov])*.78,'#d8402c',3*K)}
-  }
+    if(u.move){const f=1-u.move.left/u.move.total,t=u.move.to;arrow(L.cx[u.prov],L.cy[u.prov],L.cx[u.prov]+(L.cx[t]-L.cx[u.prov])*(.35+.5*f),L.cy[u.prov]+(L.cy[t]-L.cy[u.prov])*(.35+.5*f),'rgba(238,224,180,.9)',2.2*K)}
+    if(u.attack!=null){const t=u.attack;arrow(L.cx[u.prov],L.cy[u.prov],L.cx[u.prov]+(L.cx[t]-L.cx[u.prov])*.78,L.cy[u.prov]+(L.cy[t]-L.cy[u.prov])*.78,'#c8321f',3.2*K)}}
+  /* eenheden */
   const groups={};for(const u of S.units){const k=u.prov+'|'+u.owner+'|'+u.kind;(groups[k]=groups[k]||[]).push(u)}
   const per={};
   for(const k in groups){const[pi,ow]=k.split('|').map(Number),kind=k.split('|')[2],g=groups[k],off=(per[pi]=(per[pi]||0)+1)-1;
-    const w=R*1.05,h=R*.6,x=L.cx[pi]-w/2+off*R*.25,y=L.cy[pi]-h/2+R*.15+off*R*.25,mine=ow===S.player;
-    ctx.lineWidth=(mine?2:1.2)*K;ctx.strokeStyle=mine?'#fff':'#1e2a2b';
-    if(kind==='fleet'){ctx.beginPath();ctx.moveTo(x-w*.05,y+h*.15);ctx.lineTo(x+w*1.05,y+h*.15);ctx.lineTo(x+w*.82,y+h);ctx.lineTo(x+w*.18,y+h);ctx.closePath();ctx.fillStyle=S.nations[ow].color;ctx.fill();ctx.stroke();
-      ctx.fillStyle='#f1efe6';ctx.fillRect(x+w*.38,y-h*.2,w*.24,h*.35);ctx.strokeRect(x+w*.38,y-h*.2,w*.24,h*.35);
-      ctx.fillStyle='#f1efe6';ctx.font=`700 ${Math.round(h*.62)}px 'Saira Condensed',sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(g.length,x+w/2,y+h*.6)}
-    else{ctx.fillStyle='#eceee6';ctx.fillRect(x,y,w,h);ctx.fillStyle=S.nations[ow].color;ctx.fillRect(x,y,w*.28,h);ctx.strokeRect(x,y,w,h);
-      ctx.fillStyle='#1e2a2b';ctx.font=`700 ${Math.round(h*.78)}px 'Saira Condensed',sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(g.length,x+w*.64,y+h*.54)}
+    const w=R*.95,h=R*.6,x=L.cx[pi]-w/2+off*R*.25,y=L.cy[pi]-h/2+R*.12+off*R*.25,mine=ow===S.player,col=S.nations[ow].color;
+    ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(x+R*.06,y+R*.06,w,h);
+    if(kind==='fleet')ship(x,y,w,h,col,mine);else natoBox(x,y,w,h,col,mine);
+    tabNum(x+w-R*.1,y-R*.18,g.length,R*.36);
     const mo=kind==='fleet'?50:maxOrg(S.nations[ow]),org=g.reduce((s,u)=>s+Math.max(0,u.org),0)/g.length/mo;
-    ctx.fillStyle='#1e2a2b';ctx.fillRect(x,y+h+1,w,3);ctx.fillStyle=org>.6?'#6fae55':org>.3?'#d5a838':'#d8402c';ctx.fillRect(x,y+h+1,w*org,3);
-  }
-  ctx.fillStyle='#d8402c';ctx.font=`700 ${Math.round(R*.55)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-  for(const b of S.battle)ctx.fillText('✕',L.cx[b]-R*.45,L.cy[b]-R*.38);
+    ctx.fillStyle='#0d1011';ctx.fillRect(x,y+h+1.5,w,3.2);ctx.fillStyle=org>.6?'#7fb25a':org>.3?'#d9aa3c':'#d0432c';ctx.fillRect(x,y+h+1.5,w*org,3.2)}
+  /* gevechten */
+  for(const b of S.battle){const x=L.cx[b]-R*.48,y=L.cy[b]-R*.42,r=R*.2;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fillStyle='#a82a1c';ctx.fill();ctx.strokeStyle='#f0dcb0';ctx.lineWidth=1.3*K;ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x-r*.5,y-r*.5);ctx.lineTo(x+r*.5,y+r*.5);ctx.moveTo(x+r*.5,y-r*.5);ctx.lineTo(x-r*.5,y+r*.5);ctx.stroke()}
+  /* vignet */
+  ctx.setTransform(d,0,0,d,0,0);const g=ctx.createRadialGradient(L.W/2,L.H/2,Math.min(L.W,L.H)*.35,L.W/2,L.H/2,Math.max(L.W,L.H)*.75);
+  g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.5)');ctx.fillStyle=g;ctx.fillRect(0,0,L.W,L.H);
 }
 
 /* ================= interface ================= */
@@ -510,8 +545,10 @@ function renderTop(){
   document.querySelectorAll('#speed button').forEach(b=>b.classList.toggle('on',+b.dataset.s===S.speed));
   if(S.player<0)return;const n=S.nations[S.player];stats(n);
   const lu=S.units.filter(u=>u.owner===n.id&&u.kind==='land').length,fu=S.units.filter(u=>u.owner===n.id&&u.kind==='fleet').length;
-  $('#res').innerHTML=`<div><span>Civiel</span> <b>${n.civ}</b></div><div><span>Militair</span> <b>${n.milF}</b></div><div><span>Werven</span> <b>${n.docks}</b></div><div><span>Uitrusting</span> <b>${fmt(n.equip)}</b></div><div><span>Mankracht</span> <b>${fmt(n.mp)}k</b></div><div><span>Divisies</span> <b>${lu}</b></div><div><span>Vloten</span> <b>${fu}</b></div><div><span>Vliegtuigen</span> <b>${fmt(n.planes)}</b></div>`;
+  $('#res').innerHTML=ico('civ','Civiele fabrieken',n.civ)+ico('mil','Militaire fabrieken',n.milF)+ico('dock','Scheepswerven',n.docks)+ico('equip','Uitrusting',fmt(n.equip))+ico('mp','Mankracht',fmt(n.mp)+'k')+ico('div','Divisies',lu)+ico('fleet','Vloten',fu)+ico('air','Vliegtuigen',fmt(n.planes));
 }
+const IC={civ:'<path d="M1 15V7l4 2.2V7l4 2.2V2h3.5v13z"/>',mil:'<path d="M1 11.5h9l2.5-2.5h2.5v3H12l-1.5 1.5H1z"/><circle cx="4" cy="13.5" r="1.5"/><circle cx="8" cy="13.5" r="1.5"/>',dock:'<path d="M7 1h2v2.2a2 2 0 11-2 0zM7 6h2v7.8a4 4 0 003.3-2.6l-1.3-.4 3-2 .5 3.6-1.2-.5A6 6 0 012 12l-1.2.5.5-3.6 3 2-1.3.4A4 4 0 007 13.8z"/>',equip:'<path d="M1 5l7-3 7 3v7l-7 3-7-3zm2 1.3v4.9l4 1.7V8zm10 0L9 8v4.9l4-1.7z"/>',mp:'<circle cx="8" cy="4" r="3"/><path d="M2 15.5c0-4.2 2.6-6.5 6-6.5s6 2.3 6 6.5z"/>',div:'<path d="M1 3h14v10H1zm1.5 1.5v7h11v-7zm.5.6l10 5.8v-.1L3.1 5.1zm10 0L3 10.9z"/>',fleet:'<path d="M.5 9.5h15l-2.5 5H3zM5 9.5V6h5.5v3.5zM7 6V2.5h1.2V6z"/>',air:'<path d="M8 .5l1.2 5.3L15 8.6v1.6L9 8.9l-.4 3.7 2 1.4v1.3L8 14.5l-2.6.8V14l2-1.4L7 8.9 1 10.2V8.6l5.8-2.8z"/>'};
+const ico=(k,t,v)=>`<div title="${t}" aria-label="${t}: ${v}"><svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true">${IC[k]}</svg><b>${v}</b></div>`;
 const bar=f=>`<div class="bar"><i style="width:${Math.max(0,Math.min(1,f))*100}%"></i></div>`;
 const terr={vlak:'vlakte',bos:'bos',berg:'bergen'};
 function unitRow(u){const o=S.nations[u.owner],mine=o.id===S.player,mo=u.kind==='fleet'?50:maxOrg(o);
@@ -654,7 +691,7 @@ function startScreen(){
   clearTimeout(timer);newGame(mapSize);V={z:1,x:0,y:0};layout();draw();renderTop();renderPanel();
   $('#res').innerHTML='';$('#flag').style.background='transparent';$('#nname').textContent='IJzeren Fronten';$('#ticker').textContent='';
   const o=$('#overlay');o.classList.remove('hide');
-  o.innerHTML=`<div class="card"><h1>IJzeren Fronten</h1><p>Januari 1936. ${S.nations.length} naties delen een continent vol kusten en eilanden. Bouw je industrie, leger, vloot en luchtmacht, kies je bondgenoten en verover driekwart van het land. Een natie capituleert als ze minder dan 30% van haar eigen grondgebied overhoudt.</p>
+  o.innerHTML=`<div class="card"><h1>IJzeren Fronten</h1><div class="sub">Opperbevel · 1 januari 1936</div><p> ${S.nations.length} naties delen een continent vol kusten en eilanden. Bouw je industrie, leger, vloot en luchtmacht, kies je bondgenoten en verover driekwart van het land. Een natie capituleert als ze minder dan 30% van haar eigen grondgebied overhoudt.</p>
   <div class="seg" style="margin-bottom:12px">${Object.keys(SIZES).map(k=>`<button class="act ${k===mapSize?'':'alt'}" data-o="size" data-v="${k}">${SIZES[k].label} (${SIZES[k].n} naties)</button>`).join('')}</div>
   ${S.nations.map(n=>`<button class="pick" data-pick="${n.id}"><span class="sw" style="background:${n.color}"></span><span><b>${n.name}</b>${n.provs} gebieden · ${n.civ} civiel, ${n.milF} militair, ${n.docks} ${n.docks===1?'werf':'werven'}</span></button>`).join('')}
   <div class="seg"><button class="act alt" data-o="reroll">Andere kaart</button><button class="act alt" data-o="load">Opgeslagen spel laden</button></div></div>`;
