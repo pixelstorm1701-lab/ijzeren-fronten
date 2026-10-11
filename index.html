@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="IJzeren Fronten: een strategiespel over industrie, legers, vloten en luchtmacht.">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>IJzeren Fronten</title>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;600;700&family=Stardos+Stencil:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--sea:#2c4a55;--ink:#1e2a2b;--paper:#dcdfd5;--paper2:#c9cdc1;--alert:#b23a2a;--ok:#4f7d43}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--sea);color:var(--ink);font-family:'Saira Condensed','Arial Narrow',sans-serif;font-size:16px;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:820px;margin:0 auto}
+header{display:flex;align-items:center;gap:7px;padding:6px 8px;background:var(--ink);color:var(--paper)}
+#flag{width:16px;height:16px;border:2px solid var(--paper);flex:none}
+#nname{font-family:'Stardos Stencil',serif;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#date{margin-left:auto;font-size:14px;font-variant-numeric:tabular-nums;opacity:.85;white-space:nowrap}
+.hbtns{display:flex;gap:2px}
+.hbtns button{background:transparent;color:var(--paper);border:1px solid #4a5859;padding:4px 6px;font:600 13px 'Saira Condensed',sans-serif;min-width:30px}
+.hbtns button.on{background:var(--paper);color:var(--ink)}
+#res{display:flex;gap:13px;padding:5px 10px;background:#2a3738;color:var(--paper);font-size:14px;overflow-x:auto;white-space:nowrap}
+#res b{font-variant-numeric:tabular-nums}
+#res span{opacity:.72}
+#mapwrap{position:relative;flex:1 1 auto;min-height:220px;overflow:hidden}
+canvas{display:block;touch-action:none}
+#zoom{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:4px}
+#zoom button{width:34px;height:34px;background:rgba(220,223,213,.92);border:1.5px solid var(--ink);font:700 18px 'Saira Condensed',sans-serif;color:var(--ink);padding:0}
+#ticker{position:absolute;left:8px;bottom:6px;right:50px;font-size:13px;color:var(--paper);pointer-events:none;text-shadow:0 1px 2px #000}
+#tabs{display:flex;background:var(--paper2);border-top:3px solid var(--ink);overflow-x:auto;scrollbar-width:none}
+#tabs::-webkit-scrollbar{display:none}
+#tabs button{flex:1 0 auto;background:none;border:none;padding:9px 11px;font:600 15px 'Saira Condensed',sans-serif;color:#4a5450}
+#tabs button.on{background:var(--paper);color:var(--ink);box-shadow:inset 0 3px 0 var(--ink)}
+#panel{height:36vh;overflow-y:auto;background:var(--paper);padding:10px 12px 18px;font-size:15px;line-height:1.35}
+#panel h3{font-family:'Stardos Stencil',serif;font-size:18px;margin:6px 0}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--paper2)}
+.row:last-child{border-bottom:none}
+.grow{flex:1;min-width:0}
+.hint{color:#5c6560;font-size:14px;margin:3px 0}
+.seg{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+button.act{background:var(--ink);color:var(--paper);border:none;padding:7px 11px;font:600 14px 'Saira Condensed',sans-serif;white-space:nowrap}
+button.act.alt{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+button.act.war{background:var(--alert)}
+button.act.on{background:var(--ok)}
+button.act:disabled{opacity:.35}
+.bar{height:6px;background:var(--paper2);margin-top:4px}
+.bar i{display:block;height:100%;background:var(--ink)}
+.sw{display:inline-block;width:12px;height:12px;vertical-align:-1px;margin-right:6px;border:1px solid var(--ink)}
+.tag{font-size:13px;padding:1px 6px;border:1px solid currentColor;margin-left:6px}
+.tag.war{color:var(--alert)}.tag.ally{color:var(--ok)}
+.done{opacity:.5}
+#overlay{position:fixed;inset:0;background:rgba(20,30,31,.82);display:flex;align-items:center;justify-content:center;padding:16px;z-index:5}
+#overlay.hide{display:none}
+.card{background:var(--paper);max-width:440px;width:100%;padding:20px 18px;max-height:92vh;overflow:auto}
+.card h1{font-family:'Stardos Stencil',serif;font-size:42px;line-height:1;margin:0 0 8px}
+.card p{margin:0 0 14px}
+.card .act{margin:0 6px 8px 0}
+.pick{display:flex;align-items:center;width:100%;gap:10px;padding:9px 10px;margin:0 0 6px;background:var(--paper2);border:none;text-align:left;font:15px 'Saira Condensed',sans-serif;color:var(--ink)}
+.pick .sw{width:22px;height:22px;flex:none}
+.pick b{font-family:'Stardos Stencil',serif;font-size:19px;display:block}
+#toast{position:fixed;left:50%;top:84px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 14px;font-size:15px;max-width:90vw;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6;border-left:4px solid var(--alert)}
+#toast.show{opacity:1}
+button:focus-visible{outline:2px solid #e8c547;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div id="flag"></div><div id="nname">IJzeren Fronten</div><div id="date"></div>
+    <div class="hbtns" id="speed"><button data-s="0" aria-label="Pauze">❚❚</button><button data-s="1">1×</button><button data-s="2">2×</button><button data-s="3">3×</button></div>
+    <div class="hbtns"><button id="menuBtn" aria-label="Menu">☰</button></div>
+  </header>
+  <div id="res"></div>
+  <div id="mapwrap"><canvas id="map"></canvas>
+    <div id="zoom"><button data-z="in" aria-label="Inzoomen">+</button><button data-z="out" aria-label="Uitzoomen">−</button><button data-z="home" aria-label="Naar hoofdstad">⌖</button></div>
+    <div id="ticker"></div></div>
+  <nav id="tabs">
+    <button data-t="leger" class="on">Leger</button><button data-t="industrie">Industrie</button><button data-t="marine">Marine</button><button data-t="lucht">Lucht</button><button data-t="onderzoek">Onderzoek</button><button data-t="focus">Focus</button><button data-t="diplomatie">Diplomatie</button>
+  </nav>
+  <section id="panel"></section>
+</div>
+<div id="overlay"></div>
+<div id="toast"></div>
+
+<script>
+/* ================= basis ================= */
+let COLS=11,ROWS=15,N=165,NB=[];
+const S3=Math.sqrt(3);
+const SIZES={klein:{c:11,r:15,n:5,sp:5,label:'Klein'},groot:{c:17,r:23,n:7,sp:6,label:'Groot'}};
+const NDEF=[['Valdoria','#b0583f'],['Kestrië','#5b8150'],['Morvane','#c49a3c'],['Eldrun','#5d6f9c'],['Sarkovië','#86607f'],['Brannvik','#3f8c86'],['Tessaly','#8c7449']];
+const TECH={inf:['Infanteriewapens','+15% aanval en verdediging'],ind:['Industrie','+10% productie en bouwsnelheid'],doc:['Landdoctrine','+8 maximale organisatie'],mob:['Mobiliteit','Divisies verplaatsen sneller'],air:['Luchtvaart','+15% vliegtuigproductie en luchtkracht'],nav:['Marine','+15% vlootkracht en scheepsbouw']};
+const FOCUS=[
+ {k:'ind',name:'Industriële mobilisatie',desc:'+2 militaire fabrieken in de hoofdstad',f:n=>capProv(n).mil+=2},
+ {k:'civ',name:'Burgerinfrastructuur',desc:'+2 civiele fabrieken in de hoofdstad',f:n=>capProv(n).civ+=2},
+ {k:'mp',name:'Algemene dienstplicht',desc:'+50% mankrachtgroei',f:n=>n.bonus.mpGrow+=.5},
+ {k:'org',name:'Legerhervorming',desc:'+10 maximale organisatie',f:n=>n.bonus.org+=10},
+ {k:'arms',name:'Wapenprogramma',desc:'+15% uitrustingsproductie',f:n=>n.bonus.prod+=.15},
+ {k:'fort',name:'Grensversterkingen',desc:'+20% verdediging',f:n=>n.bonus.def+=.2},
+ {k:'sci',name:'Onderzoeksinstituut',desc:'+25% onderzoekssnelheid',f:n=>n.bonus.research+=.25},
+ {k:'blitz',name:'Offensieve doctrine',desc:'+15% aanval',f:n=>n.bonus.att+=.15},
+ {k:'navy',name:'Vlootprogramma',desc:'+2 scheepswerven en direct een nieuwe vloot',f:n=>{placeFactory(n,'dock');placeFactory(n,'dock');spawnFleet(n)}},
+ {k:'airf',name:'Luchtmachtopbouw',desc:'+60 vliegtuigen en +25% vliegtuigproductie',f:n=>{n.planes+=60;n.bonus.air+=.25}},
+ {k:'war',name:'Oorlogseconomie',desc:'Consumptiegoederen van 20% naar 5%, +3 militaire fabrieken',req:'ind',f:n=>{n.consumer=.05;capProv(n).mil+=3}},
+];
+const BCOST={civ:120,mil:90,dock:100},BNAME={civ:'Civiele fabriek',mil:'Militaire fabriek',dock:'Scheepswerf'};
+const MISSION={sup:['Luchtoverwicht','Je jagers bevechten vijandelijke vliegtuigen. Sterkste luchtmacht wint.'],cas:['Gevechtssteun','Extra bonus voor je divisies in gevechten, minder effectief in luchtgevechten.'],bomb:['Strategisch bombarderen','Vernietigt fabrieken en werven van het doelwit.']};
+const SY1=['Bre','Kal','Mor','Ost','Vel','Dra','Hal','Sten','Rav','Lun','Tor','Wes','Gor','Ald','Fen','Kor','Zan','Hel','Mar','Ulv'],SY2=['dorp','burg','heim','mark','veld','wijk','stad','berg','haven','dal','ven','rode','oord','vik'];
+const SPEED=[0,650,280,90],SAVEKEY='ijzeren-fronten:save';
+let S=null,L={},V={z:1,x:0,y:0},timer=null,lastPanel=0,tab='leger',mapSize='klein';
+const $=s=>document.querySelector(s);
+const cv=$('#map'),ctx=cv.getContext('2d');
+const rf=(a,b)=>a+Math.random()*(b-a),ri=(a,b)=>Math.floor(rf(a,b+1)),pick=a=>a[ri(0,a.length-1)];
+function nbCalc(i){const c=i%COLS,r=(i/COLS)|0,odd=r&1;const d=odd?[[1,0],[-1,0],[0,-1],[1,-1],[0,1],[1,1]]:[[1,0],[-1,0],[-1,-1],[0,-1],[-1,1],[0,1]];const o=[];for(const[x,y]of d){const nc=c+x,nr=r+y;if(nc>=0&&nc<COLS&&nr>=0&&nr<ROWS)o.push(nr*COLS+nc)}return o}
+function setSize(c,r){COLS=c;ROWS=r;N=c*r;NB=[];for(let i=0;i<N;i++)NB[i]=nbCalc(i)}
+function cube(i){const c=i%COLS,r=(i/COLS)|0,x=c-(r-(r&1))/2;return[x,r,-x-r]}
+function hd(a,b){const A=cube(a),B=cube(b);return Math.max(Math.abs(A[0]-B[0]),Math.abs(A[1]-B[1]),Math.abs(A[2]-B[2]))}
+
+/* ================= kaart ================= */
+function genMap(cfg){
+  const P=[];for(let i=0;i<N;i++)P.push({i,land:true,owner:-1,core:-1,civ:0,mil:0,dock:0,cap:false,terrain:'vlak',name:pick(SY1)+pick(SY2)});
+  const edge=()=>{const s=ri(0,3);return s===0?ri(0,COLS-1):s===1?(ROWS-1)*COLS+ri(0,COLS-1):s===2?ri(0,ROWS-1)*COLS:ri(0,ROWS-1)*COLS+COLS-1};
+  const walks=Math.round(N/32);
+  for(let k=0;k<walks;k++){let c=edge();for(let s=0,m=ri(8,20);s<m;s++){P[c].land=false;c=pick(NB[c])}}
+  if(cfg.n>5){let c=ri(3,COLS-4);for(let s=0;s<ROWS*1.4;s++){P[c].land=false;if(Math.random()<.4)P[pick(NB[c])].land=false;const r=(c/COLS)|0;const o=NB[c].filter(j=>((j/COLS)|0)>=r);c=pick(o.length?o:NB[c])}}
+  for(let k=0;k<2;k++){let c=ri(0,N-1);for(let s=0;s<ri(2,4);s++){P[c].land=false;c=pick(NB[c])}}
+  for(const p of P){const x=Math.random();p.terrain=x<.16?'berg':x<.36?'bos':'vlak'}
+  const seeds=[];let t=0;
+  while(seeds.length<cfg.n&&t<8000){t++;const i=ri(0,N-1);if(P[i].land&&NB[i].filter(j=>P[j].land).length>=3&&seeds.every(s=>hd(s,i)>=cfg.sp))seeds.push(i)}
+  if(seeds.length<cfg.n)return genMap(cfg);
+  const fr=seeds.map((s,n)=>{P[s].owner=n;return[s]});
+  let grew=true;
+  while(grew){grew=false;for(let n=0;n<cfg.n;n++){const f=fr[n];if(!f.length)continue;grew=true;const k=ri(0,f.length-1);const free=NB[f[k]].filter(j=>P[j].land&&P[j].owner<0);if(!free.length){f.splice(k,1);continue}const j=pick(free);P[j].owner=n;f.push(j)}}
+  for(const p of P)if(p.land&&p.owner<0){let b=0,bd=1e9;seeds.forEach((s,n)=>{const d=hd(s,p.i);if(d<bd){bd=d;b=n}});p.owner=b}
+  for(const p of P){p.core=p.owner}
+  const coast=i=>P[i].land&&NB[i].some(j=>!P[j].land);
+  for(const p of P)if(p.land){if(Math.random()<.35)p.civ++;if(Math.random()<.2)p.mil++;if(coast(p.i)&&Math.random()<.1)p.dock++}
+  seeds.forEach(s=>{P[s].cap=true;P[s].civ+=3;P[s].mil+=2;P[s].terrain='vlak';if(coast(s))P[s].dock++});
+  return{P,seeds};
+}
+
+/* ================= staat ================= */
+function newGame(size){
+  const cfg=SIZES[size];setSize(cfg.c,cfg.r);
+  const{P,seeds}=genMap(cfg);
+  S={size,day:0,speed:0,provs:P,units:[],uid:1,wars:new Set(),allies:new Set(),log:[],player:-1,auto:false,sel:null,selUnits:new Set(),battle:new Set(),warStart:{},over:false};
+  S.nations=NDEF.slice(0,cfg.n).map(([name,color],id)=>({id,name,color,ai:true,alive:true,equip:200,mp:20,civ:0,milF:0,docks:0,provs:0,consumer:.2,planes:30,airShare:.2,airMission:'sup',bombTarget:null,ships:[],shipPts:0,
+    tech:{inf:0,ind:0,doc:0,mob:0,air:0,nav:0},research:null,focus:null,focusDone:[],build:[],train:[],bonus:{prod:0,mpGrow:0,org:0,att:0,def:0,research:0,build:0,air:0},justify:null,cap:seeds[id],allyCd:{},calm:0}));
+  S.nations.forEach(n=>{stats(n);for(let k=0;k<4;k++)spawn(n);if(n.docks)spawnFleet(n)});
+}
+const key=(a,b)=>a<b?a+'-'+b:b+'-'+a;
+const atWar=(a,b)=>a!==b&&a>=0&&b>=0&&S.wars.has(key(a,b));
+const allied=(a,b)=>a!==b&&S.allies.has(key(a,b));
+const alliesOf=x=>S.nations.filter(o=>o.alive&&allied(x,o.id)).map(o=>o.id);
+const enemiesOf=x=>S.nations.filter(o=>o.alive&&atWar(x,o.id)).map(o=>o.id);
+const friendly=(o,j)=>S.provs[j].land&&(S.provs[j].owner===o||allied(o,S.provs[j].owner));
+const canEnter=(o,j)=>S.provs[j].land&&(friendly(o,j)||atWar(o,S.provs[j].owner));
+const hostileLand=(o,j)=>S.units.filter(u=>u.kind==='land'&&u.prov===j&&u.str>0&&atWar(o,u.owner));
+const hostileFleets=(o,j)=>S.units.filter(u=>u.kind==='fleet'&&u.prov===j&&u.str>0&&atWar(o,u.owner));
+const hasFleet=o=>S.units.some(u=>u.kind==='fleet'&&u.owner===o);
+const coastal=i=>S.provs[i].land&&NB[i].some(j=>!S.provs[j].land);
+const maxOrg=n=>50+8*n.tech.doc+n.bonus.org;
+const att=n=>10*(1+.15*n.tech.inf+n.bonus.att);
+const dfn=(n,p)=>12*(1+.15*n.tech.inf+n.bonus.def)*(p.terrain==='berg'?1.5:p.terrain==='bos'?1.25:1);
+const moveTime=(n,j)=>Math.max(1.5,(S.provs[j].terrain==='berg'?5:S.provs[j].terrain==='bos'?4:3)-.4*n.tech.mob);
+const nm=i=>S.provs[i].land?S.provs[i].name:'open zee';
+function canEnterU(u,j){const p=S.provs[j];if(u.kind==='fleet')return!p.land;if(p.land)return canEnter(u.owner,j);return hasFleet(u.owner)&&!hostileFleets(u.owner,j).length}
+function passU(u,j){const p=S.provs[j];if(u.kind==='fleet')return!p.land;if(p.land)return friendly(u.owner,j);return hasFleet(u.owner)&&!hostileFleets(u.owner,j).length}
+function capProv(n){const c=S.provs[n.cap];return c.owner===n.id?c:(S.provs.find(p=>p.land&&p.owner===n.id)||c)}
+function stats(n){let c=0,m=0,d=0,k=0;for(const p of S.provs)if(p.land&&p.owner===n.id){c+=p.civ;m+=p.mil;d+=p.dock;k++}n.civ=c;n.milF=m;n.docks=d;n.provs=k}
+function spawn(n){const p=capProv(n);S.units.push({id:S.uid++,owner:n.id,kind:'land',prov:p.i,str:100,org:maxOrg(n),move:null,attack:null,path:[]})}
+function spawnFleet(n){const seas=[];for(const p of S.provs)if(p.land&&p.owner===n.id&&p.dock>0)for(const j of NB[p.i])if(!S.provs[j].land&&!hostileFleets(n.id,j).length)seas.push(j);
+  if(!seas.length)return false;S.units.push({id:S.uid++,owner:n.id,kind:'fleet',prov:pick(seas),str:100,org:50,move:null,attack:null,path:[]});return true}
+function isNeighbor(a,b){return S.provs.some(p=>p.land&&p.owner===a&&NB[p.i].some(j=>S.provs[j].land&&S.provs[j].owner===b))}
+function power(id){return S.units.filter(u=>u.owner===id&&u.kind==='land').reduce((s,u)=>s+u.str/100,0)+S.nations[id].train.length*.5}
+function coreRatio(id){let a=0,b=0;for(const p of S.provs)if(p.land&&p.core===id){a++;if(p.owner===id)b++}return a?b/a:0}
+function airEff(n){return n.planes*(n.airMission==='sup'?1:n.airMission==='cas'?.6:.4)*(1+.15*n.tech.air)}
+function airSup(a,b){const ea=airEff(S.nations[a]),eb=airEff(S.nations[b]);return ea+eb<1?.5:ea/(ea+eb)}
+function airMod(a,b){if(!atWar(a,b))return 1;return 1+.5*(airSup(a,b)-.5)*(S.nations[a].airMission==='cas'?1.6:1)}
+function fleetPow(f){const n=S.nations[f.owner];return 10*(1+.15*n.tech.nav)*f.str/100*(.4+.6*Math.max(0,f.org)/50)}
+
+function log(t,imp){S.log.unshift({d:S.day,t});S.log.length=Math.min(S.log.length,30);$('#ticker').textContent=t;if(imp)toast(t)}
+let tt;function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),3200)}
+const involves=(...ids)=>ids.includes(S.player);
+
+function declareWar(a,b){
+  if(atWar(a,b)||a===b)return;
+  S.wars.add(key(a,b));S.allies.delete(key(a,b));S.warStart[key(a,b)]=S.day;
+  log(`${S.nations[a].name} verklaart ${S.nations[b].name} de oorlog!`,true);
+  for(const c of alliesOf(b))if(c!==a&&!allied(c,a)&&!atWar(c,a)){S.wars.add(key(c,a));S.warStart[key(c,a)]=S.day;log(`${S.nations[c].name} komt ${S.nations[b].name} te hulp.`,involves(c,a))}
+  for(const c of alliesOf(a))if(c!==b&&!allied(c,b)&&!atWar(c,b)){S.wars.add(key(c,b));S.warStart[key(c,b)]=S.day;log(`${S.nations[c].name} sluit zich aan bij de oorlog.`,involves(c,b))}
+}
+function makePeace(a,b){S.wars.delete(key(a,b));for(const u of S.units)if((u.owner===a||u.owner===b)&&u.attack!=null&&!atWar(u.owner,S.provs[u.attack].owner))u.attack=null;
+  for(const x of[a,b]){const n=S.nations[x];if(n.bombTarget===(x===a?b:a))n.bombTarget=null}
+  log(`Vrede tussen ${S.nations[a].name} en ${S.nations[b].name}.`,involves(a,b))}
+function capitulate(x,by){
+  const n=S.nations[x];if(!n.alive)return;n.alive=false;
+  for(const p of S.provs)if(p.owner===x)p.owner=by;
+  S.units=S.units.filter(u=>u.owner!==x);
+  for(const k of[...S.wars,...S.allies]){const[a,b]=k.split('-').map(Number);if(a===x||b===x){S.wars.delete(k);S.allies.delete(k)}}
+  for(const o of S.nations){if(o.justify&&o.justify.target===x)o.justify=null;if(o.bombTarget===x)o.bombTarget=null}
+  log(`${n.name} capituleert voor ${S.nations[by].name}.`,true);
+  if(x===S.player)endGame(false);
+}
+function capture(i,by){
+  const p=S.provs[i],prev=p.owner;p.owner=by;
+  const pn=S.nations[prev];if(!pn.alive)return;
+  if(p.cap&&pn.cap===i){p.cap=false;const alt=S.provs.filter(q=>q.land&&q.owner===prev).sort((a,b)=>(b.core===prev)-(a.core===prev)||b.civ+b.mil-a.civ-a.mil)[0];
+    if(alt){alt.cap=true;pn.cap=alt.i;log(`${S.nations[by].name} verovert ${p.name}. ${pn.name} verplaatst de hoofdstad naar ${alt.name}.`,involves(by,prev))}}
+  if(!S.provs.some(q=>q.land&&q.owner===prev)||coreRatio(prev)<.3)capitulate(prev,by);
+}
+function placeFactory(n,type){
+  const ok=p=>p.land&&p.owner===n.id&&p.civ+p.mil+p.dock<6&&(type!=='dock'||coastal(p.i));
+  let c=S.provs.filter(p=>ok(p)&&p.core===n.id);if(!c.length)c=S.provs.filter(ok);if(!c.length)return false;
+  const min=Math.min(...c.map(p=>p.civ+p.mil+p.dock));const p=pick(c.filter(q=>q.civ+q.mil+q.dock===min));p[type]++;
+  if(n.id===S.player)log(`Nieuwe ${BNAME[type].toLowerCase()} in ${p.name}.`);return true;
+}
+
+/* ================= simulatie ================= */
+function economy(n){
+  stats(n);
+  const out=n.milF*.9*(1+.1*n.tech.ind+n.bonus.prod);
+  n.equip+=out*(1-n.airShare);
+  n.planes+=out*n.airShare*.3*(1+.15*n.tech.air+n.bonus.air);
+  n.mp+=n.provs*.04*(1+n.bonus.mpGrow);
+  let pts=Math.max(0,n.civ-Math.ceil(n.civ*n.consumer))*(1+.1*n.tech.ind+n.bonus.build);
+  for(const b of n.build){if(pts<=0)break;const u=Math.min(pts,15);b.progress+=u;pts-=u}
+  for(let k=n.build.length-1;k>=0;k--)if(n.build[k].progress>=n.build[k].cost){const b=n.build.splice(k,1)[0];placeFactory(n,b.type)}
+  if(n.ships.length&&n.docks){const s=n.ships[0];s.progress+=n.docks*(1+.1*n.tech.ind+.15*n.tech.nav);if(s.progress>=s.cost&&spawnFleet(n)){n.ships.shift();if(n.id===S.player)log('Een nieuwe vloot is te water gelaten.',true)}}
+  n.train.forEach(t=>t.left--);const done=n.train.filter(t=>t.left<=0);n.train=n.train.filter(t=>t.left>0);
+  done.forEach(()=>spawn(n));if(done.length&&n.id===S.player)log(`${done.length>1?done.length+' divisies zijn':'Een divisie is'} klaar voor inzet.`);
+  if(n.research){n.research.left-=1+n.bonus.research;if(n.research.left<=0){n.tech[n.research.key]++;if(n.id===S.player)log(`Onderzoek voltooid: ${TECH[n.research.key][0]} ${n.tech[n.research.key]}.`,true);n.research=null}}
+  if(n.focus){n.focus.left--;if(n.focus.left<=0){const f=FOCUS.find(x=>x.k===n.focus.key);n.focus=null;f.f(n);n.focusDone.push(f.k);if(n.id===S.player)log(`Focus voltooid: ${f.name}.`,true)}}
+  if(n.justify&&n.justify.left>0){n.justify.left--;if(n.justify.left===0&&n.id===S.player)log(`Oorlogsdoel tegen ${S.nations[n.justify.target].name} is klaar.`,true)}
+  const mo=maxOrg(n);
+  for(const u of S.units){if(u.owner!==n.id)continue;
+    const fighting=u.attack!=null||S.battle.has(u.prov);
+    if(u.kind==='fleet'){if(!fighting)u.org=Math.min(50,u.org+4);if(u.str<100&&NB[u.prov].some(j=>S.provs[j].land&&S.provs[j].owner===n.id))u.str=Math.min(100,u.str+1.5);continue}
+    if(!S.provs[u.prov].land){u.org=Math.min(mo,u.org+1);continue}
+    if(!fighting)u.org=Math.min(mo,u.org+4);
+    if(u.str<100&&n.equip>=1){const a=Math.min(2,100-u.str,n.equip);u.str+=a;n.equip-=a}}
+}
+function order(u,to,path=[]){
+  u.move=null;u.attack=null;u.path=path;
+  if(!NB[u.prov].includes(to))return false;
+  if(u.kind==='land'&&S.provs[to].land&&hostileLand(u.owner,to).length){u.attack=to;u.path=[];return true}
+  if(!canEnterU(u,to))return false;
+  const t=u.kind==='fleet'?1.5:S.provs[to].land?moveTime(S.nations[u.owner],to):2;u.move={to,left:t,total:t};return true;
+}
+function findPath(u,target){if(target===u.prov)return null;const{dist,par}=bfs(u.prov,j=>j===target?canEnterU(u,j):passU(u,j));return dist.has(target)?pathTo(par,u.prov,target):null}
+function movement(){
+  for(const u of S.units){if(!u.move)continue;u.move.left--;if(u.move.left>0)continue;
+    const to=u.move.to;u.move=null;
+    if(!canEnterU(u,to)){u.path=[];continue}
+    if(u.kind==='land'&&S.provs[to].land&&hostileLand(u.owner,to).length){u.attack=to;u.path=[];continue}
+    u.prov=to;const p=S.provs[to];
+    if(u.kind==='land'&&p.land&&p.owner!==u.owner&&atWar(u.owner,p.owner))capture(to,u.owner);
+    if(u.path&&u.path.length){const nx=u.path.shift();order(u,nx,u.path)}
+  }
+}
+function retreat(d){
+  d.attack=null;d.move=null;d.path=[];
+  const opts=NB[d.prov].filter(j=>friendly(d.owner,j)&&!hostileLand(d.owner,j).length&&!S.battle.has(j));
+  if(!opts.length){d.str=0;if(d.owner===S.player)log('Een omsingelde divisie is vernietigd.',true);return}
+  d.prov=pick(opts);d.org=Math.max(0,d.org);d.str=Math.max(d.str,1);
+}
+function seaRetreat(f){
+  f.move=null;f.path=[];
+  const opts=NB[f.prov].filter(j=>!S.provs[j].land&&!hostileFleets(f.owner,j).length);
+  if(!opts.length){f.str=0;if(involves(f.owner))log('Een vloot is tot zinken gebracht.',true);return}
+  f.prov=pick(opts);f.org=Math.max(0,f.org);
+}
+function combat(){
+  S.battle=new Set();
+  const bt={};for(const u of S.units)if(u.kind==='land'&&u.attack!=null)(bt[u.attack]=bt[u.attack]||[]).push(u);
+  for(const k in bt){const to=+k,P=S.provs[to];
+    const atk=bt[k].filter(u=>NB[u.prov].includes(to)&&u.str>0);if(!atk.length)continue;
+    const defs=S.units.filter(d=>d.kind==='land'&&d.prov===to&&d.str>0&&atk.some(a=>atWar(a.owner,d.owner)));
+    if(!defs.length){atk.forEach(a=>{a.attack=null;if(canEnter(a.owner,to))a.move={to,left:1,total:1}});continue}
+    S.battle.add(to);
+    let A=0,D=0;const dO=defs[0].owner,aO=atk[0].owner;
+    for(const a of atk){const n=S.nations[a.owner];A+=att(n)*a.str/100*(.4+.6*Math.max(0,a.org)/maxOrg(n))*(S.provs[a.prov].land?1:.5)*airMod(a.owner,dO)}
+    for(const d of defs){const n=S.nations[d.owner];D+=dfn(n,P)*d.str/100*(.4+.6*Math.max(0,d.org)/maxOrg(n))*airMod(d.owner,aO)}
+    for(const d of defs){const r=rf(.7,1.1);d.org-=A*.22/defs.length*r;d.str-=A*.04/defs.length*r}
+    for(const a of atk){const r=rf(.7,1.1);a.org-=D*.2/atk.length*r;a.str-=D*.035/atk.length*r}
+    for(const d of defs)if(d.org<=0||d.str<=8)retreat(d);
+    for(const a of atk)if(a.org<=6||a.str<=12)a.attack=null;
+  }
+  const seaHexes=new Set(S.units.filter(u=>u.kind==='fleet').map(u=>u.prov));
+  for(const h of seaHexes){
+    const here=S.units.filter(u=>u.prov===h&&u.str>0),fl=here.filter(u=>u.kind==='fleet');
+    for(const t of here)if(t.kind==='land'&&fl.some(f=>atWar(f.owner,t.owner))){t.str=0;if(involves(t.owner))log('Een divisie op zee is tot zinken gebracht.',true)}
+    const dmg=new Map();
+    for(const a of fl){const tg=fl.filter(b=>atWar(a.owner,b.owner));if(!tg.length)continue;const pw=fleetPow(a);for(const t of tg)dmg.set(t,(dmg.get(t)||0)+pw/tg.length)}
+    if(!dmg.size)continue;S.battle.add(h);
+    for(const[t,d]of dmg){const r=rf(.7,1.1);t.org-=d*.25*r;t.str-=d*.05*r}
+    for(const t of dmg.keys())if(t.str>0&&(t.org<=0||t.str<=10))seaRetreat(t);
+  }
+  S.units=S.units.filter(u=>u.str>0);
+}
+function airWar(){
+  for(const k of S.wars){const[a,b]=k.split('-').map(Number);const A=S.nations[a],B=S.nations[b];if(!A.alive||!B.alive)continue;
+    const ea=airEff(A),eb=airEff(B);A.planes=Math.max(0,A.planes-eb*.004*rf(.6,1.2));B.planes=Math.max(0,B.planes-ea*.004*rf(.6,1.2))}
+  for(const n of S.nations){if(!n.alive||n.airMission!=='bomb')continue;const t=n.bombTarget;if(t==null||!atWar(n.id,t))continue;
+    n.planes*=.998;const ch=Math.min(.25,n.planes*.0006*(1.3-airSup(t,n.id)));
+    if(Math.random()<ch){const c=S.provs.filter(p=>p.land&&p.owner===t&&p.civ+p.mil+p.dock>0);if(c.length){const p=pick(c);const kk=pick(['civ','mil','dock'].filter(x=>p[x]>0));p[kk]--;
+      if(involves(n.id,t))log(`${n.name} bombardeert een ${BNAME[kk].toLowerCase()} in ${p.name}.`,t===S.player)}}}
+}
+
+/* ================= AI ================= */
+function bfs(start,pass){const dist=new Map([[start,0]]),par=new Map(),q=[start];let h=0;while(h<q.length){const c=q[h++];for(const j of NB[c]){if(dist.has(j)||!pass(j))continue;dist.set(j,dist.get(c)+1);par.set(j,c);q.push(j)}}return{dist,par}}
+function pathTo(par,s,g){const p=[g];let c=g;while(c!==s){c=par.get(c);if(c==null)return null;p.push(c)}return p.reverse()}
+function aiUnits(n){
+  const id=n.id,mo=maxOrg(n);
+  const idle=S.units.filter(u=>u.owner===id&&u.kind==='land'&&!u.move&&u.attack==null&&!(u.path&&u.path.length));
+  if(!idle.length)return;
+  const fr=j=>friendly(id,j),en=enemiesOf(id);
+  const enemyProv=j=>S.provs[j].land&&en.includes(S.provs[j].owner);
+  const foreign=j=>S.provs[j].land&&!fr(j);
+  const handled=new Set();
+  for(const u of idle){if(S.provs[u.prov].land)continue;handled.add(u.id);
+    const{dist,par}=bfs(u.prov,j=>passU(u,j)||fr(j));let best=-1,bd=1e9;for(const[j,d]of dist)if(fr(j)&&d<bd){bd=d;best=j}
+    if(best>=0){const p=pathTo(par,u.prov,best);if(p&&p.length>1)order(u,p[1],p.slice(2))}}
+  let front=S.provs.filter(p=>p.land&&fr(p.i)&&NB[p.i].some(en.length?enemyProv:foreign)).map(p=>p.i);
+  const landFront=en.length>0&&front.length>0;
+  if(!front.length){const cs=S.provs.filter(p=>p.land&&p.owner===id&&coastal(p.i)).map(p=>p.i);
+    if(en.length&&cs.length&&(!n.stage||!cs.includes(n.stage)||S.day%30===0)){
+      const dist=new Map(),q=[];for(const p of S.provs)if(enemyProv(p.i))for(const j of NB[p.i])if(!S.provs[j].land&&!dist.has(j)){dist.set(j,0);q.push(j)}
+      let h=0;while(h<q.length){const c=q[h++];for(const j of NB[c])if(!S.provs[j].land&&!dist.has(j)){dist.set(j,dist.get(c)+1);q.push(j)}}
+      let best=null,bd=1e9;for(const c of cs)for(const j of NB[c])if(dist.has(j)&&dist.get(j)<bd){bd=dist.get(j);best=c}
+      n.stage=best}
+    front=en.length&&n.stage!=null&&cs.includes(n.stage)?[n.stage]:cs}
+  if(!front.length)return;
+  const load={};let total=0;for(const u of S.units)if(u.owner===id&&u.kind==='land'){const k=u.move?u.move.to:u.prov;load[k]=(load[k]||0)+1;total++}
+  const avg=landFront||front.length>1?Math.max(1,total/front.length):99;
+  if(landFront){
+    const by={};for(const u of idle)if(!handled.has(u.id))(by[u.prov]=by[u.prov]||[]).push(u);
+    for(const k in by){const ready=by[k].filter(u=>u.org>mo*.7&&u.str>55);if(!ready.length)continue;
+      const opts=NB[+k].filter(enemyProv);if(!opts.length)continue;
+      let best=-1,bs=-1e9,bds=0;
+      for(const j of opts){const ds=hostileLand(id,j).reduce((s,u)=>s+u.str/100*(.4+.6*Math.max(0,u.org)/maxOrg(S.nations[u.owner])),0);
+        const sc=-ds*2+(S.provs[j].cap?1.5:0)-(S.provs[j].terrain==='berg'?.7:0)+Math.random()*.5;if(sc>bs){bs=sc;best=j;bds=ds}}
+      if(bds===0||ready.length>=bds*1.4+.5)ready.forEach(u=>{order(u,best);handled.add(u.id)});
+    }
+  }else if(en.length&&hasFleet(id)&&Math.random()<.4){
+    const by={};for(const u of idle)if(!handled.has(u.id)&&S.provs[u.prov].land&&coastal(u.prov)&&u.org>mo*.7&&u.str>60)(by[u.prov]=by[u.prov]||[]).push(u);
+    const g=Object.values(by).sort((a,b)=>b.length-a.length)[0];
+    if(g&&g.length>=2){const u0=g[0];const{dist,par}=bfs(u0.prov,j=>!S.provs[j].land&&passU(u0,j));
+      let best=-1,via=-1,bs=1e9;
+      for(const p of S.provs){if(!enemyProv(p.i))continue;for(const j of NB[p.i]){if(S.provs[j].land||!dist.has(j)||dist.get(j)>12)continue;const sc=hostileLand(id,p.i).length*3+dist.get(j)*.3+Math.random();if(sc<bs){bs=sc;best=p.i;via=j}}}
+      if(best>=0&&g.length>=hostileLand(id,best).length*1.5+1){const p=pathTo(par,u0.prov,via);if(p){const full=p.concat([best]);g.forEach(u=>{order(u,full[1],full.slice(2));handled.add(u.id)});if(involves(id,S.provs[best].owner))log(`${n.name} lanceert een invasie over zee bij ${S.provs[best].name}.`,true)}}}
+  }
+  for(const u of idle){if(handled.has(u.id)||!S.provs[u.prov].land)continue;
+    if(front.includes(u.prov)&&(load[u.prov]||0)<=Math.ceil(avg))continue;
+    const{dist,par}=bfs(u.prov,fr);let best=-1,bs=1e9;
+    for(const f of front){if(!dist.has(f))continue;const sc=dist.get(f)+((load[f]||0)-avg)*1.5+Math.random();if(sc<bs){bs=sc;best=f}}
+    if(best<0||best===u.prov)continue;
+    const path=pathTo(par,u.prov,best);if(!path||path.length<2)continue;
+    load[u.prov]--;load[best]=(load[best]||0)+1;order(u,path[1],path.slice(2));
+  }
+}
+function aiFleets(n){
+  const id=n.id,en=enemiesOf(id),sea=j=>!S.provs[j].land;
+  const fl=S.units.filter(u=>u.owner===id&&u.kind==='fleet'&&!u.move&&!(u.path&&u.path.length));if(!fl.length)return;
+  const home=S.provs.filter(p=>!p.land&&NB[p.i].some(j=>S.provs[j].land&&S.provs[j].owner===id)).map(p=>p.i);
+  let ef=[],ec=[];
+  if(en.length){ef=S.units.filter(u=>u.kind==='fleet'&&en.includes(u.owner)).map(u=>u.prov);ec=S.provs.filter(p=>!p.land&&NB[p.i].some(j=>S.provs[j].land&&en.includes(S.provs[j].owner))).map(p=>p.i)}
+  const myP=S.units.filter(u=>u.owner===id&&u.kind==='fleet').reduce((s,u)=>s+u.str,0),thP=S.units.filter(u=>u.kind==='fleet'&&en.includes(u.owner)).reduce((s,u)=>s+u.str,0);
+  for(const f of fl){
+    let tg=home;
+    if(f.str>=45&&f.org>=20&&en.length)tg=(ef.length&&myP>=thP*.9)?ef:(ec.length?ec:home);
+    if(!tg.length||(tg.includes(f.prov)&&!(tg===home&&Math.random()<.15)))continue;
+    const{dist,par}=bfs(f.prov,sea);let best=-1,bs=1e9;for(const t of tg){if(!dist.has(t))continue;const sc=dist.get(t)+Math.random()*3;if(sc<bs){bs=sc;best=t}}
+    if(best<0||best===f.prov)continue;const p=pathTo(par,f.prov,best);if(p&&p.length>1)order(f,p[1],p.slice(2));
+  }
+}
+function aiStrategy(n){
+  stats(n);
+  const coastOwn=S.provs.some(p=>p.land&&p.owner===n.id&&coastal(p.i));
+  if(n.build.length<2){let t=(n.civ<n.milF*1.3&&S.day<500)?'civ':'mil';if(coastOwn&&n.docks<1+Math.floor(n.provs/12)&&Math.random()<.4)t='dock';n.build.push({type:t,progress:0,cost:BCOST[t]})}
+  const nf=S.units.filter(u=>u.owner===n.id&&u.kind==='fleet').length;
+  if(n.docks&&!n.ships.length&&nf<1+Math.floor(n.provs/10))n.ships.push({progress:0,cost:150});
+  const cap=Math.round(n.provs*.45)+3;
+  while(n.equip>=100&&n.mp>=3&&S.units.filter(u=>u.owner===n.id&&u.kind==='land').length+n.train.length<cap){n.equip-=100;n.mp-=3;n.train.push({left:20})}
+  if(!n.research){const ks=Object.keys(TECH).filter(k=>n.tech[k]<5);if(ks.length){const m=Math.min(...ks.map(k=>n.tech[k]));const k=pick(ks.filter(x=>n.tech[x]===m));n.research={key:k,left:50+25*n.tech[k],total:50+25*n.tech[k]}}}
+  if(!n.focus){const av=FOCUS.filter(f=>!n.focusDone.includes(f.k)&&(!f.req||n.focusDone.includes(f.req)));if(av.length)n.focus={key:pick(av).k,left:35}}
+  const en=enemiesOf(n.id);n.calm=en.length?0:n.calm+1;
+  if(en.length){const top=Math.max(...en.map(e=>airEff(S.nations[e])));n.airMission=airEff(n)>top*1.4?(Math.random()<.35?'bomb':'cas'):'sup';if(!en.includes(n.bombTarget))n.bombTarget=en[0]}else n.airMission='sup';
+  if(n.justify){const t=n.justify.target;if(!S.nations[t].alive||allied(n.id,t))n.justify=null;else if(n.justify.left<=0){declareWar(n.id,t);n.justify=null}}
+  else if(S.day>75&&!en.length){
+    const cand=S.nations.filter(o=>o.alive&&o.id!==n.id&&!allied(n.id,o.id)&&isNeighbor(n.id,o.id));
+    const full=id=>power(id)+alliesOf(id).reduce((s,c)=>s+power(c),0);
+    if(cand.length){const tgt=cand.reduce((a,b)=>full(a.id)<full(b.id)?a:b);
+      if(power(n.id)>full(tgt.id)*Math.max(.85,1.25-n.calm*.02)&&Math.random()<.3){n.justify={target:tgt.id,left:30};if(tgt.id===S.player)log(`${n.name} rechtvaardigt een oorlogsdoel tegen jou.`,true)}}
+  }
+  if(en.length&&Math.random()<.06){const m=S.nations.find(o=>o.alive&&o.ai&&o.id!==n.id&&!allied(n.id,o.id)&&!atWar(n.id,o.id)&&enemiesOf(o.id).some(e=>en.includes(e)));
+    if(m){S.allies.add(key(n.id,m.id));log(`${n.name} en ${m.name} sluiten een bondgenootschap.`)}}
+  for(const e of en){const o=S.nations[e];if(o.ai&&S.day-(S.warStart[key(n.id,e)]||0)>200&&Math.random()<.03&&!S.provs.some(p=>p.land&&((p.owner===n.id&&p.core===e)||(p.owner===e&&p.core===n.id))))makePeace(n.id,e)}
+}
+
+function tick(){
+  S.day++;
+  for(const n of S.nations)if(n.alive)economy(n);
+  movement();combat();airWar();
+  if(S.day%2===0)for(const n of S.nations)if(n.alive&&(n.ai||S.auto)){aiUnits(n);aiFleets(n)}
+  if(S.day%7===0)for(const n of S.nations)if(n.alive&&n.ai)aiStrategy(n);
+  for(const id of S.selUnits)if(!S.units.some(u=>u.id===id))S.selUnits.delete(id);
+  checkEnd();draw();renderTop();
+  if(Date.now()-lastPanel>700)renderPanel();
+}
+function checkEnd(){
+  if(S.over)return;const land=S.provs.filter(p=>p.land);const mine=land.filter(p=>p.owner===S.player).length;
+  if(mine/land.length>=.75||S.nations.every(n=>!n.alive||n.id===S.player))endGame(true);
+}
+function endGame(win){
+  S.over=true;setSpeed(0);
+  const o=$('#overlay');o.classList.remove('hide');
+  o.innerHTML=`<div class="card"><h1>${win?'Overwinning':'Capitulatie'}</h1><p>${win?`${S.nations[S.player].name} beheerst het continent na ${S.day} dagen.`:`${S.nations[S.player].name} heeft zich overgegeven op dag ${S.day}.`}</p><button class="act" data-o="new">Nieuw spel</button></div>`;
+}
+function setSpeed(s){if(!S)return;S.speed=s;clearTimeout(timer);renderTop();if(s&&!S.over)loop()}
+function loop(){if(!S||S.over||!S.speed)return;tick();timer=setTimeout(loop,SPEED[S.speed])}
+
+/* ================= opslaan ================= */
+/* Opslag: Claude-opslag als die er is, anders de browser (localStorage) */
+const store={
+  async set(v){if(window.storage)return window.storage.set(SAVEKEY,v,false);localStorage.setItem(SAVEKEY,v)},
+  async get(){if(window.storage){const r=await window.storage.get(SAVEKEY,false);return r&&r.value}return localStorage.getItem(SAVEKEY)}
+};
+async function saveGame(){
+  try{const st={...S,wars:[...S.wars],allies:[...S.allies],battle:[...S.battle],selUnits:[],sel:null,speed:0};
+    await store.set(JSON.stringify({v:2,cols:COLS,rows:ROWS,S:st}));toast(`Spel opgeslagen op ${dateStr()}.`)}
+  catch(e){toast('Opslaan is mislukt. Controleer of je browser opslag voor deze site toestaat.')}
+}
+async function loadGame(){
+  let raw=null;try{raw=await store.get()}catch(e){}
+  if(!raw){toast('Geen opgeslagen spel gevonden.');return}
+  try{const d=JSON.parse(raw);
+    setSize(d.cols,d.rows);S=d.S;S.wars=new Set(S.wars);S.allies=new Set(S.allies);S.battle=new Set(S.battle);S.warStart=S.warStart||{};S.selUnits=new Set();S.over=false;S.speed=0;
+    const n=S.nations[S.player];$('#flag').style.background=n.color;$('#nname').textContent=n.name;$('#overlay').classList.add('hide');
+    layout();homeView();draw();renderTop();renderPanel();toast(`Spel geladen: ${n.name}, ${dateStr()}.`)}
+  catch(e){toast('Het opgeslagen spel is beschadigd en kan niet worden geladen.')}
+}
+
+/* ================= tekenen ================= */
+function layout(){
+  const w=$('#mapwrap'),W=w.clientWidth,H=w.clientHeight,dpr=window.devicePixelRatio||1;
+  cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
+  const R=Math.min(W/((COLS+.5)*S3),(H-4)/(ROWS*1.5+.5));
+  L={W,H,R,dpr,ox:(W-(COLS+.5)*S3*R)/2,oy:(H-(ROWS*1.5+.5)*R)/2,cx:[],cy:[],edge:[]};
+  for(let i=0;i<N;i++){const c=i%COLS,r=(i/COLS)|0;L.cx[i]=L.ox+S3*R*(c+.5+.5*(r&1));L.cy[i]=L.oy+R+1.5*R*r}
+  for(let i=0;i<N;i++){L.edge[i]=[];for(let k=0;k<6;k++){const a=Math.PI/3*k,mx=L.cx[i]+Math.cos(a)*S3*R,my=L.cy[i]+Math.sin(a)*S3*R;let f=-1;for(const j of NB[i])if(Math.hypot(L.cx[j]-mx,L.cy[j]-my)<R*.5)f=j;L.edge[i][k]=f}}
+  clampV();
+}
+function clampV(){V.z=Math.max(1,Math.min(4,V.z));V.x=Math.min(0,Math.max(L.W-L.W*V.z,V.x));V.y=Math.min(0,Math.max(L.H-L.H*V.z,V.y))}
+function zoomAt(z,sx,sy){const wx=(sx-V.x)/V.z,wy=(sy-V.y)/V.z;V.z=Math.max(1,Math.min(4,z));V.x=sx-wx*V.z;V.y=sy-wy*V.z;clampV();draw()}
+function homeView(){if(!S||S.player<0){V={z:1,x:0,y:0};return}const c=capProv(S.nations[S.player]).i;V.z=S.size==='groot'?1.9:1.2;V.x=L.W/2-L.cx[c]*V.z;V.y=L.H/2-L.cy[c]*V.z;clampV()}
+function hexPath(i,r){ctx.beginPath();for(let k=0;k<6;k++){const a=Math.PI/3*k-Math.PI/6,x=L.cx[i]+r*Math.cos(a),y=L.cy[i]+r*Math.sin(a);k?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.closePath()}
+function corner(i,k){const a=Math.PI/3*k-Math.PI/6;return[L.cx[i]+L.R*Math.cos(a),L.cy[i]+L.R*Math.sin(a)]}
+function star(x,y,r,K){ctx.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr=k%2?r*.45:r;ctx.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a))}ctx.closePath();ctx.fillStyle='#f1efe6';ctx.fill();ctx.strokeStyle='#1e2a2b';ctx.lineWidth=K;ctx.stroke()}
+function arrow(x1,y1,x2,y2,col,w){const a=Math.atan2(y2-y1,x2-x1),h=L.R*.28;ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2-Math.cos(a)*h*.6,y2-Math.sin(a)*h*.6);ctx.stroke();ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-h*Math.cos(a-.5),y2-h*Math.sin(a-.5));ctx.lineTo(x2-h*Math.cos(a+.5),y2-h*Math.sin(a+.5));ctx.closePath();ctx.fill()}
+function draw(){
+  if(!S||!L.R)return;const R=L.R,K=1/Math.sqrt(V.z),d=L.dpr;
+  ctx.setTransform(d,0,0,d,0,0);ctx.fillStyle='#2c4a55';ctx.fillRect(0,0,L.W,L.H);
+  ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;for(let y=6;y<L.H;y+=9){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(L.W,y);ctx.stroke()}
+  ctx.setTransform(d*V.z,0,0,d*V.z,d*V.x,d*V.y);
+  for(const p of S.provs){if(!p.land)continue;const i=p.i;
+    hexPath(i,R+.5);ctx.fillStyle=S.nations[p.owner].color;ctx.fill();
+    if(p.owner!==p.core){ctx.save();hexPath(i,R);ctx.clip();ctx.strokeStyle=S.nations[p.core].color;ctx.lineWidth=R*.16;for(let t=-3;t<=3;t++){ctx.beginPath();ctx.moveTo(L.cx[i]-R+t*R*.5,L.cy[i]+R);ctx.lineTo(L.cx[i]+R+t*R*.5,L.cy[i]-R);ctx.stroke()}ctx.restore()}
+    const x=L.cx[i],y=L.cy[i];ctx.strokeStyle='rgba(20,25,25,.28)';ctx.fillStyle='rgba(20,25,25,.22)';ctx.lineWidth=1.2*K;
+    if(p.terrain==='berg'){ctx.beginPath();ctx.moveTo(x-R*.5,y-R*.25);ctx.lineTo(x-R*.25,y-R*.6);ctx.lineTo(x,y-R*.25);ctx.moveTo(x-R*.1,y-R*.4);ctx.lineTo(x+R*.15,y-R*.65);ctx.lineTo(x+R*.4,y-R*.25);ctx.stroke()}
+    else if(p.terrain==='bos'){for(const[dx,dy]of[[-.3,-.45],[0,-.55],[.3,-.45]]){ctx.beginPath();ctx.arc(x+dx*R,y+dy*R,R*.1,0,7);ctx.fill()}}
+    if(p.dock){ctx.strokeStyle='rgba(20,25,25,.55)';ctx.lineWidth=1.3*K;const ax=x-R*.45,ay=y+R*.5;ctx.beginPath();ctx.moveTo(ax,ay-R*.22);ctx.lineTo(ax,ay+R*.08);ctx.moveTo(ax-R*.12,ay-R*.02);ctx.arc(ax,ay-R*.02,R*.12,Math.PI,0,true);ctx.stroke()}
+  }
+  for(const p of S.provs){if(!p.land)continue;for(let k=0;k<6;k++){const j=L.edge[p.i][k];const[a,b]=corner(p.i,k),[c,e]=corner(p.i,(k+1)%6);
+    if(j<0||!S.provs[j].land){ctx.strokeStyle='#17282d';ctx.lineWidth=2*K}
+    else if(S.provs[j].owner!==p.owner){ctx.strokeStyle='#1e2a2b';ctx.lineWidth=2.6*K}
+    else{if(j<p.i)continue;ctx.strokeStyle='rgba(0,0,0,.16)';ctx.lineWidth=.8*K}
+    ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,e);ctx.stroke()}}
+  for(const n of S.nations)if(n.alive){const p=S.provs[n.cap];if(p.land&&p.owner===n.id)star(L.cx[p.i]+R*.45,L.cy[p.i]-R*.4,R*.26,K)}
+  if(S.sel!=null){
+    const sel=S.units.filter(u=>S.selUnits.has(u.id));
+    if(sel.length)for(const j of NB[S.sel])if(sel.some(u=>canEnterU(u,j))){hexPath(j,R*.92);ctx.fillStyle='rgba(255,255,255,.28)';ctx.fill()}
+    hexPath(S.sel,R*.9);ctx.strokeStyle='#fff';ctx.lineWidth=3*K;ctx.stroke();
+  }
+  for(const u of S.units){
+    if(u.move){const f=1-u.move.left/u.move.total,t=u.move.to;arrow(L.cx[u.prov],L.cy[u.prov],L.cx[u.prov]+(L.cx[t]-L.cx[u.prov])*(.35+.5*f),L.cy[u.prov]+(L.cy[t]-L.cy[u.prov])*(.35+.5*f),'rgba(245,245,235,.85)',2*K)}
+    if(u.attack!=null){const t=u.attack;arrow(L.cx[u.prov],L.cy[u.prov],L.cx[u.prov]+(L.cx[t]-L.cx[u.prov])*.78,L.cy[u.prov]+(L.cy[t]-L.cy[u.prov])*.78,'#d8402c',3*K)}
+  }
+  const groups={};for(const u of S.units){const k=u.prov+'|'+u.owner+'|'+u.kind;(groups[k]=groups[k]||[]).push(u)}
+  const per={};
+  for(const k in groups){const[pi,ow]=k.split('|').map(Number),kind=k.split('|')[2],g=groups[k],off=(per[pi]=(per[pi]||0)+1)-1;
+    const w=R*1.05,h=R*.6,x=L.cx[pi]-w/2+off*R*.25,y=L.cy[pi]-h/2+R*.15+off*R*.25,mine=ow===S.player;
+    ctx.lineWidth=(mine?2:1.2)*K;ctx.strokeStyle=mine?'#fff':'#1e2a2b';
+    if(kind==='fleet'){ctx.beginPath();ctx.moveTo(x-w*.05,y+h*.15);ctx.lineTo(x+w*1.05,y+h*.15);ctx.lineTo(x+w*.82,y+h);ctx.lineTo(x+w*.18,y+h);ctx.closePath();ctx.fillStyle=S.nations[ow].color;ctx.fill();ctx.stroke();
+      ctx.fillStyle='#f1efe6';ctx.fillRect(x+w*.38,y-h*.2,w*.24,h*.35);ctx.strokeRect(x+w*.38,y-h*.2,w*.24,h*.35);
+      ctx.fillStyle='#f1efe6';ctx.font=`700 ${Math.round(h*.62)}px 'Saira Condensed',sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(g.length,x+w/2,y+h*.6)}
+    else{ctx.fillStyle='#eceee6';ctx.fillRect(x,y,w,h);ctx.fillStyle=S.nations[ow].color;ctx.fillRect(x,y,w*.28,h);ctx.strokeRect(x,y,w,h);
+      ctx.fillStyle='#1e2a2b';ctx.font=`700 ${Math.round(h*.78)}px 'Saira Condensed',sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(g.length,x+w*.64,y+h*.54)}
+    const mo=kind==='fleet'?50:maxOrg(S.nations[ow]),org=g.reduce((s,u)=>s+Math.max(0,u.org),0)/g.length/mo;
+    ctx.fillStyle='#1e2a2b';ctx.fillRect(x,y+h+1,w,3);ctx.fillStyle=org>.6?'#6fae55':org>.3?'#d5a838':'#d8402c';ctx.fillRect(x,y+h+1,w*org,3);
+  }
+  ctx.fillStyle='#d8402c';ctx.font=`700 ${Math.round(R*.55)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+  for(const b of S.battle)ctx.fillText('✕',L.cx[b]-R*.45,L.cy[b]-R*.38);
+}
+
+/* ================= interface ================= */
+const fmt=x=>Math.floor(x).toLocaleString('nl-NL');
+function dateStr(){return new Date(1936,0,1+S.day).toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'})}
+function renderTop(){
+  if(!S)return;$('#date').textContent=dateStr();
+  document.querySelectorAll('#speed button').forEach(b=>b.classList.toggle('on',+b.dataset.s===S.speed));
+  if(S.player<0)return;const n=S.nations[S.player];stats(n);
+  const lu=S.units.filter(u=>u.owner===n.id&&u.kind==='land').length,fu=S.units.filter(u=>u.owner===n.id&&u.kind==='fleet').length;
+  $('#res').innerHTML=`<div><span>Civiel</span> <b>${n.civ}</b></div><div><span>Militair</span> <b>${n.milF}</b></div><div><span>Werven</span> <b>${n.docks}</b></div><div><span>Uitrusting</span> <b>${fmt(n.equip)}</b></div><div><span>Mankracht</span> <b>${fmt(n.mp)}k</b></div><div><span>Divisies</span> <b>${lu}</b></div><div><span>Vloten</span> <b>${fu}</b></div><div><span>Vliegtuigen</span> <b>${fmt(n.planes)}</b></div>`;
+}
+const bar=f=>`<div class="bar"><i style="width:${Math.max(0,Math.min(1,f))*100}%"></i></div>`;
+const terr={vlak:'vlakte',bos:'bos',berg:'bergen'};
+function unitRow(u){const o=S.nations[u.owner],mine=o.id===S.player,mo=u.kind==='fleet'?50:maxOrg(o);
+  const what=u.kind==='fleet'?'Vloot':S.provs[u.prov].land?'Divisie':'Divisie aan boord';
+  return`<div class="row"><div class="grow"><span class="sw" style="background:${o.color}"></span>${mine?what:o.name+', '+what.toLowerCase()} · sterkte ${Math.round(u.str)}% · organisatie ${Math.max(0,Math.round(u.org))}/${mo}${u.attack!=null?' · <b>valt aan</b>':u.move?' · onderweg':''}</div></div>`}
+function pLeger(n){
+  const my=S.units.filter(u=>u.owner===n.id&&u.kind==='land'),ok=n.equip>=100&&n.mp>=3;
+  let h=`<div class="row"><div class="grow"><b>${my.length}</b> divisies${n.train.length?`, ${n.train.length} in opleiding`:''}<div class="hint">Een divisie kost 100 uitrusting en 3k mankracht en is na 20 dagen klaar.</div>${n.train.map(t=>bar(1-t.left/20)).join('')}</div><button class="act" data-a="train" ${ok?'':'disabled'}>Train divisie</button></div>`;
+  h+=`<div class="row"><div class="grow">Automatisch front<div class="hint">Divisies en vloten handelen zelf: grens bezetten, aanvallen, invasies over zee.</div></div><button class="act ${S.auto?'on':'alt'}" data-a="auto">${S.auto?'Aan':'Uit'}</button></div>`;
+  if(S.sel==null)return h+`<p class="hint">Tik een gebied met jouw eenheden om ze te selecteren. Tik daarna een doel: een buurgebied, een ver eigen gebied, of een vijandelijke kust om over zee te landen. Knijp of gebruik + en − om te zoomen, sleep om te schuiven.</p>`;
+  const p=S.provs[S.sel];
+  if(p.land)h+=`<h3>${p.name}${S.nations[p.core].cap===p.i&&p.owner===p.core?' ★':''}</h3><div class="hint"><span class="sw" style="background:${S.nations[p.owner].color}"></span>${S.nations[p.owner].name}${p.owner!==p.core?` (bezet, van ${S.nations[p.core].name})`:''} · ${terr[p.terrain]}${coastal(p.i)?' · kust':''} · ${p.civ} civiel, ${p.mil} militair, ${p.dock} werf</div>`;
+  else h+=`<h3>Open zee</h3><div class="hint">Vloten varen hier. Divisies kunnen hier varen zolang je een vloot hebt en er geen vijandelijke vloot ligt.</div>`;
+  for(const u of S.units.filter(u=>u.prov===p.i))h+=unitRow(u);
+  if(S.selUnits.size)h+=`<div class="row"><div class="hint grow">${S.selUnits.size} geselecteerd. Tik nogmaals op dit gebied om te deselecteren.</div><button class="act alt" data-a="stop">Stop orders</button></div>`;
+  return h;
+}
+function pInd(n){
+  stats(n);const cg=Math.ceil(n.civ*n.consumer),cap=Math.max(0,n.civ-cg)*(1+.1*n.tech.ind+n.bonus.build),full=n.build.length>=5,coast=S.provs.some(p=>p.land&&p.owner===n.id&&coastal(p.i));
+  let h=`<div class="row"><div class="grow"><b>${n.civ}</b> civiele fabrieken<div class="hint">${cg} gaan naar consumptiegoederen. Bouwcapaciteit ${cap.toFixed(1)} per dag, max 15 per project.</div></div></div>
+  <div class="row"><div class="grow"><b>${n.milF}</b> militaire fabrieken<div class="hint">Leveren ${(n.milF*.9*(1+.1*n.tech.ind+n.bonus.prod)).toFixed(1)} per dag, waarvan ${Math.round(n.airShare*100)}% naar vliegtuigen.</div></div></div>
+  <div class="seg">${['civ','mil','dock'].map(t=>`<button class="act" data-a="build" data-v="${t}" ${full||(t==='dock'&&!coast)?'disabled':''}>${BNAME[t]} (${BCOST[t]})</button>`).join('')}</div>`;
+  if(!n.build.length)h+=`<p class="hint">Geen bouwprojecten. Civiele fabrieken versnellen de bouw, militaire fabrieken leveren uitrusting en vliegtuigen, werven bouwen vloten.</p>`;
+  n.build.forEach((b,k)=>h+=`<div class="row"><div class="grow">${BNAME[b.type]} ${bar(b.progress/b.cost)}</div><button class="act alt" data-a="unbuild" data-v="${k}" aria-label="Annuleer">✕</button></div>`);
+  return h;
+}
+function pMarine(n){
+  const my=S.units.filter(u=>u.owner===n.id&&u.kind==='fleet'),np=n.docks*(1+.1*n.tech.ind+.15*n.tech.nav);
+  let h=`<div class="row"><div class="grow"><b>${n.docks}</b> scheepswerven<div class="hint">${np.toFixed(1)} scheepsbouwpunten per dag. Een vloot kost 150.</div>${n.ships.map(s=>bar(s.progress/s.cost)).join('')}</div><button class="act" data-a="ship" ${n.docks&&n.ships.length<4?'':'disabled'}>Bouw vloot</button></div>`;
+  if(!n.docks)h+=`<p class="hint">Bouw eerst een scheepswerf in een kustgebied via Industrie.</p>`;
+  h+=`<h3>${my.length} ${my.length===1?'vloot':'vloten'}</h3>`;
+  if(!my.length)h+=`<p class="hint">Zonder vloot kunnen je divisies niet over zee.</p>`;
+  my.forEach(u=>h+=unitRow(u));
+  h+=`<p class="hint">Vloten bevechten vijandelijke vloten op hetzelfde zeegebied. Divisies aan boord worden vernietigd als een vijandelijke vloot hen onderschept, en vallen aan land aan met halve kracht. Beschadigde vloten herstellen langs je eigen kust.</p>`;
+  return h;
+}
+function pLucht(n){
+  const prod=n.milF*.9*(1+.1*n.tech.ind+n.bonus.prod)*n.airShare*.3*(1+.15*n.tech.air+n.bonus.air),en=enemiesOf(n.id);
+  let h=`<div class="row"><div class="grow"><b>${fmt(n.planes)}</b> vliegtuigen, +${prod.toFixed(1)} per dag<div class="hint">Deel van de militaire productie voor vliegtuigen</div><div class="seg">${[0,.15,.3,.5].map(v=>`<button class="act ${n.airShare===v?'':'alt'}" data-a="share" data-v="${v}">${v*100}%</button>`).join('')}</div></div></div><h3>Missie</h3>`;
+  for(const k in MISSION)h+=`<div class="row"><div class="grow"><b>${MISSION[k][0]}</b><div class="hint">${MISSION[k][1]}</div></div><button class="act ${n.airMission===k?'on':'alt'}" data-a="mission" data-v="${k}">${n.airMission===k?'Actief':'Kies'}</button></div>`;
+  if(n.airMission==='bomb'){h+=`<h3>Doelwit</h3>`;if(!en.length)h+=`<p class="hint">Je bent niet in oorlog. Bommenwerpers wachten op een doelwit.</p>`;
+    en.forEach(e=>h+=`<div class="row"><div class="grow"><span class="sw" style="background:${S.nations[e].color}"></span>${S.nations[e].name}</div><button class="act ${n.bombTarget===e?'on':'alt'}" data-a="bomb" data-v="${e}">${n.bombTarget===e?'Doelwit':'Kies'}</button></div>`)}
+  if(en.length){h+=`<h3>Luchtoverwicht</h3>`;en.forEach(e=>{const s=airSup(n.id,e);h+=`<div class="row"><div class="grow">Tegen ${S.nations[e].name}: ${Math.round(s*100)}%${bar(s)}</div></div>`})}
+  else h+=`<p class="hint">Luchtoverwicht geeft je divisies tot +25% kracht in gevechten, met Gevechtssteun nog meer.</p>`;
+  return h;
+}
+function pRes(n){
+  let h=n.research?'':`<p class="hint">Kies een onderzoek. Er loopt er één tegelijk.</p>`;
+  for(const k in TECH){const lv=n.tech[k],busy=n.research&&n.research.key===k;
+    h+=`<div class="row"><div class="grow"><b>${TECH[k][0]}</b> · niveau ${lv}/5<div class="hint">${TECH[k][1]}</div>${busy?bar(1-n.research.left/n.research.total):''}</div>${busy?'':`<button class="act" data-a="res" data-v="${k}" ${n.research||lv>=5?'disabled':''}>${lv>=5?'Klaar':`Onderzoek (${50+25*lv} d)`}</button>`}</div>`}
+  return h;
+}
+function pFocus(n){
+  let h=n.focus?'':`<p class="hint">Kies een nationale focus. Elke focus duurt 35 dagen.</p>`;
+  for(const f of FOCUS){const done=n.focusDone.includes(f.k),busy=n.focus&&n.focus.key===f.k,lock=f.req&&!n.focusDone.includes(f.req);
+    h+=`<div class="row ${done?'done':''}"><div class="grow"><b>${f.name}</b><div class="hint">${f.desc}${lock?' · vereist Industriële mobilisatie':''}</div>${busy?bar(1-n.focus.left/35):''}</div>${done?'✓':busy?'':`<button class="act" data-a="focus" data-v="${f.k}" ${n.focus||lock?'disabled':''}>Start</button>`}</div>`}
+  return h;
+}
+function pDip(n){
+  let h='';
+  for(const o of S.nations){if(o.id===n.id||!o.alive)continue;
+    const war=atWar(n.id,o.id),al=allied(n.id,o.id),j=n.justify&&n.justify.target===o.id,cd=(n.allyCd[o.id]||0)>S.day;
+    let btn='';
+    if(war)btn=`<button class="act alt" data-a="peace" data-v="${o.id}">Vrede voorstellen</button>`;
+    else if(al)btn='';
+    else if(j&&n.justify.left<=0)btn=`<button class="act war" data-a="war" data-v="${o.id}">Verklaar oorlog</button>`;
+    else if(j)btn=`<div class="hint">Oorlogsdoel ${n.justify.left} d</div>`;
+    else btn=`<button class="act alt" data-a="ally" data-v="${o.id}" ${cd?'disabled':''}>Bondgenoot</button><button class="act" data-a="justify" data-v="${o.id}" ${n.justify?'disabled':''}>Oorlogsdoel</button>`;
+    h+=`<div class="row"><div class="grow"><span class="sw" style="background:${o.color}"></span><b>${o.name}</b>${war?'<span class="tag war">Oorlog</span>':al?'<span class="tag ally">Bondgenoot</span>':''}<div class="hint">${o.provs} gebieden · ${S.units.filter(u=>u.owner===o.id&&u.kind==='land').length} divisies · ${S.units.filter(u=>u.owner===o.id&&u.kind==='fleet').length} vloten · ${fmt(o.planes)} vliegtuigen${isNeighbor(n.id,o.id)?' · buurland':''}</div></div><div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">${btn}</div></div>`}
+  h+=`<h3>Gebeurtenissen</h3>`+(S.log.slice(0,12).map(l=>`<div class="hint">Dag ${l.d}: ${l.t}</div>`).join('')||'<p class="hint">Nog niets gebeurd.</p>');
+  return h;
+}
+function renderPanel(){
+  lastPanel=Date.now();if(!S||S.player<0){$('#panel').innerHTML='';return}
+  S.nations.forEach(stats);const n=S.nations[S.player];
+  $('#panel').innerHTML={leger:pLeger,industrie:pInd,marine:pMarine,lucht:pLucht,onderzoek:pRes,focus:pFocus,diplomatie:pDip}[tab](n);
+}
+function act(a,v){
+  const n=S.nations[S.player],o=S.nations[+v];
+  if(a==='train'&&n.equip>=100&&n.mp>=3){n.equip-=100;n.mp-=3;n.train.push({left:20})}
+  if(a==='auto')S.auto=!S.auto;
+  if(a==='stop')S.units.forEach(u=>{if(S.selUnits.has(u.id)){u.move=null;u.attack=null;u.path=[]}});
+  if(a==='build'&&n.build.length<5)n.build.push({type:v,progress:0,cost:BCOST[v]});
+  if(a==='unbuild')n.build.splice(+v,1);
+  if(a==='ship'&&n.docks&&n.ships.length<4)n.ships.push({progress:0,cost:150});
+  if(a==='share')n.airShare=+v;
+  if(a==='mission'){n.airMission=v;if(v==='bomb'&&n.bombTarget==null)n.bombTarget=enemiesOf(n.id)[0]??null}
+  if(a==='bomb')n.bombTarget=+v;
+  if(a==='res'&&!n.research){const d=50+25*n.tech[v];n.research={key:v,left:d,total:d}}
+  if(a==='focus'&&!n.focus)n.focus={key:v,left:35};
+  if(a==='justify'&&!n.justify){n.justify={target:o.id,left:30};log(`Je rechtvaardigt een oorlogsdoel tegen ${o.name}.`)}
+  if(a==='war'){declareWar(n.id,o.id);n.justify=null}
+  if(a==='ally'){n.allyCd[o.id]=S.day+60;
+    const share=enemiesOf(o.id).some(e=>atWar(n.id,e)),bad=alliesOf(o.id).some(c=>atWar(n.id,c))||enemiesOf(n.id).some(e=>allied(o.id,e));
+    if(!bad&&(share||Math.random()<.3)){S.allies.add(key(n.id,o.id));log(`${o.name} wordt je bondgenoot.`,true)}else toast(`${o.name} weigert een bondgenootschap.`)}
+  if(a==='peace'){if(coreRatio(o.id)<.75||Math.random()<.1)makePeace(n.id,o.id);else toast(`${o.name} weigert vrede zolang het niet verliest.`)}
+  draw();renderTop();renderPanel();
+}
+function onTap(i){
+  const me=S.player,sel=S.units.filter(u=>S.selUnits.has(u.id));
+  if(S.sel!=null&&i===S.sel&&S.selUnits.size){S.selUnits.clear();return}
+  const ownHere=S.units.some(u=>u.prov===i&&u.owner===me);
+  if(sel.length&&i!==S.sel&&(!ownHere||NB[S.sel].includes(i))){
+    let k=0,attack=false;
+    for(const u of sel){let ok=false;if(NB[u.prov].includes(i))ok=order(u,i);else{const p=findPath(u,i);if(p&&p.length>1)ok=order(u,p[1],p.slice(2))}
+      if(ok){k++;const last=u.path&&u.path.length?u.path[u.path.length-1]:(u.move?u.move.to:u.attack);if(u.attack!=null||(S.provs[i].land&&S.provs[i].owner!==me&&atWar(me,S.provs[i].owner)))attack=true}}
+    if(k){toast(attack?`Aanval op ${nm(i)}.`:`Op weg naar ${nm(i)}.`);S.selUnits.clear();S.sel=i;return}
+    if(!ownHere){toast(!S.provs[i].land&&sel.some(u=>u.kind==='land')&&!hasFleet(me)?'Je hebt een vloot nodig om divisies over zee te verplaatsen.':S.provs[i].land&&!canEnter(me,i)?'Je bent niet in oorlog met dit land.':'Deze eenheden kunnen daar niet komen.');return}
+  }
+  S.sel=i;S.selUnits=new Set(S.units.filter(u=>u.prov===i&&u.owner===me).map(u=>u.id));
+}
+function tapAt(sx,sy){
+  if(!S||S.player<0||S.over)return;const wx=(sx-V.x)/V.z,wy=(sy-V.y)/V.z;let best=-1,bd=1e9;
+  for(let i=0;i<N;i++){const d=Math.hypot(L.cx[i]-wx,L.cy[i]-wy);if(d<bd){bd=d;best=i}}
+  if(bd>L.R*1.05)return;onTap(best);if(tab!=='leger'){tab='leger';syncTabs()}draw();renderPanel();
+}
+/* aanraking: tikken, slepen, knijpen */
+const ptrs=new Map();let gest=null;
+const pos=e=>{const b=cv.getBoundingClientRect();return{x:e.clientX-b.left,y:e.clientY-b.top}};
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,pos(e));
+  if(ptrs.size===1){const p=pos(e);gest={moved:false,sx:p.x,sy:p.y,vx:V.x,vy:V.y}}
+  else if(ptrs.size===2){const[a,b]=[...ptrs.values()];gest={pinch:true,d:Math.hypot(a.x-b.x,a.y-b.y)||1,z:V.z,mx:(a.x+b.x)/2,my:(a.y+b.y)/2,vx:V.x,vy:V.y}}});
+cv.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,pos(e));if(!gest)return;
+  if(gest.pinch&&ptrs.size===2){const[a,b]=[...ptrs.values()];const nz=Math.max(1,Math.min(4,gest.z*Math.hypot(a.x-b.x,a.y-b.y)/gest.d));const wx=(gest.mx-gest.vx)/gest.z,wy=(gest.my-gest.vy)/gest.z;
+    V.z=nz;V.x=(a.x+b.x)/2-wx*nz;V.y=(a.y+b.y)/2-wy*nz;clampV();draw()}
+  else if(!gest.pinch){const p=pos(e),dx=p.x-gest.sx,dy=p.y-gest.sy;if(Math.hypot(dx,dy)>8)gest.moved=true;if(gest.moved){V.x=gest.vx+dx;V.y=gest.vy+dy;clampV();draw()}}});
+function endPtr(e){const had=ptrs.has(e.pointerId);ptrs.delete(e.pointerId);if(had&&gest&&!gest.pinch&&!gest.moved&&ptrs.size===0&&e.type==='pointerup'){const p=pos(e);tapAt(p.x,p.y)}if(ptrs.size===0||gest&&gest.pinch)gest=null}
+cv.addEventListener('pointerup',endPtr);cv.addEventListener('pointercancel',endPtr);
+cv.addEventListener('wheel',e=>{e.preventDefault();const p=pos(e);zoomAt(V.z*(e.deltaY<0?1.15:1/1.15),p.x,p.y)},{passive:false});
+$('#zoom').addEventListener('click',e=>{const b=e.target.closest('[data-z]');if(!b||!S)return;const z=b.dataset.z;if(z==='home'){homeView();draw()}else zoomAt(V.z*(z==='in'?1.4:1/1.4),L.W/2,L.H/2)});
+$('#panel').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&!b.disabled)act(b.dataset.a,b.dataset.v)});
+$('#speed').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(b&&S&&S.player>=0)setSpeed(+b.dataset.s)});
+function syncTabs(){document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab))}
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;tab=b.dataset.t;syncTabs();renderPanel()});
+window.addEventListener('resize',()=>{if(!S)return;layout();draw()});
+$('#menuBtn').addEventListener('click',()=>{if(!S||S.player<0||S.over)return;setSpeed(0);const o=$('#overlay');o.classList.remove('hide');
+  o.innerHTML=`<div class="card"><h1>Menu</h1><p>${S.nations[S.player].name}, ${dateStr()}. Het spel is gepauzeerd.</p><button class="act" data-o="resume">Verder spelen</button><button class="act alt" data-o="save">Opslaan</button><button class="act alt" data-o="load">Laden</button><button class="act alt" data-o="new">Nieuw spel</button><p class="hint">Er is één opslagplek in deze browser; opslaan overschrijft het vorige spel.</p></div>`});
+
+function startScreen(){
+  clearTimeout(timer);newGame(mapSize);V={z:1,x:0,y:0};layout();draw();renderTop();renderPanel();
+  $('#res').innerHTML='';$('#flag').style.background='transparent';$('#nname').textContent='IJzeren Fronten';$('#ticker').textContent='';
+  const o=$('#overlay');o.classList.remove('hide');
+  o.innerHTML=`<div class="card"><h1>IJzeren Fronten</h1><p>Januari 1936. ${S.nations.length} naties delen een continent vol kusten en eilanden. Bouw je industrie, leger, vloot en luchtmacht, kies je bondgenoten en verover driekwart van het land. Een natie capituleert als ze minder dan 30% van haar eigen grondgebied overhoudt.</p>
+  <div class="seg" style="margin-bottom:12px">${Object.keys(SIZES).map(k=>`<button class="act ${k===mapSize?'':'alt'}" data-o="size" data-v="${k}">${SIZES[k].label} (${SIZES[k].n} naties)</button>`).join('')}</div>
+  ${S.nations.map(n=>`<button class="pick" data-pick="${n.id}"><span class="sw" style="background:${n.color}"></span><span><b>${n.name}</b>${n.provs} gebieden · ${n.civ} civiel, ${n.milF} militair, ${n.docks} ${n.docks===1?'werf':'werven'}</span></button>`).join('')}
+  <div class="seg"><button class="act alt" data-o="reroll">Andere kaart</button><button class="act alt" data-o="load">Opgeslagen spel laden</button></div></div>`;
+}
+$('#overlay').addEventListener('click',e=>{
+  const b=e.target.closest('[data-o]');
+  if(b){const a=b.dataset.o;
+    if(a==='new'||a==='reroll')startScreen();
+    if(a==='size'){mapSize=b.dataset.v;startScreen()}
+    if(a==='resume')$('#overlay').classList.add('hide');
+    if(a==='save')saveGame().then(()=>$('#overlay').classList.add('hide'));
+    if(a==='load')loadGame();
+    return}
+  const p=e.target.closest('[data-pick]');if(!p)return;
+  const n=S.nations[+p.dataset.pick];n.ai=false;S.player=n.id;
+  $('#flag').style.background=n.color;$('#nname').textContent=n.name;
+  $('#overlay').classList.add('hide');homeView();
+  log(`Je leidt ${n.name}. Druk op 1× om de tijd te starten.`,true);
+  draw();renderTop();renderPanel();
+});
+startScreen();
+</script>
+</body>
+</html>
