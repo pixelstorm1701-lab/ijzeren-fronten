@@ -2,717 +2,837 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8">
-<meta name="description" content="IJzeren Fronten: een strategiespel over industrie, legers, vloten en luchtmacht.">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>IJzeren Fronten</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Old+Standard+TT:wght@700&family=Special+Elite&display=swap" rel="stylesheet">
+<meta name="description" content="Rijken der Eeuwen: een beurtgebaseerd strategiespel. Sticht steden, onderzoek technologie en bouw een rijk.">
+<title>Rijken der Eeuwen</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#121517;--steel:#262c30;--steel2:#1a1e21;--steel3:#323a3f;--bronze:#7d6642;--gold:#d6b46c;--parch:#e2dac4;--muted:#a49c87;--alert:#a8352a;--ok:#5f8a46}
+:root{--wood:#3a2716;--wood2:#22160b;--parch:#efe3c2;--parch2:#ddcb9c;--ink:#2b1d10;--muted:#6f5a3e;--gold:#e3b650;--red:#8c2a1e;--green:#46682f}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:#0f1214;color:var(--parch);font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-size:16px;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
-#app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:820px;margin:0 auto;background:var(--steel2)}
-header{display:flex;align-items:center;gap:7px;padding:6px 8px;background:linear-gradient(#353d42,#1c2023);border-bottom:2px solid var(--bronze);box-shadow:0 2px 6px rgba(0,0,0,.5);position:relative;z-index:1}
-#flag{width:26px;height:18px;border:1.5px solid var(--gold);box-shadow:0 0 0 1px #000,inset 0 0 6px rgba(0,0,0,.45);flex:none}
-#nname{font-family:'Old Standard TT',Georgia,serif;font-weight:700;font-size:17px;min-width:0;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 #000}
-#date{margin-left:auto;font-family:'Special Elite','Courier New',monospace;font-size:12px;white-space:nowrap;background:#0d1011;border:1px solid var(--bronze);padding:3px 7px;color:var(--parch)}
-.hbtns{display:flex;gap:2px}
-.hbtns button{background:linear-gradient(#3d454a,#22272a);color:var(--gold);border:1px solid #5b4a2e;padding:4px 6px;font:700 13px 'Barlow Condensed',sans-serif;min-width:30px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
-.hbtns button.on{background:linear-gradient(#e2c27c,#a9884a);color:#1a1408;border-color:#e2c27c}
-#res{display:flex;gap:14px;padding:5px 10px;background:linear-gradient(#171b1d,#111416);border-bottom:1px solid #3a3226;font-size:15px;overflow-x:auto;white-space:nowrap}
-#res div{display:flex;align-items:center;gap:4px}
-#res svg{color:var(--gold);flex:none}
-#res b{font-variant-numeric:tabular-nums;font-weight:600}
-#mapwrap{position:relative;flex:1 1 auto;min-height:220px;overflow:hidden;background:#1d3a45}
+html,body{margin:0;height:100%;background:var(--wood2);color:var(--ink);font-family:'Alegreya Sans',system-ui,sans-serif;font-size:16px;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:820px;margin:0 auto}
+header{display:flex;align-items:center;gap:8px;padding:6px 8px;background:linear-gradient(#4d341d,#2a1b0d);color:var(--parch);border-bottom:2px solid var(--gold);box-shadow:0 2px 6px rgba(0,0,0,.5);z-index:1}
+#cflag{width:24px;height:16px;border:1.5px solid var(--gold);flex:none}
+#cname{font-family:Cinzel,serif;font-weight:700;font-size:15px;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#year{font-family:Cinzel,serif;font-size:13px;white-space:nowrap}
+.stat{font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+#hstats{margin-left:auto;display:flex;gap:10px}
+#menuBtn{background:linear-gradient(#5a3e22,#2e1e0f);color:var(--gold);border:1px solid var(--gold);width:32px;height:30px;font-size:16px}
+#mapwrap{position:relative;flex:1 1 auto;min-height:220px;overflow:hidden;background:#0c0906}
 canvas{display:block;touch-action:none}
 #zoom{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:4px}
-#zoom button{width:34px;height:34px;background:linear-gradient(#3d454a,#22272a);border:1px solid var(--bronze);font:700 18px 'Barlow Condensed',sans-serif;color:var(--gold);padding:0;box-shadow:0 2px 4px rgba(0,0,0,.5)}
-#ticker{position:absolute;left:8px;bottom:6px;right:50px;font-size:13px;color:var(--parch);pointer-events:none;text-shadow:0 1px 2px #000}
-#tabs{display:flex;background:var(--steel2);border-top:2px solid var(--bronze);overflow-x:auto;scrollbar-width:none}
+#zoom button{width:34px;height:34px;background:linear-gradient(#f3e8c9,#d8c48f);border:1.5px solid var(--wood);font:700 18px 'Alegreya Sans',sans-serif;color:var(--ink);padding:0;box-shadow:0 2px 4px rgba(0,0,0,.5)}
+#turnbar{position:absolute;right:8px;bottom:8px;display:flex;gap:6px}
+#turnbar button{font:700 15px 'Alegreya Sans',sans-serif;padding:9px 12px;border:1.5px solid var(--wood);box-shadow:0 2px 6px rgba(0,0,0,.6)}
+#nextBtn{background:linear-gradient(#f3e8c9,#d8c48f);color:var(--ink)}
+#endBtn{background:linear-gradient(#f0c75e,#b98a26);color:#2a1a05}
+#endBtn.pulse{animation:pulse 1.2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 4px rgba(240,199,94,.55),0 2px 6px rgba(0,0,0,.6)}}
+#ticker{position:absolute;left:8px;bottom:12px;right:200px;font-size:13px;color:var(--parch);pointer-events:none;text-shadow:0 1px 2px #000,0 0 4px #000}
+#tabs{display:flex;background:var(--wood);border-top:2px solid var(--gold);overflow-x:auto;scrollbar-width:none}
 #tabs::-webkit-scrollbar{display:none}
-#tabs button{flex:1 0 auto;background:none;border:none;border-right:1px solid #2c2620;padding:9px 11px;font:600 15px 'Barlow Condensed',sans-serif;color:var(--muted)}
-#tabs button.on{background:var(--steel3);color:var(--gold);box-shadow:inset 0 -3px 0 var(--gold)}
-#panel{height:36vh;overflow-y:auto;background:linear-gradient(#252b2e,#1a1e20);padding:10px 12px 18px;font-size:15px;line-height:1.35}
-#panel h3{font-family:'Old Standard TT',Georgia,serif;font-size:17px;color:var(--gold);margin:8px 0 6px;padding-bottom:3px;border-bottom:1px solid var(--bronze)}
-#panel b{color:#f0e8d2}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(125,102,66,.3)}
+#tabs button{flex:1 0 auto;background:none;border:none;padding:9px 10px;font:700 15px 'Alegreya Sans',sans-serif;color:#cdb98a}
+#tabs button.on{background:var(--parch);color:var(--ink)}
+#panel{height:34vh;overflow-y:auto;background:var(--parch);padding:10px 12px 18px;font-size:15px;line-height:1.35;background-image:radial-gradient(rgba(120,90,40,.08) 1px,transparent 1px);background-size:5px 5px}
+#panel h3{font-family:Cinzel,serif;font-size:16px;margin:8px 0 6px;padding-bottom:3px;border-bottom:1px solid var(--parch2)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--parch2)}
 .row:last-child{border-bottom:none}
 .grow{flex:1;min-width:0}
 .hint{color:var(--muted);font-size:14px;margin:3px 0}
-.seg{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
-button.act{background:linear-gradient(#41494e,#262b2e);color:var(--gold);border:1px solid var(--bronze);padding:7px 11px;font:600 14px 'Barlow Condensed',sans-serif;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 1px 2px rgba(0,0,0,.4)}
-button.act.alt{background:rgba(0,0,0,.2);color:var(--parch);border-color:#4f5355}
-button.act.war{background:linear-gradient(#a3372a,#6a1e17);color:#f4e4c8;border-color:#c25444}
-button.act.on{background:linear-gradient(#6d9a50,#3f6330);color:#f0f4e6;border-color:#88b06a}
+.btns{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0}
+button.act{background:linear-gradient(#5a3e22,#3a2614);color:var(--parch);border:1px solid #2a1a0c;padding:7px 11px;font:700 14px 'Alegreya Sans',sans-serif;white-space:nowrap}
+button.act.alt{background:transparent;color:var(--ink);border:1.5px solid var(--wood)}
+button.act.war{background:linear-gradient(#a8382a,#6d1d14)}
+button.act.gold{background:linear-gradient(#f0c75e,#b98a26);color:#2a1a05}
+button.act.on{background:linear-gradient(#5f8a46,#3a5a29)}
 button.act:disabled{opacity:.35}
-.bar{height:7px;background:#0d1011;border:1px solid #3a3226;margin-top:4px}
-.bar i{display:block;height:100%;background:linear-gradient(#e2c27c,#9d7d42)}
-.sw{display:inline-block;width:14px;height:10px;vertical-align:0;margin-right:6px;border:1px solid #000;box-shadow:0 0 0 1px rgba(214,180,108,.4)}
-.tag{font-size:13px;padding:1px 6px;border:1px solid currentColor;margin-left:6px}
-.tag.war{color:#e06a55}.tag.ally{color:#8fbd6f}
-.done{opacity:.5}
-#overlay{position:fixed;inset:0;background:radial-gradient(rgba(10,12,13,.7),rgba(5,6,7,.92));display:flex;align-items:center;justify-content:center;padding:16px;z-index:5}
+.bar{height:7px;background:var(--parch2);margin-top:4px;border:1px solid #b9a575}
+.bar i{display:block;height:100%;background:linear-gradient(#7a5326,#4c3216)}
+.bar.f i{background:linear-gradient(#7da54a,#4e7a2a)}
+.sw{display:inline-block;width:13px;height:10px;margin-right:6px;border:1px solid var(--ink);vertical-align:0}
+.tag{font-size:13px;padding:0 6px;border:1px solid currentColor;margin-left:6px}
+.tag.war{color:#a8382a}.tag.peace{color:#46682f}
+.ucard{display:flex;gap:10px;align-items:center}
+.ucard .em{font-size:30px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid var(--ink)}
+.yld{font-variant-numeric:tabular-nums;white-space:nowrap}
+#overlay{position:fixed;inset:0;background:rgba(15,10,5,.82);display:flex;align-items:center;justify-content:center;padding:16px;z-index:5}
 #overlay.hide{display:none}
-.card{background:linear-gradient(#2a3034,#191d1f);border:2px solid var(--bronze);box-shadow:0 0 0 1px #000,0 12px 40px rgba(0,0,0,.7);color:var(--parch);max-width:440px;width:100%;padding:20px 18px;max-height:92vh;overflow:auto}
-.card h1{font-family:'Old Standard TT',Georgia,serif;font-size:40px;color:var(--gold);line-height:1;margin:0 0 4px;text-shadow:0 2px 0 #000}
-.card .sub{font-family:'Special Elite','Courier New',monospace;color:var(--muted);font-size:14px;margin:0 0 12px}
-.card p{margin:0 0 14px}
+.card{background:var(--parch);border:3px double var(--wood);box-shadow:0 12px 40px rgba(0,0,0,.7);max-width:440px;width:100%;padding:20px 18px;max-height:92vh;overflow:auto}
+.card h1{font-family:Cinzel,serif;font-size:34px;line-height:1.05;margin:0 0 6px;color:var(--wood)}
+.card p{margin:0 0 12px}
 .card .act{margin:0 6px 8px 0}
-.pick{display:flex;align-items:center;width:100%;gap:10px;padding:9px 10px;margin:0 0 6px;background:rgba(0,0,0,.3);border:1px solid #3a3226;text-align:left;font:15px 'Barlow Condensed',sans-serif;color:var(--parch)}
-.pick .sw{width:30px;height:20px;flex:none}
-.pick b{font-family:'Old Standard TT',Georgia,serif;font-size:18px;color:var(--gold);display:block}
-#toast{position:fixed;left:50%;top:86px;transform:translateX(-50%);background:linear-gradient(#2a3034,#191d1f);color:var(--parch);padding:8px 14px;font-size:15px;max-width:90vw;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6;border:1px solid var(--bronze);border-left:4px solid var(--alert);box-shadow:0 4px 14px rgba(0,0,0,.6)}
+.pick{display:flex;align-items:center;width:100%;gap:10px;padding:9px 10px;margin:0 0 6px;background:var(--parch2);border:1px solid #b9a575;text-align:left;font:15px 'Alegreya Sans',sans-serif;color:var(--ink)}
+.pick .sw{width:26px;height:18px;flex:none}
+.pick b{font-family:Cinzel,serif;font-size:17px;display:block}
+#toast{position:fixed;left:50%;top:60px;transform:translateX(-50%);background:var(--parch);color:var(--ink);padding:8px 14px;font-size:15px;max-width:90vw;opacity:0;transition:opacity .25s;pointer-events:none;z-index:6;border:1.5px solid var(--wood);border-left:5px solid var(--red);box-shadow:0 4px 14px rgba(0,0,0,.6)}
 #toast.show{opacity:1}
 button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}#endBtn.pulse{animation:none}}
 </style>
 </head>
 <body>
 <div id="app">
-  <header>
-    <div id="flag"></div><div id="nname">IJzeren Fronten</div><div id="date"></div>
-    <div class="hbtns" id="speed"><button data-s="0" aria-label="Pauze">❚❚</button><button data-s="1">1×</button><button data-s="2">2×</button><button data-s="3">3×</button></div>
-    <div class="hbtns"><button id="menuBtn" aria-label="Menu">☰</button></div>
-  </header>
-  <div id="res"></div>
+  <header><div id="cflag"></div><div id="cname">Rijken der Eeuwen</div><div id="year"></div>
+    <div id="hstats"><span class="stat" id="gold"></span><span class="stat" id="sci"></span></div>
+    <button id="menuBtn" aria-label="Menu">☰</button></header>
   <div id="mapwrap"><canvas id="map"></canvas>
-    <div id="zoom"><button data-z="in" aria-label="Inzoomen">+</button><button data-z="out" aria-label="Uitzoomen">−</button><button data-z="home" aria-label="Naar hoofdstad">⌖</button></div>
-    <div id="ticker"></div></div>
-  <nav id="tabs">
-    <button data-t="leger" class="on">Leger</button><button data-t="industrie">Industrie</button><button data-t="marine">Marine</button><button data-t="lucht">Lucht</button><button data-t="onderzoek">Onderzoek</button><button data-t="focus">Focus</button><button data-t="diplomatie">Diplomatie</button>
-  </nav>
+    <div id="zoom"><button data-z="in" aria-label="Inzoomen">+</button><button data-z="out" aria-label="Uitzoomen">−</button><button data-z="home" aria-label="Naar geselecteerde eenheid">⌖</button></div>
+    <div id="ticker"></div>
+    <div id="turnbar"><button id="nextBtn">Volgende</button><button id="endBtn">Einde beurt</button></div>
+  </div>
+  <nav id="tabs"><button data-t="info" class="on">Eenheid</button><button data-t="stad">Stad</button><button data-t="onderzoek">Onderzoek</button><button data-t="rijk">Rijk</button><button data-t="diplo">Diplomatie</button></nav>
   <section id="panel"></section>
 </div>
 <div id="overlay"></div>
 <div id="toast"></div>
-
 <script>
-/* ================= basis ================= */
-let COLS=11,ROWS=15,N=165,NB=[];
-const S3=Math.sqrt(3);
-const SIZES={klein:{c:11,r:15,n:5,sp:5,label:'Klein'},groot:{c:17,r:23,n:7,sp:6,label:'Groot'}};
-const NDEF=[['Valdoria','#b0583f'],['Kestrië','#5b8150'],['Morvane','#c49a3c'],['Eldrun','#5d6f9c'],['Sarkovië','#86607f'],['Brannvik','#3f8c86'],['Tessaly','#8c7449']];
-const TECH={inf:['Infanteriewapens','+15% aanval en verdediging'],ind:['Industrie','+10% productie en bouwsnelheid'],doc:['Landdoctrine','+8 maximale organisatie'],mob:['Mobiliteit','Divisies verplaatsen sneller'],air:['Luchtvaart','+15% vliegtuigproductie en luchtkracht'],nav:['Marine','+15% vlootkracht en scheepsbouw']};
-const FOCUS=[
- {k:'ind',name:'Industriële mobilisatie',desc:'+2 militaire fabrieken in de hoofdstad',f:n=>capProv(n).mil+=2},
- {k:'civ',name:'Burgerinfrastructuur',desc:'+2 civiele fabrieken in de hoofdstad',f:n=>capProv(n).civ+=2},
- {k:'mp',name:'Algemene dienstplicht',desc:'+50% mankrachtgroei',f:n=>n.bonus.mpGrow+=.5},
- {k:'org',name:'Legerhervorming',desc:'+10 maximale organisatie',f:n=>n.bonus.org+=10},
- {k:'arms',name:'Wapenprogramma',desc:'+15% uitrustingsproductie',f:n=>n.bonus.prod+=.15},
- {k:'fort',name:'Grensversterkingen',desc:'+20% verdediging',f:n=>n.bonus.def+=.2},
- {k:'sci',name:'Onderzoeksinstituut',desc:'+25% onderzoekssnelheid',f:n=>n.bonus.research+=.25},
- {k:'blitz',name:'Offensieve doctrine',desc:'+15% aanval',f:n=>n.bonus.att+=.15},
- {k:'navy',name:'Vlootprogramma',desc:'+2 scheepswerven en direct een nieuwe vloot',f:n=>{placeFactory(n,'dock');placeFactory(n,'dock');spawnFleet(n)}},
- {k:'airf',name:'Luchtmachtopbouw',desc:'+60 vliegtuigen en +25% vliegtuigproductie',f:n=>{n.planes+=60;n.bonus.air+=.25}},
- {k:'war',name:'Oorlogseconomie',desc:'Consumptiegoederen van 20% naar 5%, +3 militaire fabrieken',req:'ind',f:n=>{n.consumer=.05;capProv(n).mil+=3}},
-];
-const BCOST={civ:120,mil:90,dock:100},BNAME={civ:'Civiele fabriek',mil:'Militaire fabriek',dock:'Scheepswerf'};
-const MISSION={sup:['Luchtoverwicht','Je jagers bevechten vijandelijke vliegtuigen. Sterkste luchtmacht wint.'],cas:['Gevechtssteun','Extra bonus voor je divisies in gevechten, minder effectief in luchtgevechten.'],bomb:['Strategisch bombarderen','Vernietigt fabrieken en werven van het doelwit.']};
-const SY1=['Bre','Kal','Mor','Ost','Vel','Dra','Hal','Sten','Rav','Lun','Tor','Wes','Gor','Ald','Fen','Kor','Zan','Hel','Mar','Ulv'],SY2=['dorp','burg','heim','mark','veld','wijk','stad','berg','haven','dal','ven','rode','oord','vik'];
-const SPEED=[0,650,280,90],SAVEKEY='ijzeren-fronten:save';
-let S=null,L={},V={z:1,x:0,y:0},timer=null,lastPanel=0,tab='leger',mapSize='klein';
-const $=s=>document.querySelector(s);
-const cv=$('#map'),ctx=cv.getContext('2d');
-const rf=(a,b)=>a+Math.random()*(b-a),ri=(a,b)=>Math.floor(rf(a,b+1)),pick=a=>a[ri(0,a.length-1)];
-function nbCalc(i){const c=i%COLS,r=(i/COLS)|0,odd=r&1;const d=odd?[[1,0],[-1,0],[0,-1],[1,-1],[0,1],[1,1]]:[[1,0],[-1,0],[-1,-1],[0,-1],[-1,1],[0,1]];const o=[];for(const[x,y]of d){const nc=c+x,nr=r+y;if(nc>=0&&nc<COLS&&nr>=0&&nr<ROWS)o.push(nr*COLS+nc)}return o}
-function setSize(c,r){COLS=c;ROWS=r;N=c*r;NB=[];for(let i=0;i<N;i++)NB[i]=nbCalc(i)}
-function cube(i){const c=i%COLS,r=(i/COLS)|0,x=c-(r-(r&1))/2;return[x,r,-x-r]}
-function hd(a,b){const A=cube(a),B=cube(b);return Math.max(Math.abs(A[0]-B[0]),Math.abs(A[1]-B[1]),Math.abs(A[2]-B[2]))}
 
-/* ================= kaart ================= */
-function genMap(cfg){
-  const P=[];for(let i=0;i<N;i++)P.push({i,land:true,owner:-1,core:-1,civ:0,mil:0,dock:0,cap:false,terrain:'vlak',name:pick(SY1)+pick(SY2)});
-  const edge=()=>{const s=ri(0,3);return s===0?ri(0,COLS-1):s===1?(ROWS-1)*COLS+ri(0,COLS-1):s===2?ri(0,ROWS-1)*COLS:ri(0,ROWS-1)*COLS+COLS-1};
-  const walks=Math.round(N/32);
-  for(let k=0;k<walks;k++){let c=edge();for(let s=0,m=ri(8,20);s<m;s++){P[c].land=false;c=pick(NB[c])}}
-  if(cfg.n>5){let c=ri(3,COLS-4);for(let s=0;s<ROWS*1.4;s++){P[c].land=false;if(Math.random()<.4)P[pick(NB[c])].land=false;const r=(c/COLS)|0;const o=NB[c].filter(j=>((j/COLS)|0)>=r);c=pick(o.length?o:NB[c])}}
-  for(let k=0;k<2;k++){let c=ri(0,N-1);for(let s=0;s<ri(2,4);s++){P[c].land=false;c=pick(NB[c])}}
-  for(const p of P){const x=Math.random();p.terrain=x<.16?'berg':x<.36?'bos':'vlak'}
-  const seeds=[];let t=0;
-  while(seeds.length<cfg.n&&t<8000){t++;const i=ri(0,N-1);if(P[i].land&&NB[i].filter(j=>P[j].land).length>=3&&seeds.every(s=>hd(s,i)>=cfg.sp))seeds.push(i)}
-  if(seeds.length<cfg.n)return genMap(cfg);
-  const fr=seeds.map((s,n)=>{P[s].owner=n;return[s]});
-  let grew=true;
-  while(grew){grew=false;for(let n=0;n<cfg.n;n++){const f=fr[n];if(!f.length)continue;grew=true;const k=ri(0,f.length-1);const free=NB[f[k]].filter(j=>P[j].land&&P[j].owner<0);if(!free.length){f.splice(k,1);continue}const j=pick(free);P[j].owner=n;f.push(j)}}
-  for(const p of P)if(p.land&&p.owner<0){let b=0,bd=1e9;seeds.forEach((s,n)=>{const d=hd(s,p.i);if(d<bd){bd=d;b=n}});p.owner=b}
-  for(const p of P){p.core=p.owner}
-  const coast=i=>P[i].land&&NB[i].some(j=>!P[j].land);
-  for(const p of P)if(p.land){if(Math.random()<.35)p.civ++;if(Math.random()<.2)p.mil++;if(coast(p.i)&&Math.random()<.1)p.dock++}
-  seeds.forEach(s=>{P[s].cap=true;P[s].civ+=3;P[s].mil+=2;P[s].terrain='vlak';if(coast(s))P[s].dock++});
-  return{P,seeds};
-}
-
-/* ================= staat ================= */
-function newGame(size){
-  const cfg=SIZES[size];setSize(cfg.c,cfg.r);
-  const{P,seeds}=genMap(cfg);
-  S={size,day:0,speed:0,provs:P,units:[],uid:1,wars:new Set(),allies:new Set(),log:[],player:-1,auto:false,sel:null,selUnits:new Set(),battle:new Set(),warStart:{},over:false};
-  S.nations=NDEF.slice(0,cfg.n).map(([name,color],id)=>({id,name,color,ai:true,alive:true,equip:200,mp:20,civ:0,milF:0,docks:0,provs:0,consumer:.2,planes:30,airShare:.2,airMission:'sup',bombTarget:null,ships:[],shipPts:0,
-    tech:{inf:0,ind:0,doc:0,mob:0,air:0,nav:0},research:null,focus:null,focusDone:[],build:[],train:[],bonus:{prod:0,mpGrow:0,org:0,att:0,def:0,research:0,build:0,air:0},justify:null,cap:seeds[id],allyCd:{},calm:0}));
-  S.nations.forEach(n=>{stats(n);for(let k=0;k<4;k++)spawn(n);if(n.docks)spawnFleet(n)});
-}
-const key=(a,b)=>a<b?a+'-'+b:b+'-'+a;
-const atWar=(a,b)=>a!==b&&a>=0&&b>=0&&S.wars.has(key(a,b));
-const allied=(a,b)=>a!==b&&S.allies.has(key(a,b));
-const alliesOf=x=>S.nations.filter(o=>o.alive&&allied(x,o.id)).map(o=>o.id);
-const enemiesOf=x=>S.nations.filter(o=>o.alive&&atWar(x,o.id)).map(o=>o.id);
-const friendly=(o,j)=>S.provs[j].land&&(S.provs[j].owner===o||allied(o,S.provs[j].owner));
-const canEnter=(o,j)=>S.provs[j].land&&(friendly(o,j)||atWar(o,S.provs[j].owner));
-const hostileLand=(o,j)=>S.units.filter(u=>u.kind==='land'&&u.prov===j&&u.str>0&&atWar(o,u.owner));
-const hostileFleets=(o,j)=>S.units.filter(u=>u.kind==='fleet'&&u.prov===j&&u.str>0&&atWar(o,u.owner));
-const hasFleet=o=>S.units.some(u=>u.kind==='fleet'&&u.owner===o);
-const coastal=i=>S.provs[i].land&&NB[i].some(j=>!S.provs[j].land);
-const maxOrg=n=>50+8*n.tech.doc+n.bonus.org;
-const att=n=>10*(1+.15*n.tech.inf+n.bonus.att);
-const dfn=(n,p)=>12*(1+.15*n.tech.inf+n.bonus.def)*(p.terrain==='berg'?1.5:p.terrain==='bos'?1.25:1);
-const moveTime=(n,j)=>Math.max(1.5,(S.provs[j].terrain==='berg'?5:S.provs[j].terrain==='bos'?4:3)-.4*n.tech.mob);
-const nm=i=>S.provs[i].land?S.provs[i].name:'open zee';
-function canEnterU(u,j){const p=S.provs[j];if(u.kind==='fleet')return!p.land;if(p.land)return canEnter(u.owner,j);return hasFleet(u.owner)&&!hostileFleets(u.owner,j).length}
-function passU(u,j){const p=S.provs[j];if(u.kind==='fleet')return!p.land;if(p.land)return friendly(u.owner,j);return hasFleet(u.owner)&&!hostileFleets(u.owner,j).length}
-function capProv(n){const c=S.provs[n.cap];return c.owner===n.id?c:(S.provs.find(p=>p.land&&p.owner===n.id)||c)}
-function stats(n){let c=0,m=0,d=0,k=0;for(const p of S.provs)if(p.land&&p.owner===n.id){c+=p.civ;m+=p.mil;d+=p.dock;k++}n.civ=c;n.milF=m;n.docks=d;n.provs=k}
-function spawn(n){const p=capProv(n);S.units.push({id:S.uid++,owner:n.id,kind:'land',prov:p.i,str:100,org:maxOrg(n),move:null,attack:null,path:[]})}
-function spawnFleet(n){const seas=[];for(const p of S.provs)if(p.land&&p.owner===n.id&&p.dock>0)for(const j of NB[p.i])if(!S.provs[j].land&&!hostileFleets(n.id,j).length)seas.push(j);
-  if(!seas.length)return false;S.units.push({id:S.uid++,owner:n.id,kind:'fleet',prov:pick(seas),str:100,org:50,move:null,attack:null,path:[]});return true}
-function isNeighbor(a,b){return S.provs.some(p=>p.land&&p.owner===a&&NB[p.i].some(j=>S.provs[j].land&&S.provs[j].owner===b))}
-function power(id){return S.units.filter(u=>u.owner===id&&u.kind==='land').reduce((s,u)=>s+u.str/100,0)+S.nations[id].train.length*.5}
-function coreRatio(id){let a=0,b=0;for(const p of S.provs)if(p.land&&p.core===id){a++;if(p.owner===id)b++}return a?b/a:0}
-function airEff(n){return n.planes*(n.airMission==='sup'?1:n.airMission==='cas'?.6:.4)*(1+.15*n.tech.air)}
-function airSup(a,b){const ea=airEff(S.nations[a]),eb=airEff(S.nations[b]);return ea+eb<1?.5:ea/(ea+eb)}
-function airMod(a,b){if(!atWar(a,b))return 1;return 1+.5*(airSup(a,b)-.5)*(S.nations[a].airMission==='cas'?1.6:1)}
-function fleetPow(f){const n=S.nations[f.owner];return 10*(1+.15*n.tech.nav)*f.str/100*(.4+.6*Math.max(0,f.org)/50)}
-
-function log(t,imp){S.log.unshift({d:S.day,t});S.log.length=Math.min(S.log.length,30);$('#ticker').textContent=t;if(imp)toast(t)}
-let tt;function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),3200)}
-const involves=(...ids)=>ids.includes(S.player);
-
-function declareWar(a,b){
-  if(atWar(a,b)||a===b)return;
-  S.wars.add(key(a,b));S.allies.delete(key(a,b));S.warStart[key(a,b)]=S.day;
-  log(`${S.nations[a].name} verklaart ${S.nations[b].name} de oorlog!`,true);
-  for(const c of alliesOf(b))if(c!==a&&!allied(c,a)&&!atWar(c,a)){S.wars.add(key(c,a));S.warStart[key(c,a)]=S.day;log(`${S.nations[c].name} komt ${S.nations[b].name} te hulp.`,involves(c,a))}
-  for(const c of alliesOf(a))if(c!==b&&!allied(c,b)&&!atWar(c,b)){S.wars.add(key(c,b));S.warStart[key(c,b)]=S.day;log(`${S.nations[c].name} sluit zich aan bij de oorlog.`,involves(c,b))}
-}
-function makePeace(a,b){S.wars.delete(key(a,b));for(const u of S.units)if((u.owner===a||u.owner===b)&&u.attack!=null&&!atWar(u.owner,S.provs[u.attack].owner))u.attack=null;
-  for(const x of[a,b]){const n=S.nations[x];if(n.bombTarget===(x===a?b:a))n.bombTarget=null}
-  log(`Vrede tussen ${S.nations[a].name} en ${S.nations[b].name}.`,involves(a,b))}
-function capitulate(x,by){
-  const n=S.nations[x];if(!n.alive)return;n.alive=false;
-  for(const p of S.provs)if(p.owner===x)p.owner=by;
-  S.units=S.units.filter(u=>u.owner!==x);
-  for(const k of[...S.wars,...S.allies]){const[a,b]=k.split('-').map(Number);if(a===x||b===x){S.wars.delete(k);S.allies.delete(k)}}
-  for(const o of S.nations){if(o.justify&&o.justify.target===x)o.justify=null;if(o.bombTarget===x)o.bombTarget=null}
-  log(`${n.name} capituleert voor ${S.nations[by].name}.`,true);
-  if(x===S.player)endGame(false);
-}
-function capture(i,by){
-  const p=S.provs[i],prev=p.owner;p.owner=by;
-  const pn=S.nations[prev];if(!pn.alive)return;
-  if(p.cap&&pn.cap===i){p.cap=false;const alt=S.provs.filter(q=>q.land&&q.owner===prev).sort((a,b)=>(b.core===prev)-(a.core===prev)||b.civ+b.mil-a.civ-a.mil)[0];
-    if(alt){alt.cap=true;pn.cap=alt.i;log(`${S.nations[by].name} verovert ${p.name}. ${pn.name} verplaatst de hoofdstad naar ${alt.name}.`,involves(by,prev))}}
-  if(!S.provs.some(q=>q.land&&q.owner===prev)||coreRatio(prev)<.3)capitulate(prev,by);
-}
-function placeFactory(n,type){
-  const ok=p=>p.land&&p.owner===n.id&&p.civ+p.mil+p.dock<6&&(type!=='dock'||coastal(p.i));
-  let c=S.provs.filter(p=>ok(p)&&p.core===n.id);if(!c.length)c=S.provs.filter(ok);if(!c.length)return false;
-  const min=Math.min(...c.map(p=>p.civ+p.mil+p.dock));const p=pick(c.filter(q=>q.civ+q.mil+q.dock===min));p[type]++;
-  if(n.id===S.player)log(`Nieuwe ${BNAME[type].toLowerCase()} in ${p.name}.`);return true;
-}
-
-/* ================= simulatie ================= */
-function economy(n){
-  stats(n);
-  const out=n.milF*.9*(1+.1*n.tech.ind+n.bonus.prod);
-  n.equip+=out*(1-n.airShare);
-  n.planes+=out*n.airShare*.3*(1+.15*n.tech.air+n.bonus.air);
-  n.mp+=n.provs*.04*(1+n.bonus.mpGrow);
-  let pts=Math.max(0,n.civ-Math.ceil(n.civ*n.consumer))*(1+.1*n.tech.ind+n.bonus.build);
-  for(const b of n.build){if(pts<=0)break;const u=Math.min(pts,15);b.progress+=u;pts-=u}
-  for(let k=n.build.length-1;k>=0;k--)if(n.build[k].progress>=n.build[k].cost){const b=n.build.splice(k,1)[0];placeFactory(n,b.type)}
-  if(n.ships.length&&n.docks){const s=n.ships[0];s.progress+=n.docks*(1+.1*n.tech.ind+.15*n.tech.nav);if(s.progress>=s.cost&&spawnFleet(n)){n.ships.shift();if(n.id===S.player)log('Een nieuwe vloot is te water gelaten.',true)}}
-  n.train.forEach(t=>t.left--);const done=n.train.filter(t=>t.left<=0);n.train=n.train.filter(t=>t.left>0);
-  done.forEach(()=>spawn(n));if(done.length&&n.id===S.player)log(`${done.length>1?done.length+' divisies zijn':'Een divisie is'} klaar voor inzet.`);
-  if(n.research){n.research.left-=1+n.bonus.research;if(n.research.left<=0){n.tech[n.research.key]++;if(n.id===S.player)log(`Onderzoek voltooid: ${TECH[n.research.key][0]} ${n.tech[n.research.key]}.`,true);n.research=null}}
-  if(n.focus){n.focus.left--;if(n.focus.left<=0){const f=FOCUS.find(x=>x.k===n.focus.key);n.focus=null;f.f(n);n.focusDone.push(f.k);if(n.id===S.player)log(`Focus voltooid: ${f.name}.`,true)}}
-  if(n.justify&&n.justify.left>0){n.justify.left--;if(n.justify.left===0&&n.id===S.player)log(`Oorlogsdoel tegen ${S.nations[n.justify.target].name} is klaar.`,true)}
-  const mo=maxOrg(n);
-  for(const u of S.units){if(u.owner!==n.id)continue;
-    const fighting=u.attack!=null||S.battle.has(u.prov);
-    if(u.kind==='fleet'){if(!fighting)u.org=Math.min(50,u.org+4);if(u.str<100&&NB[u.prov].some(j=>S.provs[j].land&&S.provs[j].owner===n.id))u.str=Math.min(100,u.str+1.5);continue}
-    if(!S.provs[u.prov].land){u.org=Math.min(mo,u.org+1);continue}
-    if(!fighting)u.org=Math.min(mo,u.org+4);
-    if(u.str<100&&n.equip>=1){const a=Math.min(2,100-u.str,n.equip);u.str+=a;n.equip-=a}}
-}
-function order(u,to,path=[]){
-  u.move=null;u.attack=null;u.path=path;
-  if(!NB[u.prov].includes(to))return false;
-  if(u.kind==='land'&&S.provs[to].land&&hostileLand(u.owner,to).length){u.attack=to;u.path=[];return true}
-  if(!canEnterU(u,to))return false;
-  const t=u.kind==='fleet'?1.5:S.provs[to].land?moveTime(S.nations[u.owner],to):2;u.move={to,left:t,total:t};return true;
-}
-function findPath(u,target){if(target===u.prov)return null;const{dist,par}=bfs(u.prov,j=>j===target?canEnterU(u,j):passU(u,j));return dist.has(target)?pathTo(par,u.prov,target):null}
-function movement(){
-  for(const u of S.units){if(!u.move)continue;u.move.left--;if(u.move.left>0)continue;
-    const to=u.move.to;u.move=null;
-    if(!canEnterU(u,to)){u.path=[];continue}
-    if(u.kind==='land'&&S.provs[to].land&&hostileLand(u.owner,to).length){u.attack=to;u.path=[];continue}
-    u.prov=to;const p=S.provs[to];
-    if(u.kind==='land'&&p.land&&p.owner!==u.owner&&atWar(u.owner,p.owner))capture(to,u.owner);
-    if(u.path&&u.path.length){const nx=u.path.shift();order(u,nx,u.path)}
-  }
-}
-function retreat(d){
-  d.attack=null;d.move=null;d.path=[];
-  const opts=NB[d.prov].filter(j=>friendly(d.owner,j)&&!hostileLand(d.owner,j).length&&!S.battle.has(j));
-  if(!opts.length){d.str=0;if(d.owner===S.player)log('Een omsingelde divisie is vernietigd.',true);return}
-  d.prov=pick(opts);d.org=Math.max(0,d.org);d.str=Math.max(d.str,1);
-}
-function seaRetreat(f){
-  f.move=null;f.path=[];
-  const opts=NB[f.prov].filter(j=>!S.provs[j].land&&!hostileFleets(f.owner,j).length);
-  if(!opts.length){f.str=0;if(involves(f.owner))log('Een vloot is tot zinken gebracht.',true);return}
-  f.prov=pick(opts);f.org=Math.max(0,f.org);
-}
-function combat(){
-  S.battle=new Set();
-  const bt={};for(const u of S.units)if(u.kind==='land'&&u.attack!=null)(bt[u.attack]=bt[u.attack]||[]).push(u);
-  for(const k in bt){const to=+k,P=S.provs[to];
-    const atk=bt[k].filter(u=>NB[u.prov].includes(to)&&u.str>0);if(!atk.length)continue;
-    const defs=S.units.filter(d=>d.kind==='land'&&d.prov===to&&d.str>0&&atk.some(a=>atWar(a.owner,d.owner)));
-    if(!defs.length){atk.forEach(a=>{a.attack=null;if(canEnter(a.owner,to))a.move={to,left:1,total:1}});continue}
-    S.battle.add(to);
-    let A=0,D=0;const dO=defs[0].owner,aO=atk[0].owner;
-    for(const a of atk){const n=S.nations[a.owner];A+=att(n)*a.str/100*(.4+.6*Math.max(0,a.org)/maxOrg(n))*(S.provs[a.prov].land?1:.5)*airMod(a.owner,dO)}
-    for(const d of defs){const n=S.nations[d.owner];D+=dfn(n,P)*d.str/100*(.4+.6*Math.max(0,d.org)/maxOrg(n))*airMod(d.owner,aO)}
-    for(const d of defs){const r=rf(.7,1.1);d.org-=A*.22/defs.length*r;d.str-=A*.04/defs.length*r}
-    for(const a of atk){const r=rf(.7,1.1);a.org-=D*.2/atk.length*r;a.str-=D*.035/atk.length*r}
-    for(const d of defs)if(d.org<=0||d.str<=8)retreat(d);
-    for(const a of atk)if(a.org<=6||a.str<=12)a.attack=null;
-  }
-  const seaHexes=new Set(S.units.filter(u=>u.kind==='fleet').map(u=>u.prov));
-  for(const h of seaHexes){
-    const here=S.units.filter(u=>u.prov===h&&u.str>0),fl=here.filter(u=>u.kind==='fleet');
-    for(const t of here)if(t.kind==='land'&&fl.some(f=>atWar(f.owner,t.owner))){t.str=0;if(involves(t.owner))log('Een divisie op zee is tot zinken gebracht.',true)}
-    const dmg=new Map();
-    for(const a of fl){const tg=fl.filter(b=>atWar(a.owner,b.owner));if(!tg.length)continue;const pw=fleetPow(a);for(const t of tg)dmg.set(t,(dmg.get(t)||0)+pw/tg.length)}
-    if(!dmg.size)continue;S.battle.add(h);
-    for(const[t,d]of dmg){const r=rf(.7,1.1);t.org-=d*.25*r;t.str-=d*.05*r}
-    for(const t of dmg.keys())if(t.str>0&&(t.org<=0||t.str<=10))seaRetreat(t);
-  }
-  S.units=S.units.filter(u=>u.str>0);
-}
-function airWar(){
-  for(const k of S.wars){const[a,b]=k.split('-').map(Number);const A=S.nations[a],B=S.nations[b];if(!A.alive||!B.alive)continue;
-    const ea=airEff(A),eb=airEff(B);A.planes=Math.max(0,A.planes-eb*.004*rf(.6,1.2));B.planes=Math.max(0,B.planes-ea*.004*rf(.6,1.2))}
-  for(const n of S.nations){if(!n.alive||n.airMission!=='bomb')continue;const t=n.bombTarget;if(t==null||!atWar(n.id,t))continue;
-    n.planes*=.998;const ch=Math.min(.25,n.planes*.0006*(1.3-airSup(t,n.id)));
-    if(Math.random()<ch){const c=S.provs.filter(p=>p.land&&p.owner===t&&p.civ+p.mil+p.dock>0);if(c.length){const p=pick(c);const kk=pick(['civ','mil','dock'].filter(x=>p[x]>0));p[kk]--;
-      if(involves(n.id,t))log(`${n.name} bombardeert een ${BNAME[kk].toLowerCase()} in ${p.name}.`,t===S.player)}}}
-}
-
-/* ================= AI ================= */
-function bfs(start,pass){const dist=new Map([[start,0]]),par=new Map(),q=[start];let h=0;while(h<q.length){const c=q[h++];for(const j of NB[c]){if(dist.has(j)||!pass(j))continue;dist.set(j,dist.get(c)+1);par.set(j,c);q.push(j)}}return{dist,par}}
-function pathTo(par,s,g){const p=[g];let c=g;while(c!==s){c=par.get(c);if(c==null)return null;p.push(c)}return p.reverse()}
-function aiUnits(n){
-  const id=n.id,mo=maxOrg(n);
-  const idle=S.units.filter(u=>u.owner===id&&u.kind==='land'&&!u.move&&u.attack==null&&!(u.path&&u.path.length));
-  if(!idle.length)return;
-  const fr=j=>friendly(id,j),en=enemiesOf(id);
-  const enemyProv=j=>S.provs[j].land&&en.includes(S.provs[j].owner);
-  const foreign=j=>S.provs[j].land&&!fr(j);
-  const handled=new Set();
-  for(const u of idle){if(S.provs[u.prov].land)continue;handled.add(u.id);
-    const{dist,par}=bfs(u.prov,j=>passU(u,j)||fr(j));let best=-1,bd=1e9;for(const[j,d]of dist)if(fr(j)&&d<bd){bd=d;best=j}
-    if(best>=0){const p=pathTo(par,u.prov,best);if(p&&p.length>1)order(u,p[1],p.slice(2))}}
-  let front=S.provs.filter(p=>p.land&&fr(p.i)&&NB[p.i].some(en.length?enemyProv:foreign)).map(p=>p.i);
-  const landFront=en.length>0&&front.length>0;
-  if(!front.length){const cs=S.provs.filter(p=>p.land&&p.owner===id&&coastal(p.i)).map(p=>p.i);
-    if(en.length&&cs.length&&(!n.stage||!cs.includes(n.stage)||S.day%30===0)){
-      const dist=new Map(),q=[];for(const p of S.provs)if(enemyProv(p.i))for(const j of NB[p.i])if(!S.provs[j].land&&!dist.has(j)){dist.set(j,0);q.push(j)}
-      let h=0;while(h<q.length){const c=q[h++];for(const j of NB[c])if(!S.provs[j].land&&!dist.has(j)){dist.set(j,dist.get(c)+1);q.push(j)}}
-      let best=null,bd=1e9;for(const c of cs)for(const j of NB[c])if(dist.has(j)&&dist.get(j)<bd){bd=dist.get(j);best=c}
-      n.stage=best}
-    front=en.length&&n.stage!=null&&cs.includes(n.stage)?[n.stage]:cs}
-  if(!front.length)return;
-  const load={};let total=0;for(const u of S.units)if(u.owner===id&&u.kind==='land'){const k=u.move?u.move.to:u.prov;load[k]=(load[k]||0)+1;total++}
-  const avg=landFront||front.length>1?Math.max(1,total/front.length):99;
-  if(landFront){
-    const by={};for(const u of idle)if(!handled.has(u.id))(by[u.prov]=by[u.prov]||[]).push(u);
-    for(const k in by){const ready=by[k].filter(u=>u.org>mo*.7&&u.str>55);if(!ready.length)continue;
-      const opts=NB[+k].filter(enemyProv);if(!opts.length)continue;
-      let best=-1,bs=-1e9,bds=0;
-      for(const j of opts){const ds=hostileLand(id,j).reduce((s,u)=>s+u.str/100*(.4+.6*Math.max(0,u.org)/maxOrg(S.nations[u.owner])),0);
-        const sc=-ds*2+(S.provs[j].cap?1.5:0)-(S.provs[j].terrain==='berg'?.7:0)+Math.random()*.5;if(sc>bs){bs=sc;best=j;bds=ds}}
-      if(bds===0||ready.length>=bds*1.4+.5)ready.forEach(u=>{order(u,best);handled.add(u.id)});
-    }
-  }else if(en.length&&hasFleet(id)&&Math.random()<.4){
-    const by={};for(const u of idle)if(!handled.has(u.id)&&S.provs[u.prov].land&&coastal(u.prov)&&u.org>mo*.7&&u.str>60)(by[u.prov]=by[u.prov]||[]).push(u);
-    const g=Object.values(by).sort((a,b)=>b.length-a.length)[0];
-    if(g&&g.length>=2){const u0=g[0];const{dist,par}=bfs(u0.prov,j=>!S.provs[j].land&&passU(u0,j));
-      let best=-1,via=-1,bs=1e9;
-      for(const p of S.provs){if(!enemyProv(p.i))continue;for(const j of NB[p.i]){if(S.provs[j].land||!dist.has(j)||dist.get(j)>12)continue;const sc=hostileLand(id,p.i).length*3+dist.get(j)*.3+Math.random();if(sc<bs){bs=sc;best=p.i;via=j}}}
-      if(best>=0&&g.length>=hostileLand(id,best).length*1.5+1){const p=pathTo(par,u0.prov,via);if(p){const full=p.concat([best]);g.forEach(u=>{order(u,full[1],full.slice(2));handled.add(u.id)});if(involves(id,S.provs[best].owner))log(`${n.name} lanceert een invasie over zee bij ${S.provs[best].name}.`,true)}}}
-  }
-  for(const u of idle){if(handled.has(u.id)||!S.provs[u.prov].land)continue;
-    if(front.includes(u.prov)&&(load[u.prov]||0)<=Math.ceil(avg))continue;
-    const{dist,par}=bfs(u.prov,fr);let best=-1,bs=1e9;
-    for(const f of front){if(!dist.has(f))continue;const sc=dist.get(f)+((load[f]||0)-avg)*1.5+Math.random();if(sc<bs){bs=sc;best=f}}
-    if(best<0||best===u.prov)continue;
-    const path=pathTo(par,u.prov,best);if(!path||path.length<2)continue;
-    load[u.prov]--;load[best]=(load[best]||0)+1;order(u,path[1],path.slice(2));
-  }
-}
-function aiFleets(n){
-  const id=n.id,en=enemiesOf(id),sea=j=>!S.provs[j].land;
-  const fl=S.units.filter(u=>u.owner===id&&u.kind==='fleet'&&!u.move&&!(u.path&&u.path.length));if(!fl.length)return;
-  const home=S.provs.filter(p=>!p.land&&NB[p.i].some(j=>S.provs[j].land&&S.provs[j].owner===id)).map(p=>p.i);
-  let ef=[],ec=[];
-  if(en.length){ef=S.units.filter(u=>u.kind==='fleet'&&en.includes(u.owner)).map(u=>u.prov);ec=S.provs.filter(p=>!p.land&&NB[p.i].some(j=>S.provs[j].land&&en.includes(S.provs[j].owner))).map(p=>p.i)}
-  const myP=S.units.filter(u=>u.owner===id&&u.kind==='fleet').reduce((s,u)=>s+u.str,0),thP=S.units.filter(u=>u.kind==='fleet'&&en.includes(u.owner)).reduce((s,u)=>s+u.str,0);
-  for(const f of fl){
-    let tg=home;
-    if(f.str>=45&&f.org>=20&&en.length)tg=(ef.length&&myP>=thP*.9)?ef:(ec.length?ec:home);
-    if(!tg.length||(tg.includes(f.prov)&&!(tg===home&&Math.random()<.15)))continue;
-    const{dist,par}=bfs(f.prov,sea);let best=-1,bs=1e9;for(const t of tg){if(!dist.has(t))continue;const sc=dist.get(t)+Math.random()*3;if(sc<bs){bs=sc;best=t}}
-    if(best<0||best===f.prov)continue;const p=pathTo(par,f.prov,best);if(p&&p.length>1)order(f,p[1],p.slice(2));
-  }
-}
-function aiStrategy(n){
-  stats(n);
-  const coastOwn=S.provs.some(p=>p.land&&p.owner===n.id&&coastal(p.i));
-  if(n.build.length<2){let t=(n.civ<n.milF*1.3&&S.day<500)?'civ':'mil';if(coastOwn&&n.docks<1+Math.floor(n.provs/12)&&Math.random()<.4)t='dock';n.build.push({type:t,progress:0,cost:BCOST[t]})}
-  const nf=S.units.filter(u=>u.owner===n.id&&u.kind==='fleet').length;
-  if(n.docks&&!n.ships.length&&nf<1+Math.floor(n.provs/10))n.ships.push({progress:0,cost:150});
-  const cap=Math.round(n.provs*.45)+3;
-  while(n.equip>=100&&n.mp>=3&&S.units.filter(u=>u.owner===n.id&&u.kind==='land').length+n.train.length<cap){n.equip-=100;n.mp-=3;n.train.push({left:20})}
-  if(!n.research){const ks=Object.keys(TECH).filter(k=>n.tech[k]<5);if(ks.length){const m=Math.min(...ks.map(k=>n.tech[k]));const k=pick(ks.filter(x=>n.tech[x]===m));n.research={key:k,left:50+25*n.tech[k],total:50+25*n.tech[k]}}}
-  if(!n.focus){const av=FOCUS.filter(f=>!n.focusDone.includes(f.k)&&(!f.req||n.focusDone.includes(f.req)));if(av.length)n.focus={key:pick(av).k,left:35}}
-  const en=enemiesOf(n.id);n.calm=en.length?0:n.calm+1;
-  if(en.length){const top=Math.max(...en.map(e=>airEff(S.nations[e])));n.airMission=airEff(n)>top*1.4?(Math.random()<.35?'bomb':'cas'):'sup';if(!en.includes(n.bombTarget))n.bombTarget=en[0]}else n.airMission='sup';
-  if(n.justify){const t=n.justify.target;if(!S.nations[t].alive||allied(n.id,t))n.justify=null;else if(n.justify.left<=0){declareWar(n.id,t);n.justify=null}}
-  else if(S.day>75&&!en.length){
-    const cand=S.nations.filter(o=>o.alive&&o.id!==n.id&&!allied(n.id,o.id)&&isNeighbor(n.id,o.id));
-    const full=id=>power(id)+alliesOf(id).reduce((s,c)=>s+power(c),0);
-    if(cand.length){const tgt=cand.reduce((a,b)=>full(a.id)<full(b.id)?a:b);
-      if(power(n.id)>full(tgt.id)*Math.max(.85,1.25-n.calm*.02)&&Math.random()<.3){n.justify={target:tgt.id,left:30};if(tgt.id===S.player)log(`${n.name} rechtvaardigt een oorlogsdoel tegen jou.`,true)}}
-  }
-  if(en.length&&Math.random()<.06){const m=S.nations.find(o=>o.alive&&o.ai&&o.id!==n.id&&!allied(n.id,o.id)&&!atWar(n.id,o.id)&&enemiesOf(o.id).some(e=>en.includes(e)));
-    if(m){S.allies.add(key(n.id,m.id));log(`${n.name} en ${m.name} sluiten een bondgenootschap.`)}}
-  for(const e of en){const o=S.nations[e];if(o.ai&&S.day-(S.warStart[key(n.id,e)]||0)>200&&Math.random()<.03&&!S.provs.some(p=>p.land&&((p.owner===n.id&&p.core===e)||(p.owner===e&&p.core===n.id))))makePeace(n.id,e)}
-}
-
-function tick(){
-  S.day++;
-  for(const n of S.nations)if(n.alive)economy(n);
-  movement();combat();airWar();
-  if(S.day%2===0)for(const n of S.nations)if(n.alive&&(n.ai||S.auto)){aiUnits(n);aiFleets(n)}
-  if(S.day%7===0)for(const n of S.nations)if(n.alive&&n.ai)aiStrategy(n);
-  for(const id of S.selUnits)if(!S.units.some(u=>u.id===id))S.selUnits.delete(id);
-  checkEnd();draw();renderTop();
-  if(Date.now()-lastPanel>700)renderPanel();
-}
-function checkEnd(){
-  if(S.over)return;const land=S.provs.filter(p=>p.land);const mine=land.filter(p=>p.owner===S.player).length;
-  if(mine/land.length>=.75||S.nations.every(n=>!n.alive||n.id===S.player))endGame(true);
-}
-function endGame(win){
-  S.over=true;setSpeed(0);
-  const o=$('#overlay');o.classList.remove('hide');
-  o.innerHTML=`<div class="card"><h1>${win?'Overwinning':'Capitulatie'}</h1><p>${win?`${S.nations[S.player].name} beheerst het continent na ${S.day} dagen.`:`${S.nations[S.player].name} heeft zich overgegeven op dag ${S.day}.`}</p><button class="act" data-o="new">Nieuw spel</button></div>`;
-}
-function setSpeed(s){if(!S)return;S.speed=s;clearTimeout(timer);renderTop();if(s&&!S.over)loop()}
-function loop(){if(!S||S.over||!S.speed)return;tick();timer=setTimeout(loop,SPEED[S.speed])}
-
-/* ================= opslaan ================= */
-/* Opslag: Claude-opslag als die er is, anders de browser (localStorage) */
-const store={
-  async set(v){if(window.storage)return window.storage.set(SAVEKEY,v,false);localStorage.setItem(SAVEKEY,v)},
-  async get(){if(window.storage){const r=await window.storage.get(SAVEKEY,false);return r&&r.value}return localStorage.getItem(SAVEKEY)}
+/* ================= gegevens ================= */
+const TER={
+ oceaan:{n:'Oceaan',f:1,s:0,c:2,col:'#1e4d73',w:1},
+ kust:{n:'Kustwater',f:1,s:0,c:2,col:'#3a7fa3',w:1},
+ gras:{n:'Grasland',f:2,s:0,c:0,col:'#6e9a3d',mc:1,irr:1,road:1},
+ vlakte:{n:'Vlakte',f:1,s:1,c:0,col:'#a8a04e',mc:1,irr:1,road:1},
+ woestijn:{n:'Woestijn',f:0,s:1,c:0,col:'#d9c27b',mc:1,irr:1,road:1,mine:1},
+ toendra:{n:'Toendra',f:1,s:0,c:0,col:'#a2a893',mc:1},
+ bos:{n:'Bos',f:1,s:2,c:0,col:'#4d7a33',mc:2,def:.25},
+ heuvels:{n:'Heuvels',f:1,s:0,c:0,col:'#9a8f4f',mc:2,def:.5,irr:1,mine:2},
+ bergen:{n:'Bergen',f:0,s:1,c:0,col:'#8a8174',mc:3,def:1,mine:2},
 };
-async function saveGame(){
-  try{const st={...S,wars:[...S.wars],allies:[...S.allies],battle:[...S.battle],selUnits:[],sel:null,speed:0};
-    await store.set(JSON.stringify({v:2,cols:COLS,rows:ROWS,S:st}));toast(`Spel opgeslagen op ${dateStr()}.`)}
-  catch(e){toast('Opslaan is mislukt. Controleer of je browser opslag voor deze site toestaat.')}
+const RES={tarwe:{n:'Tarwe',e:'🌾',f:2,on:['gras','vlakte']},vis:{n:'Vis',e:'🐟',f:2,on:['kust']},goud:{n:'Goud',e:'💰',c:4,on:['heuvels','bergen']},wild:{n:'Wild',e:'🦌',f:1,s:1,on:['bos','toendra']},paard:{n:'Paarden',e:'🐎',s:1,c:1,on:['vlakte','gras']},wijn:{n:'Wijn',e:'🍇',c:3,on:['heuvels']}};
+const UT={
+ kolonist:{n:'Kolonist',e:'⛺',a:0,d:1,m:1,c:30,settle:1,civil:1},
+ arbeider:{n:'Arbeider',e:'⚒️',a:0,d:0,m:1,c:20,work:1,civil:1},
+ verkenner:{n:'Verkenner',e:'🧭',a:0,d:0,m:2,c:20,civil:1,sight:2},
+ krijger:{n:'Krijger',e:'🪓',a:1,d:1,m:1,c:10},
+ speerman:{n:'Speerman',e:'🔱',a:1,d:2,m:1,c:20,t:'brons'},
+ boog:{n:'Boogschutter',e:'🏹',a:2,d:1,m:1,c:20,t:'krijgscode'},
+ ruiter:{n:'Ruiter',e:'🐎',a:2,d:1,m:2,c:20,t:'paard'},
+ zwaard:{n:'Zwaardvechter',e:'⚔️',a:3,d:2,m:1,c:30,t:'ijzer'},
+ katapult:{n:'Katapult',e:'🎯',a:5,d:1,m:1,c:30,t:'wiskunde'},
+ pikenier:{n:'Pikenier',e:'🛡️',a:1,d:3,m:1,c:30,t:'feodalisme'},
+ ridder:{n:'Ridder',e:'🏇',a:4,d:3,m:2,c:40,t:'ridderschap'},
+ musketier:{n:'Musketier',e:'💂',a:2,d:4,m:1,c:30,t:'buskruit'},
+ kanon:{n:'Kanon',e:'💣',a:8,d:1,m:1,c:40,t:'metallurgie'},
+ cavalerie:{n:'Cavalerie',e:'🐴',a:6,d:3,m:3,c:60,t:'industrie'},
+ galei:{n:'Galei',e:'⛵',a:1,d:1,m:3,c:30,t:'zeevaart',sea:1,cap:2},
+ karveel:{n:'Karveel',e:'🚢',a:1,d:2,m:4,c:40,t:'navigatie',sea:1,cap:3},
+ fregat:{n:'Fregat',e:'⚓',a:4,d:2,m:5,c:60,t:'stoom',sea:1,cap:2},
+};
+const BT={
+ graanschuur:{n:'Graanschuur',c:60,up:1,t:'aardewerk',d:'Behoudt de helft van het voedsel bij groei'},
+ kazerne:{n:'Kazerne',c:40,up:1,d:'Nieuwe eenheden zijn veteraan en herstellen sneller'},
+ tempel:{n:'Tempel',c:40,up:1,t:'ceremonie',cu:1,d:'+2 tevreden burgers, +1 cultuur'},
+ bibliotheek:{n:'Bibliotheek',c:90,up:1,t:'schrift',cu:3,d:'+50% wetenschap, +3 cultuur'},
+ markt:{n:'Marktplaats',c:80,up:1,t:'munten',d:'+50% goud, +1 tevreden'},
+ muren:{n:'Stadsmuren',c:60,up:0,t:'metselen',d:'+100% verdediging tegen landaanvallen'},
+ haven:{n:'Haven',c:60,up:1,t:'zeevaart',coast:1,d:'+1 voedsel op watertegels'},
+ aquaduct:{n:'Aquaduct',c:100,up:1,t:'bouwkunde',d:'Stad kan groeien voorbij 8 inwoners'},
+ kathedraal:{n:'Kathedraal',c:120,up:2,t:'theologie',cu:2,d:'+3 tevreden burgers, +2 cultuur'},
+ universiteit:{n:'Universiteit',c:160,up:2,t:'universiteit',cu:2,d:'+50% wetenschap, +2 cultuur'},
+ bank:{n:'Bank',c:120,up:2,t:'bankwezen',d:'+50% goud'},
+};
+const WT={
+ reus:{n:'Havenreus',c:200,t:'brons',d:'+1 handel op watertegels van deze stad'},
+ tuinen:{n:'Tuinen van Ishara',c:250,t:'aardewerk',d:'+1 tevreden in al je steden'},
+ wachtmuur:{n:'De Wachtmuur',c:250,t:'metselen',d:'Werkt als stadsmuren in al je steden'},
+ academie:{n:'Academie der Wijzen',c:300,t:'filosofie',d:'Geeft direct een gratis technologie'},
+ sterrenwacht:{n:'Sterrenwacht',c:300,t:'astronomie',d:'+100% wetenschap in deze stad'},
+ expo:{n:'Wereldtentoonstelling',c:600,t:'industrie',d:'Wie dit wonder voltooit, wint het spel'},
+};
+const TT={
+ aardewerk:{n:'Aardewerk',r:[]},brons:{n:'Bronsbewerking',r:[]},alfabet:{n:'Alfabet',r:[]},ceremonie:{n:'Ceremonieel',r:[]},
+ paard:{n:'Paardrijden',r:[]},krijgscode:{n:'Krijgscode',r:[]},metselen:{n:'Metselwerk',r:[]},
+ schrift:{n:'Schrift',r:['alfabet']},ijzer:{n:'IJzerbewerking',r:['brons']},munten:{n:'Muntslag',r:['brons','alfabet']},
+ wiskunde:{n:'Wiskunde',r:['alfabet','metselen']},zeevaart:{n:'Zeevaart',r:['aardewerk','alfabet']},
+ filosofie:{n:'Filosofie',r:['schrift','ceremonie']},bouwkunde:{n:'Bouwkunde',r:['wiskunde']},
+ feodalisme:{n:'Feodalisme',r:['ijzer','ceremonie']},astronomie:{n:'Astronomie',r:['wiskunde','schrift']},
+ ridderschap:{n:'Ridderschap',r:['paard','feodalisme']},theologie:{n:'Theologie',r:['filosofie','feodalisme']},
+ universiteit:{n:'Universiteit',r:['astronomie','filosofie']},navigatie:{n:'Navigatie',r:['zeevaart','astronomie']},
+ bankwezen:{n:'Bankwezen',r:['munten','theologie']},buskruit:{n:'Buskruit',r:['ijzer','universiteit']},
+ metallurgie:{n:'Metallurgie',r:['buskruit','bouwkunde']},methode:{n:'Wetenschappelijke methode',r:['universiteit','navigatie']},
+ stoom:{n:'Stoomkracht',r:['methode','metallurgie']},industrie:{n:'Industrialisatie',r:['stoom','bankwezen']},
+};
+const CIVS=[
+ {name:'Aurelië',color:'#c8442f',cities:['Aurum','Solvane','Tirasa','Mederon','Calvia','Brenna','Ostavo','Lucerna','Pavenna','Rhenis','Vestra','Corvin','Albara','Lumeno','Sirmia']},
+ {name:'Noordmarken',color:'#3b6fb6',cities:['Hjalmstad','Varnholm','Eskeby','Tromvik','Kaldby','Ravnsund','Ulfborg','Sterhavn','Gunnvik','Askeby','Fjellby','Brimvik','Isholm','Vinterby','Snarvik']},
+ {name:'Karthos',color:'#d6a21e',cities:['Karthos','Melqara','Tyrsa','Byrsa','Hadrum','Utiqa','Zamar','Sidra','Kerkona','Lepta','Oeza','Thapsa','Gadra','Lixa','Motya']},
+ {name:'Elmerijk',color:'#3f8f3c',cities:['Elmburg','Groenhof','Lindeveld','Eikenrode','Wilgendaal','Berkhout','Esdonk','Hazelaar','Iependam','Popelaar','Vlierhof','Taxandria','Beukeren','Varenburg','Mosrode']},
+ {name:'Sulani',color:'#8b4fa3',cities:['Sulan','Amarra','Kesh','Natari','Ombu','Zuri','Taleh','Imani','Ruvan','Mbeku','Sefra','Okoyo','Daraji','Lumbi','Kisaro']},
+ {name:'Tharros',color:'#2a9a98',cities:['Tharros','Ilyon','Kalydon','Pharsa','Delma','Myra','Orchos','Lykia','Eresos','Thera','Naxa','Pella','Kymos','Seriph','Antara']},
+];
+const SIZES={klein:{w:28,h:22,n:4,label:'Klein'},groot:{w:40,h:32,n:6,label:'Groot'}};
+const TW=64,TH=32,SAVEKEY='rijken-der-eeuwen:save';
+/* ================= basis ================= */
+let G=null,OCC=new Map(),V={z:1,x:0,y:0},L={},tab='info',viewCity=null,infoTile=null,mapSize='klein';
+const $=s=>document.querySelector(s);
+const rf=(a,b)=>a+Math.random()*(b-a),ri=(a,b)=>Math.floor(rf(a,b+1)),pick=a=>a[ri(0,a.length-1)];
+const X=i=>i%G.w,Y=i=>(i/G.w)|0,idx=(x,y)=>y*G.w+x,inb=(x,y)=>x>=0&&y>=0&&x<G.w&&y<G.h;
+const T=i=>G.tiles[i];
+const cheb=(a,b)=>Math.max(Math.abs(X(a)-X(b)),Math.abs(Y(a)-Y(b)));
+let NB8=[],NB4=[];
+function buildNB(){NB8=[];NB4=[];for(let i=0;i<G.w*G.h;i++){const x=X(i),y=Y(i),a=[],b=[];for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;if(inb(x+dx,y+dy)){a.push(idx(x+dx,y+dy));if(!dx||!dy)b.push(idx(x+dx,y+dy))}}NB8.push(a);NB4.push(b)}}
+function area(i,r,fat){const o=[],x=X(i),y=Y(i);for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){if(fat&&r>=2&&Math.abs(dx)===r&&Math.abs(dy)===r)continue;if(inb(x+dx,y+dy))o.push(idx(x+dx,y+dy))}return o}
+const isW=i=>!!TER[T(i).t].w;
+function hash(i){const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)}
+
+/* bezetting */
+function rebuildOcc(){OCC=new Map();for(const u of G.units){if(!OCC.has(u.i))OCC.set(u.i,[]);OCC.get(u.i).push(u)}}
+const at=i=>OCC.get(i)||[];
+function occAdd(u){if(!OCC.has(u.i))OCC.set(u.i,[]);OCC.get(u.i).push(u)}
+function occDel(u){const a=OCC.get(u.i);if(!a)return;const k=a.indexOf(u);if(k>=0)a.splice(k,1);if(!a.length)OCC.delete(u.i)}
+const cityById=id=>G.cities.find(c=>c.id===id);
+const cityAt=i=>T(i).city>=0?cityById(T(i).city):null;
+const has=(c,b)=>c.bld.includes(b);
+const civCities=id=>G.cities.filter(c=>c.civ===id);
+const knows=(civ,t)=>!t||civ.techs.includes(t);
+const isMil=u=>!UT[u.type].civil&&!UT[u.type].sea;
+const atWar=(a,b)=>a!==b&&G.rel[a][b]==='war';
+const maxHp=u=>u.vet?4:3;
+const wonderOwner=k=>G.wonders[k]!=null?G.wonders[k]:-1;
+const civHasWonder=(id,k)=>{const c=G.wonders[k];return c!=null&&cityById(c)&&cityById(c).civ===id};
+const cityHasWonder=(c,k)=>G.wonders[k]===c.id;
+
+/* ================= kaartgeneratie ================= */
+function noise(w,h,sc){const gw=Math.ceil(w/sc)+2,gh=Math.ceil(h/sc)+2,g=[];for(let i=0;i<gw*gh;i++)g.push(Math.random());const o=new Float32Array(w*h);
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const fx=x/sc,fy=y/sc,x0=fx|0,y0=fy|0,tx=fx-x0,ty=fy-y0,sx=tx*tx*(3-2*tx),sy=ty*ty*(3-2*ty);
+    const a=g[y0*gw+x0],b=g[y0*gw+x0+1],c=g[(y0+1)*gw+x0],d=g[(y0+1)*gw+x0+1];o[y*w+x]=a+(b-a)*sx+(c-a)*sy+(a-b-c+d)*sx*sy}return o}
+function genMap(w,h){
+  const e1=noise(w,h,7),e2=noise(w,h,3),mo=noise(w,h,5),N=w*h,el=new Float32Array(N);
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x,nx=x/(w-1)*2-1,ny=y/(h-1)*2-1,f=Math.max(Math.abs(nx),Math.abs(ny));el[i]=e1[i]*.7+e2[i]*.3-Math.pow(f,3)*.6}
+  const th=[...el].sort((a,b)=>a-b)[Math.floor(N*.55)];
+  const landV=[...el].filter(v=>v>th).sort((a,b)=>a-b),qM=landV[Math.floor(landV.length*.93)],qH=landV[Math.floor(landV.length*.8)];
+  G.tiles=[];
+  for(let i=0;i<N;i++){const y=(i/w)|0,lat=Math.abs(y/(h-1)*2-1),m=mo[i];let t;
+    if(el[i]<=th)t='oceaan';else if(el[i]>=qM)t='bergen';else if(el[i]>=qH)t='heuvels';
+    else if(lat>.8)t=m>.6?'bos':'toendra';else if(lat<.5&&m<.32)t='woestijn';else if(m>.62)t='bos';else if(m>.4)t='gras';else t='vlakte';
+    G.tiles.push({t,res:null,river:false,road:false,irr:false,mine:false,owner:-1,city:-1,job:null,el:el[i]})}
+  buildNB();
+  for(let i=0;i<N;i++)if(T(i).t==='oceaan'&&NB8[i].some(j=>!isW(j)))T(i).t='kust';
+  const srcs=G.tiles.map((t,i)=>i).filter(i=>T(i).t==='heuvels'||T(i).t==='bergen');
+  for(let k=0;k<Math.round(N/80)&&srcs.length;k++){let c=pick(srcs);const seen=new Set();
+    for(let s=0;s<40;s++){if(isW(c))break;T(c).river=true;seen.add(c);const nb=NB4[c].filter(j=>!seen.has(j));if(!nb.length)break;
+      const wtr=nb.find(j=>isW(j));if(wtr!=null)break;nb.sort((a,b)=>T(a).el-T(b).el);c=Math.random()<.75?nb[0]:pick(nb)}}
+  for(let i=0;i<N;i++){if(Math.random()<.08){const ok=Object.keys(RES).filter(r=>RES[r].on.includes(T(i).t));if(ok.length)T(i).res=pick(ok)}}
 }
-async function loadGame(){
-  let raw=null;try{raw=await store.get()}catch(e){}
-  if(!raw){toast('Geen opgeslagen spel gevonden.');return}
-  try{const d=JSON.parse(raw);
-    setSize(d.cols,d.rows);S=d.S;S.wars=new Set(S.wars);S.allies=new Set(S.allies);S.battle=new Set(S.battle);S.warStart=S.warStart||{};S.selUnits=new Set();S.over=false;S.speed=0;
-    const n=S.nations[S.player];$('#flag').style.background=n.color;$('#nname').textContent=n.name;$('#overlay').classList.add('hide');
-    layout();homeView();draw();renderTop();renderPanel();toast(`Spel geladen: ${n.name}, ${dateStr()}.`)}
-  catch(e){toast('Het opgeslagen spel is beschadigd en kan niet worden geladen.')}
+function landmasses(){const lab=new Int32Array(G.w*G.h).fill(-1);let n=0;const sizes=[];
+  for(let i=0;i<G.w*G.h;i++){if(isW(i)||lab[i]>=0)continue;const q=[i];lab[i]=n;let s=0;while(q.length){const c=q.pop();s++;for(const j of NB8[c])if(!isW(j)&&lab[j]<0){lab[j]=n;q.push(j)}}sizes.push(s);n++}
+  return{lab,sizes}}
+function siteScore(i,civ){
+  if(isW(i)||T(i).t==='bergen')return-1;let s=0;
+  for(const j of area(i,2,true)){const y=tileYield(j,null);s+=y.f*2.2+y.s*1.4+y.c*1;if(T(j).owner>=0&&T(j).owner!==civ)s-=3}
+  if(T(i).river)s+=4;if(NB8[i].some(j=>isW(j)))s+=3;if(T(i).t==='heuvels')s+=2;return s}
+
+/* ================= nieuw spel ================= */
+function newGame(size,playerIdx){
+  const cfg=SIZES[size];OCC=new Map();
+  G={size,w:cfg.w,h:cfg.h,turn:0,tiles:[],units:[],cities:[],uid:1,cid:1,civs:[],rel:[],met:[],wonders:{},player:playerIdx??0,log:[],explored:[],over:false,cityNames:{}};
+  genMap(cfg.w,cfg.h);
+  const{lab,sizes}=landmasses();const big=sizes.indexOf(Math.max(...sizes));
+  let cands=G.tiles.map((t,i)=>i).filter(i=>(T(i).t==='gras'||T(i).t==='vlakte'||T(i).t==='heuvels')&&!isW(i));
+  cands.sort((a,b)=>(lab[b]===big)-(lab[a]===big)||siteScore(b,-1)-siteScore(a,-1));
+  const starts=[];let md=Math.floor(Math.min(cfg.w,cfg.h)/3);
+  while(starts.length<cfg.n&&md>2){for(const c of cands){if(starts.length>=cfg.n)break;if(starts.every(s=>cheb(s,c)>=md))starts.push(c)}if(starts.length<cfg.n){md--;starts.length=0}}
+  if(starts.length<cfg.n)return newGame(size,playerIdx);
+  const order=[...CIVS.keys()].sort(()=>Math.random()-.5).slice(0,cfg.n);
+  if(playerIdx!=null&&!order.includes(playerIdx))order[0]=playerIdx;
+  order.forEach((ci,k)=>{const d=CIVS[ci];G.civs.push({id:k,def:ci,name:d.name,color:d.color,ai:true,alive:true,gold:10,beakers:0,research:null,techs:[],tax:.6,nameIdx:0,capital:-1,warTurn:{}});G.cityNames[k]=d.cities})
+  G.rel=G.civs.map(()=>G.civs.map(()=>'peace'));G.met=G.civs.map((c,a)=>G.civs.map((d,b)=>a===b));
+  G.explored=new Array(cfg.w*cfg.h).fill(0);
+  G.civs.forEach((c,k)=>{for(const t of['kolonist','arbeider','krijger','verkenner'])makeUnit(k,t,starts[k])});
+  G.player=playerIdx!=null?order.indexOf(playerIdx):0;
+  G.civs[G.player].ai=false;
+  rebuildOcc();
+}
+function makeUnit(civ,type,i,vet){const u={id:G.uid++,civ,type,i,hp:vet?4:3,vet:!!vet,mp:UT[type].m*3,fort:false,goto:null,auto:false,work:null,skip:false,onboard:null};G.units.push(u);occAdd(u);return u}
+function killUnit(u){occDel(u);G.units=G.units.filter(x=>x!==u);if(UT[u.type].sea)for(const c of G.units.filter(x=>x.onboard===u.id))killUnit(c);if(sel===u)sel=null}
+function log(t,imp){G.log.unshift({t:G.turn,m:t});G.log.length=Math.min(G.log.length,40);if(typeof document!=='undefined'){$('#ticker').textContent=t;if(imp)toast(t)}}
+const inv=(...ids)=>ids.includes(G.player);
+function yearStr(t=G.turn){let y=t<100?-4000+40*t:t<200?(t-100)*15:1500+(t-200)*5;return y<0?`${-y} v.Chr.`:`${y} n.Chr.`}
+
+/* ================= opbrengsten en steden ================= */
+function tileYield(i,c){
+  const t=T(i),tt=TER[t.t];let f=tt.f,s=tt.s,cm=tt.c;
+  if(t.res){const r=RES[t.res];f+=r.f||0;s+=r.s||0;cm+=r.c||0}
+  if(!tt.w&&t.river)cm+=1;
+  const isCity=t.city>=0;
+  if((t.road||isCity)&&tt.road)cm+=1;
+  if((t.irr||(isCity&&tt.irr))&&tt.irr)f+=1;
+  if(t.mine&&tt.mine)s+=tt.mine;
+  if(isCity){s=Math.max(s,1);f=Math.max(f,1)}
+  if(c&&tt.w){if(has(c,'haven'))f+=1;if(cityHasWonder(c,'reus'))cm+=1}
+  return{f,s,c:cm}}
+function workable(c){const r=[];for(const j of area(c.i,2,true)){if(j===c.i)continue;const t=T(j);if(t.owner!==c.civ||t.city>=0)continue;if(at(j).some(u=>u.civ!==c.civ))continue;r.push(j)}return r}
+function assignAll(){const used=new Set();for(const c of G.cities){const cand=workable(c).filter(j=>!used.has(j));const wf=c.pop<6?3:2.2;
+  cand.sort((a,b)=>{const A=tileYield(a,c),B=tileYield(b,c);return(B.f*wf+B.s*2+B.c*1.3)-(A.f*wf+A.s*2+A.c*1.3)});
+  c.worked=cand.slice(0,c.pop);
+  let food=[c.i,...c.worked].reduce((s,j)=>s+tileYield(j,c).f,0)-c.pop*2;
+  if(food<0){const rest=cand.slice(c.pop).sort((a,b)=>tileYield(b,c).f-tileYield(a,c).f);
+    for(let k=c.worked.length-1;k>=0&&food<0&&rest.length;k--){const nf=tileYield(rest[0],c).f,of=tileYield(c.worked[k],c).f;if(nf>of){food+=nf-of;c.worked[k]=rest.shift()}}}
+  c.worked.forEach(j=>used.add(j))}}
+function cityYield(c){
+  const civ=G.civs[c.civ];let f=0,s=0,cm=0;
+  for(const j of[c.i,...c.worked]){const y=tileYield(j,c);f+=y.f;s+=y.s;cm+=y.c}
+  const sm=1+(has(c,'bibliotheek')?.5:0)+(has(c,'universiteit')?.5:0)+(cityHasWonder(c,'sterrenwacht')?1:0);
+  const gm=1+(has(c,'markt')?.5:0)+(has(c,'bank')?.5:0);
+  const sci=Math.round(cm*civ.tax*sm),gold=Math.round(cm*(1-civ.tax)*gm);
+  const content=4+(has(c,'tempel')?2:0)+(has(c,'kathedraal')?3:0)+(has(c,'markt')?1:0)+(civHasWonder(c.civ,'tuinen')?1:0);
+  const martial=Math.min(3,at(c.i).filter(u=>u.civ===c.civ&&isMil(u)).length);
+  const unhappy=Math.max(0,c.pop-content-martial);
+  return{f,s,c:cm,sci,gold,unhappy,net:f-c.pop*2}}
+const foodBox=p=>10+p*8;
+const cultureOf=c=>c.bld.reduce((s,b)=>s+(BT[b].cu||0),0)+Object.keys(G.wonders).filter(k=>G.wonders[k]===c.id).length*3;
+function borderR(c){return c.culture<10?1:c.culture<100?2:3}
+function updateBorders(){
+  const best=new Array(G.w*G.h).fill(null);
+  for(const c of G.cities){const r=borderR(c);for(const j of area(c.i,r,true)){const d=cheb(j,c.i),sc=d*1000-c.culture;if(!best[j]||sc<best[j].sc)best[j]={sc,civ:c.civ}}}
+  for(let i=0;i<G.w*G.h;i++){const t=T(i);t.owner=t.city>=0?cityById(t.city).civ:best[i]?best[i].civ:-1}
+  assignAll();
+}
+function canFound(i,civ){if(isW(i)||T(i).city>=0)return false;if(T(i).owner>=0&&T(i).owner!==civ)return false;return!G.cities.some(c=>cheb(c.i,i)<3)}
+function foundCity(civ,i){
+  const C=G.civs[civ],names=G.cityNames[civ];const name=C.nameIdx<names.length?names[C.nameIdx]:names[C.nameIdx%names.length]+' '+(Math.floor(C.nameIdx/names.length)+1);C.nameIdx++;
+  const c={id:G.cid++,name,civ,i,pop:1,food:0,prod:0,build:null,bld:[],culture:0,worked:[],disorder:false,founded:G.turn,orig:civ};
+  G.cities.push(c);T(i).city=c.id;T(i).road=true;T(i).mine=false;if(C.capital<0)C.capital=c.id;
+  updateBorders();c.build=C.ai?aiChooseBuild(c):{k:'u',id:bestDefender(C)};
+  if(inv(civ))log(`${name} is gesticht.`);return c}
+function bldAvail(c,b){const civ=G.civs[c.civ];if(has(c,b)||!knows(civ,BT[b].t))return false;if(BT[b].coast&&!NB8[c.i].some(isW))return false;return true}
+function wonderAvail(c,k){return wonderOwner(k)<0&&knows(G.civs[c.civ],WT[k].t)}
+function unitAvail(c,u){const civ=G.civs[c.civ];if(!knows(civ,UT[u].t))return false;if(UT[u].sea&&!NB8[c.i].some(isW))return false;const x=obsolete(civ,u);return!x}
+function obsolete(civ,u){const up={krijger:'speerman',speerman:'pikenier',pikenier:'musketier',boog:'zwaard',ruiter:'ridder',ridder:'cavalerie',katapult:'kanon',galei:'karveel'};const n=up[u];return n&&knows(civ,UT[n].t)}
+function bestDefender(civ){return Object.keys(UT).filter(k=>isMil({type:k})&&knows(civ,UT[k].t)).sort((a,b)=>UT[b].d-UT[a].d||UT[a].c-UT[b].c)[0]}
+function bestAttacker(civ){return Object.keys(UT).filter(k=>isMil({type:k})&&knows(civ,UT[k].t)).sort((a,b)=>(UT[b].a*(1+UT[b].m*.15))-(UT[a].a*(1+UT[a].m*.15))||UT[a].c-UT[b].c)[0]}
+function buildCost(b){return b.k==='u'?UT[b.id].c:b.k==='b'?BT[b.id].c:WT[b.id].c}
+function buildName(b){return b?b.k==='u'?UT[b.id].n:b.k==='b'?BT[b.id].n:WT[b.id].n:'niets'}
+function cityTurn(c){
+  const civ=G.civs[c.civ],y=cityYield(c);
+  c.disorder=y.unhappy*2>c.pop;
+  if(c.disorder){if(inv(c.civ))log(`Onrust in ${c.name}! Bouw een tempel of zet troepen in de stad.`,true);return}
+  c.food+=y.net;const box=foodBox(c.pop);
+  if(c.food>=box){if(c.pop<8||has(c,'aquaduct')){c.pop++;c.food=has(c,'graanschuur')?Math.floor(box/2):0}else c.food=box}
+  else if(c.food<0){if(c.pop>1){c.pop--;if(inv(c.civ))log(`Hongersnood in ${c.name}.`,true)}c.food=0}
+  c.prod+=y.s;civ.gold+=y.gold;civ.beakers+=y.sci;c.culture+=cultureOf(c);
+  if(c.build){
+    if(c.build.k==='w'&&wonderOwner(c.build.id)>=0){if(inv(c.civ))log(`${WT[c.build.id].n} is elders al gebouwd. ${c.name} moet iets anders kiezen.`,true);c.build=civ.ai?aiChooseBuild(c):null;return}
+    if(c.build.k==='b'&&has(c,c.build.id)){c.build=civ.ai?aiChooseBuild(c):null;return}
+    const cost=buildCost(c.build);
+    if(c.prod>=cost){
+      if(c.build.k==='u'){if(UT[c.build.id].settle&&c.pop<2)return;makeUnit(c.civ,c.build.id,c.i,has(c,'kazerne')&&isMil({type:c.build.id}));if(UT[c.build.id].settle)c.pop--;
+        c.prod-=cost;if(civ.ai)c.build=aiChooseBuild(c)}
+      else if(c.build.k==='b'){c.bld.push(c.build.id);c.prod-=cost;if(inv(c.civ))log(`${c.name} heeft ${BT[c.build.id].n} gebouwd.`,true);c.build=civ.ai?aiChooseBuild(c):null}
+      else{G.wonders[c.build.id]=c.id;c.prod-=cost;log(`${civ.name} voltooit ${WT[c.build.id].n} in ${c.name}!`,true);
+        if(c.build.id==='academie'){const av=availTechs(civ);if(av.length)learn(civ,pick(av))}
+        if(c.build.id==='expo'){endGame(c.civ===G.player,c.civ===G.player?'Je rijk heeft de Wereldtentoonstelling voltooid.':`${civ.name} heeft de Wereldtentoonstelling voltooid.`)}
+        c.build=civ.ai?aiChooseBuild(c):null}
+    }
+  }else c.prod=Math.min(c.prod,200);
+}
+function techCost(civ){return Math.round(24*Math.pow(1+.5*civ.techs.length,1.35))}
+function availTechs(civ){return Object.keys(TT).filter(k=>!civ.techs.includes(k)&&TT[k].r.every(r=>civ.techs.includes(r)))}
+function learn(civ,k){civ.techs.push(k);if(inv(civ.id))log(`Ontdekt: ${TT[k].n}.`,true);if(civ.research===k)civ.research=null}
+function civTurn(civ){
+  const cs=civCities(civ.id);
+  const up=cs.reduce((s,c)=>s+c.bld.reduce((t,b)=>t+BT[b].up,0),0);civ.gold-=up;
+  if(civ.gold<0){const c=cs.find(c=>c.bld.length);if(c){const b=c.bld.pop();civ.gold+=BT[b].c;if(inv(civ.id))log(`Geldtekort: ${BT[b].n} in ${c.name} is verkocht.`,true)}else civ.gold=0}
+  if(!civ.research&&civ.ai)civ.research=aiPickTech(civ);
+  if(civ.research&&civ.beakers>=techCost(civ)){civ.beakers-=techCost(civ);learn(civ,civ.research);if(civ.ai)civ.research=aiPickTech(civ)}
 }
 
+/* ================= beweging en gevecht ================= */
+function cargo(s){return G.units.filter(x=>x.onboard===s.id)}
+function moveCost(u,a,b){if(UT[u.type].sea)return 3;const ta=T(a),tb=T(b);if((ta.road||ta.city>=0)&&(tb.road||tb.city>=0))return 1;return(TER[tb.t].mc||1)*3}
+function canEnter(u,j,attack){
+  const t=T(j),ut=UT[u.type],w=!!TER[t.t].w;
+  const city=t.city>=0?cityById(t.city):null;
+  if(ut.sea){if(!w&&!(city&&city.civ===u.civ))return false}
+  else if(w){const ship=at(j).find(s=>s.civ===u.civ&&UT[s.type].sea&&cargo(s).length<UT[s.type].cap);if(!ship)return false}
+  const others=at(j).filter(o=>o.civ!==u.civ);
+  if(others.length)return!!attack&&atWar(u.civ,others[0].civ)&&!ut.civil&&ut.a>0&&(!!ut.sea===w);
+  if(city&&city.civ!==u.civ)return!!attack&&atWar(u.civ,city.civ)&&!ut.civil&&!ut.sea;
+  if(t.owner>=0&&t.owner!==u.civ&&!atWar(u.civ,t.owner))return false;
+  return true}
+function setPos(u,j){occDel(u);u.i=j;occAdd(u)}
+function moveUnit(u,j){
+  const ut=UT[u.type];
+  if(ut.sea){const cg=cargo(u);setPos(u,j);cg.forEach(c=>setPos(c,j))}
+  else{if(isW(j)){const ship=at(j).find(s=>s.civ===u.civ&&UT[s.type].sea&&cargo(s).length<UT[s.type].cap);u.onboard=ship?ship.id:null}else u.onboard=null;setPos(u,j)}
+  if(u.civ===G.player)reveal(j,sight(u));
+  meetAround(u.civ,j);
+}
+function sight(u){return UT[u.type].sight||(T(u.i).t==='heuvels'||T(u.i).t==='bergen'?2:1)}
+function reveal(i,r){for(const j of area(i,r,false))G.explored[j]=1}
+function meetAround(civ,i){for(const j of area(i,2,false)){for(const o of at(j))if(o.civ!==civ)meet(civ,o.civ);const c=cityAt(j);if(c&&c.civ!==civ)meet(civ,c.civ)}}
+function meet(a,b){if(G.met[a][b])return;G.met[a][b]=G.met[b][a]=true;if(inv(a,b))log(`Eerste contact met ${G.civs[a===G.player?b:a].name}.`,true)}
+function strength(u,role,tile,vsLand){const ut=UT[u.type];let s=role==='a'?ut.a:ut.d;
+  if(role==='d'){const t=T(tile);let m=1+(TER[t.t].def||0);if(t.river)m+=.25;if(u.fort)m+=.25;
+    const c=cityAt(tile);if(c){m+=.5;if(vsLand&&(has(c,'muren')||civHasWonder(c.civ,'wachtmuur')))m+=1}s*=m}
+  return Math.max(s,.1)}
+function bestDef(list,tile,vsLand){return list.slice().sort((a,b)=>strength(b,'d',tile,vsLand)*b.hp-strength(a,'d',tile,vsLand)*a.hp)[0]}
+function winProb(a,d,tile){const A=strength(a,'a',tile),D=strength(d,'d',tile,!UT[a.type].sea),p=A/(A+D),m={};
+  const f=(x,y)=>{if(y<=0)return 1;if(x<=0)return 0;const k=x*10+y;if(k in m)return m[k];return m[k]=p*f(x,y-1)+(1-p)*f(x-1,y)};return f(a.hp,d.hp)}
+function fight(a,d,tile){
+  const A=strength(a,'a',tile),D=strength(d,'d',tile,!UT[a.type].sea),p=A/(A+D);
+  while(a.hp>0&&d.hp>0){if(Math.random()<p)d.hp--;else a.hp--}
+  const win=a.hp>0,W=win?a:d,Lo=win?d:a;
+  if(!W.vet&&Math.random()<.3){W.vet=true;W.hp++}
+  if(inv(a.civ,d.civ)){const mine=W.civ===G.player;log(`${UT[a.type].n} (${G.civs[a.civ].name}) valt ${UT[d.type].n} (${G.civs[d.civ].name}) aan: ${mine?'gewonnen':'verloren'}.`,true)}
+  killUnit(Lo);return win}
+function captureCity(c,civ){
+  const prev=c.civ;c.civ=civ;c.pop--;c.build=null;c.prod=0;
+  for(const u of at(c.i).filter(u=>u.civ===prev))killUnit(u);
+  if(c.pop<1){log(`${c.name} is verwoest.`,true);T(c.i).city=-1;G.cities=G.cities.filter(x=>x!==c);for(const k in G.wonders)if(G.wonders[k]===c.id)G.wonders[k]=-2}
+  else{c.bld=c.bld.filter(()=>Math.random()<.5);log(`${G.civs[civ].name} verovert ${c.name}.`,true);if(G.civs[civ].ai)c.build=aiChooseBuild(c)}
+  const P=G.civs[prev];if(P.capital===c.id){const cs=civCities(prev).sort((a,b)=>b.pop-a.pop);P.capital=cs.length?cs[0].id:-1}
+  updateBorders();checkAlive(prev);
+}
+function checkAlive(id){const c=G.civs[id];if(!c.alive)return;if(civCities(id).length||G.units.some(u=>u.civ===id&&UT[u.type].settle))return;
+  c.alive=false;for(const u of G.units.filter(u=>u.civ===id))killUnit(u);log(`${c.name} is van de kaart geveegd.`,true);if(id===G.player)endGame(false,'Je rijk is ten onder gegaan.')}
+function tryMove(u,j){
+  if(u.mp<=0||!NB8[u.i].includes(j))return false;
+  const ut=UT[u.type],t=T(j),w=!!TER[t.t].w,city=cityAt(j),enemies=at(j).filter(o=>o.civ!==u.civ),hostileCity=city&&city.civ!==u.civ;
+  if(enemies.length||hostileCity){
+    const ec=enemies.length?enemies[0].civ:city.civ;
+    if(!atWar(u.civ,ec)){if(u.civ===G.player)toast(`Je bent niet in oorlog met ${G.civs[ec].name}.`);return false}
+    if(ut.civil||ut.a===0){if(u.civ===G.player)toast('Deze eenheid kan niet aanvallen.');return false}
+    if(!!ut.sea!==w){if(u.civ===G.player)toast(ut.sea?'Schepen vallen alleen eenheden op zee aan.':'Landeenheden kunnen niet op zee aanvallen.');return false}
+    const fighters=enemies.filter(o=>UT[o.type].d>0||UT[o.type].a>0);
+    u.fort=false;u.goto=null;
+    if(fighters.length){const d=bestDef(fighters,j,!ut.sea);const won=fight(u,d,j);u.mp=0;if(!won)return true}
+    const left=at(j).filter(o=>o.civ!==u.civ);
+    if(left.some(o=>UT[o.type].d>0||UT[o.type].a>0))return true;
+    for(const o of left){if(UT[o.type].work){occDel(o);o.civ=u.civ;o.work=null;o.goto=null;o.auto=false;occAdd(o)}else killUnit(o)}
+    if(!ut.sea){moveUnit(u,j);u.mp=0;if(hostileCity&&cityById(city.id))captureCity(city,u.civ)}
+    return true}
+  if(!canEnter(u,j,false))return false;
+  const cost=moveCost(u,u.i,j);moveUnit(u,j);u.mp=Math.max(0,u.mp-cost);u.fort=false;u.work=null;return true}
+
+/* padzoeken */
+class Heap{constructor(){this.a=[]}get size(){return this.a.length}push(v,p){const a=this.a;a.push([v,p]);let i=a.length-1;while(i>0){const q=(i-1)>>1;if(a[q][1]<=a[i][1])break;[a[q],a[i]]=[a[i],a[q]];i=q}}
+  pop(){const a=this.a,t=a[0],l=a.pop();if(a.length){a[0]=l;let i=0;for(;;){const L=2*i+1,R=L+1;let m=i;if(L<a.length&&a[L][1]<a[m][1])m=L;if(R<a.length&&a[R][1]<a[m][1])m=R;if(m===i)break;[a[m],a[i]]=[a[i],a[m]];i=m}}return t}}
+function dij(u,target,maxCost=1e9,attackOK=false){
+  const n=G.w*G.h,dist=new Float64Array(n).fill(Infinity),par=new Int32Array(n).fill(-1),h=new Heap();dist[u.i]=0;h.push(u.i,0);
+  while(h.size){const[c,d]=h.pop();if(d>dist[c])continue;if(c===target||d>maxCost)break;
+    if(c!==u.i&&at(c).some(o=>o.civ!==u.civ))continue;
+    for(const j of NB8[c]){if(!canEnter(u,j,attackOK&&j===target))continue;const nd=d+moveCost(u,c,j);if(nd<dist[j]){dist[j]=nd;par[j]=c;h.push(j,nd)}}}
+  return{dist,par}}
+function pathFrom(par,s,g){const p=[];let c=g;while(c!==s){if(c<0)return null;p.push(c);c=par[c]}return p.reverse()}
+function findPath(u,target){const{par,dist}=dij(u,target,1e9,true);return dist[target]<Infinity?pathFrom(par,u.i,target):null}
+function execGoto(u){let guard=0;while(u.goto!=null&&u.mp>0&&guard++<20){if(u.i===u.goto){u.goto=null;break}
+  const p=findPath(u,u.goto);if(!p||!p.length){u.goto=null;if(u.civ===G.player)toast(`${UT[u.type].n}: route geblokkeerd.`);break}
+  const before=u.i;if(!tryMove(u,p[0])){u.goto=null;break}if(!G.units.includes(u))return;if(u.i===before)break}
+  if(u.goto===u.i)u.goto=null}
+
+/* ================= werkers ================= */
+function jobTime(i,task){const t=T(i).t;if(task==='road')return t==='bergen'?4:t==='bos'||t==='heuvels'?3:2;if(task==='irr')return 4;return t==='bergen'?8:t==='heuvels'?6:5}
+function canIrr(i){const t=T(i);if(!TER[t.t].irr||t.irr||t.city>=0)return false;if(t.river)return true;return NB4[i].some(j=>isW(j)||T(j).irr||T(j).city>=0||T(j).river)}
+function canMine(i){const t=T(i);return!!TER[t.t].mine&&!t.mine&&t.city<0}
+function canRoad(i){const t=T(i);return!TER[t.t].w&&!t.road&&t.city<0}
+function startWork(u,task){const t=T(u.i);if(!t.job||t.job.task!==task)t.job={task,left:jobTime(u.i,task)};u.work=task;u.mp=0;u.goto=null}
+function workTurn(){
+  const byTile=new Map();for(const u of G.units)if(u.work){if(!byTile.has(u.i))byTile.set(u.i,[]);byTile.get(u.i).push(u)}
+  for(const[i,ws]of byTile){const t=T(i);for(const u of ws){if(!t.job||t.job.task!==u.work){u.work=null;continue}t.job.left--}
+    if(t.job&&t.job.left<=0){const k=t.job.task;if(k==='road')t.road=true;if(k==='irr'){t.irr=true;t.mine=false}if(k==='mine'){t.mine=true;t.irr=false}t.job=null;ws.forEach(u=>u.work=null)}}
+}
+
+/* ================= beurt ================= */
+function endTurn(){
+  if(G.over)return;
+  for(const civ of G.civs)if(civ.alive&&civ.ai)aiTurn(civ);
+  workTurn();
+  for(const c of G.cities.slice())cityTurn(c);
+  for(const civ of G.civs)if(civ.alive)civTurn(civ);
+  updateBorders();
+  for(const u of G.units){const ut=UT[u.type];const c=cityAt(u.i);
+    if(u.mp===ut.m*3||u.fort){if(u.hp<maxHp(u))u.hp=Math.min(maxHp(u),u.hp+(c&&has(c,'kazerne')?maxHp(u):c?2:1))}
+    u.mp=ut.m*3;u.skip=false}
+  G.turn++;
+  for(const u of G.units)meetAround(u.civ,u.i);
+  for(const civ of G.civs)if(civ.alive){for(const c of civCities(civ.id))meetAround(civ.id,c.i)}
+  G.civs.forEach(c=>checkAlive(c.id));
+  if(!G.over)checkVictory();
+  if(!G.over)playerAutos();
+}
+function score(id){const cs=civCities(id);return cs.reduce((s,c)=>s+c.pop,0)+G.civs[id].techs.length*2+Object.values(G.wonders).filter(w=>cityById(w)&&cityById(w).civ===id).length*5+Math.floor(cs.reduce((s,c)=>s+c.culture,0)/50)}
+function checkVictory(){
+  const rivals=G.civs.filter(c=>c.alive&&c.id!==G.player);
+  if(!rivals.length)return endGame(true,'Alle andere rijken zijn veroverd.');
+  if(G.turn>=300){const ranks=G.civs.filter(c=>c.alive).sort((a,b)=>score(b.id)-score(a.id));const win=ranks[0].id===G.player;
+    endGame(win,win?`Het jaar ${yearStr()} is aangebroken en jouw rijk heeft de hoogste score.`:`Het jaar ${yearStr()} is aangebroken. ${ranks[0].name} heeft de hoogste score.`)}
+}
+/* ================= AI ================= */
+const AI_TECH=['brons','ceremonie','aardewerk','alfabet','schrift','metselen','krijgscode','munten','ijzer','wiskunde','filosofie','feodalisme','bouwkunde','astronomie','theologie','universiteit','paard','ridderschap','bankwezen','buskruit','zeevaart','navigatie','metallurgie','methode','stoom','industrie'];
+function aiPickTech(civ){const av=availTechs(civ);if(!av.length)return null;if(Math.random()<.7){for(const k of AI_TECH)if(av.includes(k))return k}return pick(av)}
+function milPower(id){return G.units.filter(u=>u.civ===id&&isMil(u)).reduce((s,u)=>s+(UT[u.type].a+UT[u.type].d)*u.hp/3,0)}
+function enemiesOf(id){return G.civs.filter(c=>c.alive&&atWar(id,c.id)).map(c=>c.id)}
+function nearCiv(a,b){const A=civCities(a),B=civCities(b);return A.some(x=>B.some(y=>cheb(x.i,y.i)<=12))}
+function declareWar(a,b){if(atWar(a,b)||a===b)return;G.rel[a][b]=G.rel[b][a]='war';G.civs[a].warTurn[b]=G.civs[b].warTurn[a]=G.turn;
+  log(`${G.civs[a].name} verklaart ${G.civs[b].name} de oorlog!`,inv(a,b));
+  for(const u of G.units)if((u.civ===a||u.civ===b)){const t=T(u.i);if(t.owner>=0&&t.owner!==u.civ&&!atWar(u.civ,t.owner)){}}}
+function makePeace(a,b){G.rel[a][b]=G.rel[b][a]='peace';log(`Vrede tussen ${G.civs[a].name} en ${G.civs[b].name}.`,inv(a,b));
+  for(const u of G.units.slice()){const t=T(u.i);if(t.owner>=0&&t.owner!==u.civ&&!atWar(u.civ,t.owner)&&!isW(u.i)){const home=civCities(u.civ)[0];if(home){setPos(u,home.i);u.goto=null}else killUnit(u)}}}
+function aiDiplomacy(civ){
+  if(G.turn%6!==civ.id%6)return;
+  for(const o of G.civs){if(!o.alive||o.id===civ.id||!G.met[civ.id][o.id])continue;
+    if(!atWar(civ.id,o.id)){if(G.turn>50&&!enemiesOf(civ.id).length&&nearCiv(civ.id,o.id)&&milPower(civ.id)>milPower(o.id)*1.6+4&&Math.random()<.22)declareWar(civ.id,o.id)}
+    else if(o.ai&&G.turn-(civ.warTurn[o.id]||0)>20&&(milPower(civ.id)<milPower(o.id)*.8||Math.random()<.08))makePeace(civ.id,o.id)}}
+function goodSites(civ,from,maxCost){
+  const u={civ:civ.id,type:'kolonist',i:from};const{dist}=dij(u,-1,maxCost);const res=[];
+  for(let i=0;i<G.w*G.h;i++){if(dist[i]===Infinity||!canFound(i,civ.id))continue;const s=siteScore(i,civ.id);if(s>20)res.push({i,s,d:dist[i]})}return res}
+function aiChooseBuild(c){
+  const civ=G.civs[c.civ],war=enemiesOf(civ.id).length>0;
+  const defs=at(c.i).filter(u=>u.civ===c.civ&&isMil(u)).length,want=(war||c.pop>=6||civ.capital===c.id)?2:1;
+  if(defs<want)return{k:'u',id:bestDefender(civ)};
+  const y=cityYield(c),cs=civCities(civ.id);
+  if(y.unhappy*2>=c.pop-1){if(bldAvail(c,'tempel'))return{k:'b',id:'tempel'};if(bldAvail(c,'kathedraal'))return{k:'b',id:'kathedraal'};if(bldAvail(c,'markt'))return{k:'b',id:'markt'}}
+  const settlers=G.units.filter(u=>u.civ===civ.id&&UT[u.type].settle).length+cs.filter(x=>x.build&&x.build.id==='kolonist').length;
+  if(c.pop>=2&&settlers<2&&cs.length<(G.size==='groot'?14:9)&&(civ.siteTurn===undefined||G.turn-civ.siteTurn>12||civ.hasSites)){
+    if(civ.siteTurn===undefined||G.turn-civ.siteTurn>12){civ.siteTurn=G.turn;civ.hasSites=goodSites(civ,c.i,60).length>0}
+    if(civ.hasSites)return{k:'u',id:'kolonist'}}
+  const workers=G.units.filter(u=>u.civ===civ.id&&UT[u.type].work).length+cs.filter(x=>x.build&&x.build.id==='arbeider').length;
+  if(workers<Math.ceil(cs.length*.8))return{k:'u',id:'arbeider'};
+  const mil=G.units.filter(u=>u.civ===civ.id&&isMil(u)).length;
+  if(war&&mil<cs.length*4&&Math.random()<.6)return{k:'u',id:bestAttacker(civ)};
+  if(mil<cs.length*2&&Math.random()<.35)return{k:'u',id:Math.random()<.5?bestAttacker(civ):bestDefender(civ)};
+  if(y.s>=5&&Math.random()<.3){const ws=Object.keys(WT).filter(k=>wonderAvail(c,k)&&!cs.some(x=>x!==c&&x.build&&x.build.id===k));if(ws.length)return{k:'w',id:ws.includes('expo')?'expo':pick(ws)}}
+  for(const b of['graanschuur','tempel','bibliotheek','markt','kazerne','haven','aquaduct','universiteit','kathedraal','bank','muren']){
+    if(!bldAvail(c,b))continue;if(b==='aquaduct'&&c.pop<6)continue;if(b==='graanschuur'&&c.pop<3)continue;if(b==='kazerne'&&!war&&Math.random()<.6)continue;return{k:'b',id:b}}
+  return mil<cs.length*(war?4:2.5)?{k:'u',id:bestAttacker(civ)}:null}
+function moveToward(u,target,attackOK){
+  if(u.i===target)return true;const p=findPath(u,target);if(!p||!p.length)return false;
+  for(const j of p){if(u.mp<=0)break;if(j===target&&!attackOK&&at(j).some(o=>o.civ!==u.civ))break;const b=u.i;if(!tryMove(u,j)||!G.units.includes(u)||u.i===b)break}return true}
+function aiSettler(u,civ){
+  if(G.turn<2&&!civCities(civ.id).length&&canFound(u.i,civ.id)){foundCity(civ.id,u.i);killUnit(u);return}
+  if(u.target==null||!canFound(u.target,civ.id)||G.claim&&G.claim[u.target]!==u.id){
+    const s=goodSites(civ,u.i,60).filter(x=>!(G.claim&&G.claim[x.i]&&G.claim[x.i]!==u.id));
+    if(!s.length){if(canFound(u.i,civ.id)&&siteScore(u.i,civ.id)>15){foundCity(civ.id,u.i);killUnit(u)}return}
+    s.sort((a,b)=>(b.s-b.d*.6)-(a.s-a.d*.6));u.target=s[0].i;G.claim=G.claim||{};G.claim[u.target]=u.id}
+  if(u.i===u.target){foundCity(civ.id,u.i);delete G.claim[u.target];killUnit(u);return}
+  moveToward(u,u.target);
+  if(G.units.includes(u)&&u.i===u.target&&canFound(u.i,civ.id)){foundCity(civ.id,u.i);delete G.claim[u.target];killUnit(u)}}
+function workerJob(u){
+  const civ=u.civ,{dist}=dij(u,-1,30);let best=null,bv=-1e9;const claimed=new Set(G.units.filter(w=>w!==u&&w.civ===civ&&(w.work||w.jobAt!=null)).map(w=>w.work?w.i:w.jobAt));
+  const worked=new Set();for(const c of civCities(civ))c.worked.forEach(j=>worked.add(j));
+  for(let i=0;i<G.w*G.h;i++){if(dist[i]===Infinity||T(i).owner!==civ||claimed.has(i)||isW(i))continue;const t=T(i);let task=null,v=0;
+    const near=G.cities.some(c=>c.civ===civ&&cheb(c.i,i)<=2);if(!near)continue;
+    if(canMine(i)&&(t.t==='heuvels'||t.t==='bergen')){task='mine';v=3}
+    else if(canIrr(i)&&t.t!=='heuvels'){task='irr';v=t.t==='gras'||t.t==='vlakte'?3.2:2}
+    else if(canRoad(i)&&worked.has(i)&&TER[t.t].road){task='road';v=1.6}
+    if(!task)continue;if(worked.has(i))v+=1.5;v-=dist[i]/3*.35;if(v>bv){bv=v;best={i,task}}}
+  return best}
+function aiWorker(u){
+  if(u.work)return;
+  if(u.jobAt==null||T(u.jobAt).owner!==u.civ){const j=workerJob(u);if(!j){u.jobAt=null;return}u.jobAt=j.i;u.jobTask=j.task}
+  if(u.i!==u.jobAt)moveToward(u,u.jobAt);
+  if(G.units.includes(u)&&u.i===u.jobAt){const k=u.jobTask;if((k==='mine'&&canMine(u.i))||(k==='irr'&&canIrr(u.i))||(k==='road'&&canRoad(u.i)))startWork(u,k);u.jobAt=null}}
+function aiMilitary(u,civ){
+  const cs=civCities(civ.id),here=cityAt(u.i),en=enemiesOf(civ.id);
+  if(here&&here.civ===civ.id){const want=(en.length||here.pop>=6||civ.capital===here.id)?2:1;
+    const fortd=at(u.i).filter(x=>x.civ===civ.id&&isMil(x)&&x.role==='def').length;
+    if(u.role==='def'||fortd<want){u.role='def';u.fort=true;return}}
+  if(u.role==='def'&&!(here&&here.civ===civ.id))u.role=null;
+  const needy=cs.filter(c=>at(c.i).filter(x=>x.civ===civ.id&&isMil(x)).length===0);
+  if(needy.length&&UT[u.type].d>=UT[u.type].a){const c=needy.sort((a,b)=>cheb(a.i,u.i)-cheb(b.i,u.i))[0];if(moveToward(u,c.i))return}
+  for(const j of NB8[u.i]){const es=at(j).filter(o=>atWar(civ.id,o.civ));if(!es.length||isW(j))continue;const d=bestDef(es,j,true);if(winProb(u,d,j)>.62&&u.hp>=2){tryMove(u,j);return}}
+  if(en.length&&u.hp>=maxHp(u)-1&&UT[u.type].a>=UT[u.type].d){
+    const targets=G.cities.filter(c=>en.includes(c.civ));if(!targets.length){u.fort=true;return}
+    const{dist}=dij(u,-1,90,false);let best=null,bd=1e9;
+    for(const c of targets){let m=1e9;for(const j of NB8[c.i])if(dist[j]<m)m=dist[j];if(m<bd){bd=m;best=c}}
+    if(!best){u.fort=true;return}
+    if(cheb(u.i,best.i)===1){const ds=at(best.i).filter(o=>o.civ!==civ.id);
+      if(!ds.length){tryMove(u,best.i);return}
+      const d=bestDef(ds,best.i,true),p=winProb(u,d,best.i);
+      const stack=G.units.filter(x=>x.civ===civ.id&&isMil(x)&&cheb(x.i,best.i)===1).length;
+      if(p>.5||(p>.25&&stack>=4)){tryMove(u,best.i);return}u.fort=true;return}
+    let adj=null,ad=1e9;for(const j of NB8[best.i])if(dist[j]<ad&&!at(j).some(o=>o.civ!==civ.id)){ad=dist[j];adj=j}
+    if(adj!=null)moveToward(u,adj);return}
+  if(!here||here.civ!==civ.id){const c=cs.sort((a,b)=>cheb(a.i,u.i)-cheb(b.i,u.i))[0];if(c)moveToward(u,c.i);else u.fort=true}else u.fort=true}
+function aiTurn(civ){
+  aiDiplomacy(civ);
+  if(!civ.research)civ.research=aiPickTech(civ);
+  for(const c of civCities(civ.id)){if(!c.build)c.build=aiChooseBuild(c);
+    if(enemiesOf(civ.id).length&&at(c.i).filter(u=>u.civ===c.civ&&isMil(u)).length===0&&(!c.build||c.build.k!=='u')){c.build={k:'u',id:bestDefender(civ)}}
+    if(civ.gold>80&&c.build&&c.build.k==='u'&&isMil({type:c.build.id})&&at(c.i).filter(u=>u.civ===c.civ&&isMil(u)).length===0){const cost=(buildCost(c.build)-c.prod)*2;if(cost>0&&cost<civ.gold){civ.gold-=cost;c.prod=buildCost(c.build)}}}
+  for(const u of G.units.filter(x=>x.civ===civ.id)){if(!G.units.includes(u)||u.mp<=0)continue;const ut=UT[u.type];
+    try{if(ut.settle)aiSettler(u,civ);else if(ut.work)aiWorker(u);else if(ut.sea)u.fort=true;else if(u.type==='verkenner')aiScout(u);else aiMilitary(u,civ)}catch(e){console.error(e)}}
+}
+function aiScout(u){if(!u.target||u.i===u.target||Math.random()<.1){const{dist}=dij(u,-1,40);const opts=[];for(let i=0;i<dist.length;i++)if(dist[i]<Infinity&&dist[i]>6)opts.push(i);u.target=opts.length?pick(opts):null}if(u.target!=null)moveToward(u,u.target)}
+function exploreTarget(u){const{dist}=dij(u,-1,200);let best=-1,bd=1e9;for(let i=0;i<dist.length;i++){if(dist[i]===Infinity||!G.explored[i])continue;if(!area(i,1,false).some(j=>!G.explored[j]))continue;if(dist[i]<bd&&i!==u.i){bd=dist[i];best=i}}return best}
+function playerAutos(){
+  rebuildOcc();
+  for(const u of G.units.filter(x=>x.civ===G.player)){if(!G.units.includes(u))continue;
+    if(u.auto&&UT[u.type].work){aiWorker(u);continue}
+    if(u.auto==='explore'){const t=exploreTarget(u);if(t<0){u.auto=false;log(`${UT[u.type].n}: niets meer te verkennen.`)}else{u.goto=t;execGoto(u);u.goto=null}continue}
+    if(u.goto!=null)execGoto(u)}
+}
 /* ================= tekenen ================= */
-function layout(){
-  const w=$('#mapwrap'),W=w.clientWidth,H=w.clientHeight,dpr=window.devicePixelRatio||1;
+let sel=null,chooseOpen=false,pendingDisband=null;
+const cv=$('#map'),ctx=cv.getContext('2d');
+const cx=i=>(X(i)-Y(i))*TW/2+L.ox,cy=i=>(X(i)+Y(i))*TH/2+L.oy;
+function layout(){const w=$('#mapwrap'),W=w.clientWidth,H=w.clientHeight,dpr=window.devicePixelRatio||1;
   cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
-  const R=Math.min(W/((COLS+.5)*S3),(H-4)/(ROWS*1.5+.5));
-  L={W,H,R,dpr,ox:(W-(COLS+.5)*S3*R)/2,oy:(H-(ROWS*1.5+.5)*R)/2,cx:[],cy:[],edge:[]};
-  for(let i=0;i<N;i++){const c=i%COLS,r=(i/COLS)|0;L.cx[i]=L.ox+S3*R*(c+.5+.5*(r&1));L.cy[i]=L.oy+R+1.5*R*r}
-  for(let i=0;i<N;i++){L.edge[i]=[];for(let k=0;k<6;k++){const a=Math.PI/3*k,mx=L.cx[i]+Math.cos(a)*S3*R,my=L.cy[i]+Math.sin(a)*S3*R;let f=-1;for(const j of NB[i])if(Math.hypot(L.cx[j]-mx,L.cy[j]-my)<R*.5)f=j;L.edge[i][k]=f}}
-  clampV();
-}
-function clampV(){V.z=Math.max(1,Math.min(4,V.z));V.x=Math.min(0,Math.max(L.W-L.W*V.z,V.x));V.y=Math.min(0,Math.max(L.H-L.H*V.z,V.y))}
-function zoomAt(z,sx,sy){const wx=(sx-V.x)/V.z,wy=(sy-V.y)/V.z;V.z=Math.max(1,Math.min(4,z));V.x=sx-wx*V.z;V.y=sy-wy*V.z;clampV();draw()}
-function homeView(){if(!S||S.player<0){V={z:1,x:0,y:0};return}const c=capProv(S.nations[S.player]).i;V.z=S.size==='groot'?1.9:1.2;V.x=L.W/2-L.cx[c]*V.z;V.y=L.H/2-L.cy[c]*V.z;clampV()}
-function hexPath(i,r){ctx.beginPath();for(let k=0;k<6;k++){const a=Math.PI/3*k-Math.PI/6,x=L.cx[i]+r*Math.cos(a),y=L.cy[i]+r*Math.sin(a);k?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.closePath()}
-function corner(i,k){const a=Math.PI/3*k-Math.PI/6;return[L.cx[i]+L.R*Math.cos(a),L.cy[i]+L.R*Math.sin(a)]}
-function star(x,y,r,K){ctx.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr=k%2?r*.45:r;ctx.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a))}ctx.closePath();ctx.fillStyle='#f1efe6';ctx.fill();ctx.strokeStyle='#1e2a2b';ctx.lineWidth=K;ctx.stroke()}
-function arrow(x1,y1,x2,y2,col,w){const a=Math.atan2(y2-y1,x2-x1),h=L.R*.28;ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2-Math.cos(a)*h*.6,y2-Math.sin(a)*h*.6);ctx.stroke();ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-h*Math.cos(a-.5),y2-h*Math.sin(a-.5));ctx.lineTo(x2-h*Math.cos(a+.5),y2-h*Math.sin(a+.5));ctx.closePath();ctx.fill()}
-const hash=i=>{let x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)};
+  L={W,H,dpr,ox:G.h*TW/2+TW,oy:TH*1.5,mw:(G.w+G.h)*TW/2+TW*2,mh:(G.w+G.h)*TH/2+TH*3};clampV()}
+function clampV(){V.z=Math.max(.35,Math.min(2.5,V.z));V.x=Math.min(L.W*.5,Math.max(L.W*.5-L.mw*V.z,V.x));V.y=Math.min(L.H*.5,Math.max(L.H*.5-L.mh*V.z,V.y))}
+function centerOn(i,z){if(z)V.z=z;V.x=L.W/2-cx(i)*V.z;V.y=L.H/2-cy(i)*V.z;clampV()}
+function onScreen(i){const sx=cx(i)*V.z+V.x,sy=cy(i)*V.z+V.y;return sx>30&&sx<L.W-30&&sy>30&&sy<L.H-30}
+function dia(x,y,s=1){ctx.beginPath();ctx.moveTo(x,y-TH/2*s);ctx.lineTo(x+TW/2*s,y);ctx.lineTo(x,y+TH/2*s);ctx.lineTo(x-TW/2*s,y);ctx.closePath()}
 function shade(hex,f){const n=parseInt(hex.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;if(f<0){r*=1+f;g*=1+f;b*=1+f}else{r+=(255-r)*f;g+=(255-g)*f;b+=(255-b)*f}return`rgb(${r|0},${g|0},${b|0})`}
-const TERRAIN={vlak:'#8d9862',bos:'#5d7444',berg:'#8a7e66'};
-const SEA=['#4a7c86','#3b6b77','#305d69','#29505c','#22444f'];
-function seaDepth(){const d=new Array(N).fill(99),q=[];for(let i=0;i<N;i++)if(S.provs[i].land){d[i]=0;q.push(i)}let h=0;while(h<q.length){const c=q[h++];for(const j of NB[c])if(d[j]>d[c]+1){d[j]=d[c]+1;q.push(j)}}return d}
-function natoBox(x,y,w,h,col,mine){
-  ctx.fillStyle='#e6dfc9';ctx.fillRect(x,y,w,h);
-  ctx.fillStyle=col;ctx.fillRect(x,y,w,h*.3);
-  ctx.strokeStyle='#1a1a17';ctx.lineWidth=Math.max(.8,w*.05);
-  ctx.beginPath();ctx.moveTo(x+w*.12,y+h*.38);ctx.lineTo(x+w*.88,y+h*.92);ctx.moveTo(x+w*.88,y+h*.38);ctx.lineTo(x+w*.12,y+h*.92);ctx.stroke();
-  ctx.lineWidth=Math.max(1,w*.06);ctx.strokeStyle=mine?'#e2c27c':'#151515';ctx.strokeRect(x,y,w,h);
-}
-function ship(x,y,w,h,col,mine){
-  ctx.beginPath();ctx.moveTo(x,y+h*.45);ctx.lineTo(x+w,y+h*.45);ctx.lineTo(x+w*.86,y+h);ctx.lineTo(x+w*.1,y+h);ctx.closePath();
-  ctx.fillStyle=col;ctx.fill();ctx.lineWidth=Math.max(1,w*.05);ctx.strokeStyle=mine?'#e2c27c':'#121212';ctx.stroke();
-  ctx.fillStyle=shade(col,-.35);ctx.fillRect(x+w*.3,y+h*.2,w*.32,h*.25);ctx.fillRect(x+w*.42,y,w*.07,h*.22);
-  ctx.strokeRect(x+w*.3,y+h*.2,w*.32,h*.25);
-}
-function tabNum(x,y,n,s){const w=s*(n>9?1.25:.9),h=s;ctx.fillStyle='#14181a';ctx.fillRect(x,y,w,h);ctx.strokeStyle='#7d6642';ctx.lineWidth=Math.max(.6,s*.07);ctx.strokeRect(x,y,w,h);
-  ctx.fillStyle='#e2c27c';ctx.font=`700 ${Math.round(s*.85)}px 'Barlow Condensed',sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n,x+w/2,y+h*.55)}
+function computeVis(){const v=new Uint8Array(G.w*G.h);
+  for(const u of G.units)if(u.civ===G.player)for(const j of area(u.i,sight(u),false)){v[j]=1;G.explored[j]=1}
+  for(const c of G.cities)if(c.civ===G.player)for(const j of area(c.i,Math.max(2,borderR(c)),false)){v[j]=1;G.explored[j]=1}
+  return v}
 function draw(){
-  if(!S||!L.R)return;const R=L.R,K=1/Math.sqrt(V.z),d=L.dpr;
-  if(!L.depth||L.depthFor!==S.provs)L.depth=seaDepth(),L.depthFor=S.provs;
-  ctx.setTransform(d,0,0,d,0,0);ctx.fillStyle='#1d3a45';ctx.fillRect(0,0,L.W,L.H);
-  ctx.setTransform(d*V.z,0,0,d*V.z,d*V.x,d*V.y);
-  /* zee */
-  for(const p of S.provs){if(p.land)continue;const dep=Math.min(4,L.depth[p.i]-1);hexPath(p.i,R+.6);ctx.fillStyle=SEA[dep];ctx.fill();
-    const x=L.cx[p.i],y=L.cy[p.i],hh=hash(p.i);ctx.strokeStyle='rgba(200,225,225,.10)';ctx.lineWidth=K;
-    for(let k=0;k<2;k++){const ox=(hash(p.i*3+k)-.5)*R,oy=(hash(p.i*7+k)-.5)*R;ctx.beginPath();ctx.arc(x+ox,y+oy,R*.18,Math.PI*1.1,Math.PI*1.9);ctx.stroke()}}
-  /* land: terrein + natiekleur */
-  for(const p of S.provs){if(!p.land)continue;const i=p.i,x=L.cx[i],y=L.cy[i],hh=hash(i);
-    hexPath(i,R+.6);ctx.fillStyle=shade(TERRAIN[p.terrain],(hh-.5)*.16);ctx.fill();
-    ctx.globalAlpha=.52;ctx.fillStyle=S.nations[p.owner].color;ctx.fill();ctx.globalAlpha=1;
-    if(p.owner!==p.core){ctx.save();hexPath(i,R);ctx.clip();ctx.globalAlpha=.55;ctx.strokeStyle=S.nations[p.core].color;ctx.lineWidth=R*.14;for(let t=-3;t<=3;t++){ctx.beginPath();ctx.moveTo(x-R+t*R*.5,y+R);ctx.lineTo(x+R+t*R*.5,y-R);ctx.stroke()}ctx.restore();ctx.globalAlpha=1}
-    if(p.terrain==='berg'){for(const[dx,s]of[[-.28,.34],[.12,.42],[.42,.26]]){const bx=x+dx*R,by=y-R*.2;ctx.beginPath();ctx.moveTo(bx-s*R*.8,by);ctx.lineTo(bx,by-s*R);ctx.lineTo(bx,by);ctx.closePath();ctx.fillStyle='rgba(255,248,230,.32)';ctx.fill();
-      ctx.beginPath();ctx.moveTo(bx,by-s*R);ctx.lineTo(bx+s*R*.8,by);ctx.lineTo(bx,by);ctx.closePath();ctx.fillStyle='rgba(30,22,12,.35)';ctx.fill()}}
-    else if(p.terrain==='bos'){for(let k=0;k<6;k++){const tx=x+(hash(i*11+k)-.5)*R*1.1,ty=y-R*.15+(hash(i*13+k)-.5)*R*.7;ctx.beginPath();ctx.arc(tx,ty,R*.11,0,7);ctx.fillStyle='rgba(22,40,18,.42)';ctx.fill()}}
-    else if(hh>.6){ctx.strokeStyle='rgba(40,36,20,.18)';ctx.lineWidth=K;for(let k=0;k<3;k++){ctx.beginPath();ctx.moveTo(x-R*.4,y-R*.3+k*R*.14);ctx.lineTo(x+R*.1,y-R*.3+k*R*.14);ctx.stroke()}}
-    if(p.dock){const ax=x-R*.48,ay=y+R*.48;ctx.strokeStyle='#1a1a17';ctx.lineWidth=1.4*K;ctx.beginPath();ctx.moveTo(ax,ay-R*.22);ctx.lineTo(ax,ay+R*.08);ctx.moveTo(ax-R*.12,ay-R*.02);ctx.arc(ax,ay-R*.02,R*.12,Math.PI,0,true);ctx.moveTo(ax-R*.08,ay-R*.16);ctx.lineTo(ax+R*.08,ay-R*.16);ctx.stroke()}
+  if(!G||!L.W)return;const d=L.dpr,z=V.z;
+  ctx.setTransform(d,0,0,d,0,0);ctx.fillStyle='#0c0906';ctx.fillRect(0,0,L.W,L.H);
+  ctx.setTransform(d*z,0,0,d*z,d*V.x,d*V.y);
+  const vis=computeVis();L.vis=vis;
+  const x0=-V.x/z-TW,x1=(L.W-V.x)/z+TW,y0=-V.y/z-TH*2,y1=(L.H-V.y)/z+TH*2;
+  const order=[];for(let s=0;s<G.w+G.h-1;s++)for(let x=Math.max(0,s-G.h+1);x<=Math.min(G.w-1,s);x++){const i=idx(x,s-x),px=cx(i),py=cy(i);if(px<x0||px>x1||py<y0||py>y1)continue;order.push(i)}
+  for(const i of order){if(!G.explored[i])continue;const t=T(i),tt=TER[t.t],x=cx(i),y=cy(i),h=hash(i);
+    dia(x,y,1.02);ctx.fillStyle=shade(tt.col,(h-.5)*.14);ctx.fill();
+    if(tt.w){ctx.strokeStyle='rgba(220,240,255,.16)';ctx.lineWidth=1;for(let k=0;k<2;k++){const ox=(hash(i*3+k)-.5)*TW*.5,oy=(hash(i*5+k)-.5)*TH*.5;ctx.beginPath();ctx.moveTo(x+ox-6,y+oy);ctx.quadraticCurveTo(x+ox-3,y+oy-2,x+ox,y+oy);ctx.quadraticCurveTo(x+ox+3,y+oy+2,x+ox+6,y+oy);ctx.stroke()}}
+    else if(t.t==='gras'||t.t==='vlakte'){ctx.strokeStyle='rgba(40,60,15,.25)';ctx.lineWidth=1;for(let k=0;k<4;k++){const ox=(hash(i*7+k)-.5)*TW*.6,oy=(hash(i*9+k)-.5)*TH*.55;ctx.beginPath();ctx.moveTo(ox+x,oy+y);ctx.lineTo(ox+x+1,oy+y-3);ctx.stroke()}}
+    else if(t.t==='woestijn'){ctx.fillStyle='rgba(150,110,40,.3)';for(let k=0;k<6;k++){ctx.fillRect(x+(hash(i*7+k)-.5)*TW*.6,y+(hash(i*9+k)-.5)*TH*.55,1.5,1.5)}}
+    else if(t.t==='toendra'){ctx.fillStyle='rgba(255,255,255,.35)';for(let k=0;k<3;k++){ctx.beginPath();ctx.ellipse(x+(hash(i*7+k)-.5)*TW*.5,y+(hash(i*9+k)-.5)*TH*.4,5,2,0,0,7);ctx.fill()}}
+    if(t.irr){ctx.strokeStyle='rgba(120,190,230,.75)';ctx.lineWidth=1.2;for(let k=-1;k<=1;k++){ctx.beginPath();ctx.moveTo(x-TW*.22+k*7,y-TH*.11+k*3.5);ctx.lineTo(x+TW*.04+k*7,y+TH*.03+k*3.5);ctx.stroke()}}
   }
-  /* grenzen */
-  const seg=(i,k)=>{const[a,b]=corner(i,k),[c,e]=corner(i,(k+1)%6);ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,e);ctx.stroke()};
-  for(const p of S.provs){if(!p.land)continue;for(let k=0;k<6;k++){const j=L.edge[p.i][k];
-    if(j<0||!S.provs[j].land){ctx.strokeStyle='rgba(205,225,215,.35)';ctx.lineWidth=4*K;seg(p.i,k);ctx.strokeStyle='#1b2a26';ctx.lineWidth=1.4*K;seg(p.i,k)}
-    else if(S.provs[j].owner===p.owner&&j>p.i){ctx.strokeStyle='rgba(20,18,10,.22)';ctx.lineWidth=.7*K;seg(p.i,k)}}}
-  for(const p of S.provs){if(!p.land)continue;for(let k=0;k<6;k++){const j=L.edge[p.i][k];if(j<0||!S.provs[j].land||S.provs[j].owner===p.owner||j<p.i)continue;
-    ctx.strokeStyle='#14120e';ctx.lineWidth=3.2*K;seg(p.i,k);ctx.strokeStyle='rgba(240,225,190,.35)';ctx.lineWidth=.8*K;seg(p.i,k)}}
-  /* hoofdsteden */
-  for(const n of S.nations)if(n.alive){const p=S.provs[n.cap];if(!p.land||p.owner!==n.id)continue;const x=L.cx[p.i]+R*.42,y=L.cy[p.i]-R*.42,r=R*.27;
-    ctx.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr=k%2?r*.42:r;ctx.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a))}ctx.closePath();
-    ctx.fillStyle='#e4c26a';ctx.fill();ctx.strokeStyle='#2a1f0c';ctx.lineWidth=1.2*K;ctx.stroke()}
-  /* selectie */
-  if(S.sel!=null){const sel=S.units.filter(u=>S.selUnits.has(u.id));
-    if(sel.length)for(const j of NB[S.sel])if(sel.some(u=>canEnterU(u,j))){hexPath(j,R*.9);ctx.fillStyle='rgba(226,194,124,.22)';ctx.fill();ctx.strokeStyle='rgba(226,194,124,.6)';ctx.lineWidth=1.2*K;ctx.stroke()}
-    hexPath(S.sel,R*.9);ctx.strokeStyle='#e2c27c';ctx.lineWidth=3*K;ctx.stroke()}
-  /* bewegingen */
-  for(const u of S.units){
-    if(u.move){const f=1-u.move.left/u.move.total,t=u.move.to;arrow(L.cx[u.prov],L.cy[u.prov],L.cx[u.prov]+(L.cx[t]-L.cx[u.prov])*(.35+.5*f),L.cy[u.prov]+(L.cy[t]-L.cy[u.prov])*(.35+.5*f),'rgba(238,224,180,.9)',2.2*K)}
-    if(u.attack!=null){const t=u.attack;arrow(L.cx[u.prov],L.cy[u.prov],L.cx[u.prov]+(L.cx[t]-L.cx[u.prov])*.78,L.cy[u.prov]+(L.cy[t]-L.cy[u.prov])*.78,'#c8321f',3.2*K)}}
-  /* eenheden */
-  const groups={};for(const u of S.units){const k=u.prov+'|'+u.owner+'|'+u.kind;(groups[k]=groups[k]||[]).push(u)}
-  const per={};
-  for(const k in groups){const[pi,ow]=k.split('|').map(Number),kind=k.split('|')[2],g=groups[k],off=(per[pi]=(per[pi]||0)+1)-1;
-    const w=R*.95,h=R*.6,x=L.cx[pi]-w/2+off*R*.25,y=L.cy[pi]-h/2+R*.12+off*R*.25,mine=ow===S.player,col=S.nations[ow].color;
-    ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(x+R*.06,y+R*.06,w,h);
-    if(kind==='fleet')ship(x,y,w,h,col,mine);else natoBox(x,y,w,h,col,mine);
-    tabNum(x+w-R*.1,y-R*.18,g.length,R*.36);
-    const mo=kind==='fleet'?50:maxOrg(S.nations[ow]),org=g.reduce((s,u)=>s+Math.max(0,u.org),0)/g.length/mo;
-    ctx.fillStyle='#0d1011';ctx.fillRect(x,y+h+1.5,w,3.2);ctx.fillStyle=org>.6?'#7fb25a':org>.3?'#d9aa3c':'#d0432c';ctx.fillRect(x,y+h+1.5,w*org,3.2)}
-  /* gevechten */
-  for(const b of S.battle){const x=L.cx[b]-R*.48,y=L.cy[b]-R*.42,r=R*.2;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fillStyle='#a82a1c';ctx.fill();ctx.strokeStyle='#f0dcb0';ctx.lineWidth=1.3*K;ctx.stroke();
-    ctx.beginPath();ctx.moveTo(x-r*.5,y-r*.5);ctx.lineTo(x+r*.5,y+r*.5);ctx.moveTo(x+r*.5,y-r*.5);ctx.lineTo(x-r*.5,y+r*.5);ctx.stroke()}
-  /* vignet */
-  ctx.setTransform(d,0,0,d,0,0);const g=ctx.createRadialGradient(L.W/2,L.H/2,Math.min(L.W,L.H)*.35,L.W/2,L.H/2,Math.max(L.W,L.H)*.75);
-  g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.5)');ctx.fillStyle=g;ctx.fillRect(0,0,L.W,L.H);
+  ctx.lineCap='round';
+  for(const i of order){if(!G.explored[i])continue;const t=T(i);if(!t.river)continue;ctx.strokeStyle='#3f8fc4';ctx.lineWidth=3.2;
+    let any=false;for(const j of NB4[i]){if(T(j).river||isW(j)){any=true;ctx.beginPath();ctx.moveTo(cx(i),cy(i));ctx.lineTo((cx(i)+cx(j))/2,(cy(i)+cy(j))/2);ctx.stroke()}}
+    if(!any){ctx.beginPath();ctx.arc(cx(i),cy(i),2,0,7);ctx.stroke()}}
+  for(const i of order){if(!G.explored[i])continue;const t=T(i);if(!(t.road||t.city>=0))continue;ctx.strokeStyle='rgba(112,80,40,.85)';ctx.lineWidth=1.8;
+    for(const j of NB8[i])if(j>i&&(T(j).road||T(j).city>=0)){ctx.beginPath();ctx.moveTo(cx(i),cy(i));ctx.lineTo(cx(j),cy(j));ctx.stroke()}}
+  ctx.lineCap='butt';
+  const edges=[[1,0,'r','b'],[0,1,'b','l'],[-1,0,'l','t'],[0,-1,'t','r']];
+  const cor=(x,y,k,s)=>k==='t'?[x,y-TH/2*s]:k==='r'?[x+TW/2*s,y]:k==='b'?[x,y+TH/2*s]:[x-TW/2*s,y];
+  for(const i of order){if(!G.explored[i])continue;const o=T(i).owner;if(o<0)continue;const x=cx(i),y=cy(i);
+    for(const[dx,dy,a,b]of edges){const nx=X(i)+dx,ny=Y(i)+dy;const no=inb(nx,ny)?T(idx(nx,ny)).owner:-1;if(no===o)continue;
+      const[ax,ay]=cor(x,y,a,.9),[bx,by]=cor(x,y,b,.9);ctx.strokeStyle=G.civs[o].color;ctx.lineWidth=2.6;ctx.setLineDash([5,3]);ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(bx,by);ctx.stroke();ctx.setLineDash([])}}
+  if(sel&&G.units.includes(sel)){const x=cx(sel.i),y=cy(sel.i);ctx.strokeStyle='#ffe27a';ctx.lineWidth=2.5;ctx.beginPath();ctx.ellipse(x,y,TW*.36,TH*.36,0,0,7);ctx.stroke();
+    if(sel.goto!=null){const p=findPath(sel,sel.goto);if(p){ctx.fillStyle='#ffe27a';for(const j of p){ctx.beginPath();ctx.arc(cx(j),cy(j),3,0,7);ctx.fill()}}}}
+  for(const i of order){if(!G.explored[i])continue;const t=T(i),x=cx(i),y=cy(i);
+    if(t.t==='bos')for(let k=0;k<5;k++){const tx=x+(hash(i*7+k)-.5)*TW*.55,ty=y+(hash(i*11+k)-.5)*TH*.5;ctx.fillStyle='#4a3420';ctx.fillRect(tx-1,ty-2,2,4);
+      ctx.beginPath();ctx.moveTo(tx-6,ty-1);ctx.lineTo(tx,ty-14);ctx.lineTo(tx+6,ty-1);ctx.closePath();ctx.fillStyle='#2f5a22';ctx.fill();ctx.beginPath();ctx.moveTo(tx-6,ty-1);ctx.lineTo(tx,ty-14);ctx.lineTo(tx,ty-1);ctx.closePath();ctx.fillStyle='#3f7430';ctx.fill()}
+    if(t.t==='heuvels')for(const[ox,oy,s]of[[-10,2,1],[8,-2,.85]]){ctx.beginPath();ctx.ellipse(x+ox,y+oy,13*s,10*s,0,Math.PI,0);ctx.fillStyle='#a69a5a';ctx.fill();ctx.beginPath();ctx.ellipse(x+ox+3*s,y+oy,8*s,8*s,0,Math.PI*1.5,0);ctx.lineTo(x+ox+3*s,y+oy);ctx.fillStyle='rgba(60,50,20,.3)';ctx.fill()}
+    if(t.t==='bergen')for(const[ox,oy,s]of[[-9,4,1],[9,2,.8],[0,-2,1.15]]){const px=x+ox,py=y+oy,hh=22*s,w=13*s;
+      ctx.beginPath();ctx.moveTo(px-w,py);ctx.lineTo(px,py-hh);ctx.lineTo(px,py);ctx.closePath();ctx.fillStyle='#a49a8c';ctx.fill();
+      ctx.beginPath();ctx.moveTo(px,py-hh);ctx.lineTo(px+w,py);ctx.lineTo(px,py);ctx.closePath();ctx.fillStyle='#6d6458';ctx.fill();
+      ctx.beginPath();ctx.moveTo(px-w*.3,py-hh*.7);ctx.lineTo(px,py-hh);ctx.lineTo(px+w*.3,py-hh*.7);ctx.closePath();ctx.fillStyle='#f4f2ec';ctx.fill()}
+    if(t.res&&t.city<0){ctx.font='13px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(RES[t.res].e,x-TW*.2,y+TH*.12)}
+    if(t.mine){ctx.fillStyle='#2a1d10';ctx.beginPath();ctx.arc(x+TW*.2,y+TH*.15,4,Math.PI,0);ctx.fill();ctx.fillRect(x+TW*.2-4,y+TH*.15,8,1.5)}
+    const c=t.city>=0?cityById(t.city):null;if(c)drawCity(c,x,y);
+    if(vis[i]){const us=at(i).filter(u=>u.onboard==null);if(us.length)drawUnits(us,x,y)}}
+  for(const i of order){if(!G.explored[i]){dia(cx(i),cy(i),1.03);ctx.fillStyle='#0c0906';ctx.fill()}else if(!vis[i]){dia(cx(i),cy(i),1.02);ctx.fillStyle='rgba(10,6,2,.42)';ctx.fill()}}
+  for(const c of G.cities){const i=c.i;if(!G.explored[i])continue;const x=cx(i),y=cy(i);if(x<x0||x>x1||y<y0||y>y1)continue;cityLabel(c,x,y)}
 }
+function drawCity(c,x,y){const col=G.civs[c.civ].color,n=Math.min(6,2+Math.ceil(c.pop/2));
+  const spots=[[-12,-3],[6,-7],[-3,5],[13,3],[-16,6],[2,-12]];
+  if(has(c,'muren')){ctx.strokeStyle='#9a8f7c';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(x,y,TW*.42,TH*.42,0,0,7);ctx.stroke()}
+  for(let k=0;k<n;k++){const[ox,oy]=spots[k],hx=x+ox,hy=y+oy;
+    ctx.fillStyle='#d8c8a2';ctx.fillRect(hx-5,hy-6,10,7);ctx.fillStyle='#b5a27a';ctx.fillRect(hx,hy-6,5,7);
+    ctx.beginPath();ctx.moveTo(hx-6,hy-6);ctx.lineTo(hx,hy-12);ctx.lineTo(hx+6,hy-6);ctx.closePath();ctx.fillStyle=col;ctx.fill();ctx.strokeStyle='rgba(0,0,0,.5)';ctx.lineWidth=.8;ctx.stroke()}
+  if(G.civs[c.civ].capital===c.id){ctx.fillStyle='#5a4630';ctx.fillRect(x-1,y-26,2,14);ctx.fillStyle=col;ctx.fillRect(x+1,y-26,9,6)}}
+function cityLabel(c,x,y){ctx.font="700 11px 'Alegreya Sans',sans-serif";const nm=c.name,w=ctx.measureText(nm).width+26,ly=y+TH*.42;
+  ctx.fillStyle='rgba(20,12,4,.82)';ctx.fillRect(x-w/2,ly,w,15);ctx.fillStyle=G.civs[c.civ].color;ctx.fillRect(x-w/2,ly,16,15);
+  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(c.pop,x-w/2+8,ly+8);ctx.fillStyle=c.disorder?'#ff8a70':'#f3e6c4';ctx.fillText(nm,x+8,ly+8);
+  if(c.civ===G.player&&!c.build){ctx.fillStyle='#ffe27a';ctx.fillText('!',x+w/2+5,ly+8)}}
+function drawUnits(us,x,y){
+  const top=us.includes(sel)?sel:us.slice().sort((a,b)=>(UT[b.type].d*b.hp)-(UT[a.type].d*a.hp))[0],col=G.civs[top.civ].color,ux=x,uy=y-TH*.32;
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(ux,y+2,11,5,0,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(ux,uy,11.5,0,7);ctx.fillStyle=col;ctx.fill();ctx.lineWidth=top.civ===G.player?2:1.2;ctx.strokeStyle=top.civ===G.player?'#fff6d8':'#1a1008';ctx.stroke();
+  if(top.fort){ctx.strokeStyle='#e8dcc0';ctx.lineWidth=1.5;ctx.setLineDash([3,2]);ctx.beginPath();ctx.arc(ux,uy,14.5,0,7);ctx.stroke();ctx.setLineDash([])}
+  ctx.font='14px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(UT[top.type].e,ux,uy+1);
+  const hp=top.hp/maxHp(top);ctx.fillStyle='#1a1008';ctx.fillRect(ux-10,uy-17,20,3.5);ctx.fillStyle=hp>.6?'#69b04a':hp>.3?'#d9a23a':'#d24a32';ctx.fillRect(ux-10,uy-17,20*hp,3.5);
+  const n=us.length+us.reduce((s,u)=>s+(UT[u.type].sea?cargo(u).length:0),0);
+  if(n>1){ctx.fillStyle='#1a1008';ctx.fillRect(ux+7,uy+4,11,10);ctx.fillStyle='#ffe27a';ctx.font="700 9px 'Alegreya Sans',sans-serif";ctx.fillText(n,ux+12.5,uy+9.5)}
+  if(top.work){ctx.fillStyle='#ffe27a';ctx.font="700 10px 'Alegreya Sans',sans-serif";ctx.fillText('…',ux-12,uy+9)}}
 
 /* ================= interface ================= */
-const fmt=x=>Math.floor(x).toLocaleString('nl-NL');
-function dateStr(){return new Date(1936,0,1+S.day).toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'})}
+let tt;function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),3000)}
+const bar=(f,cls='')=>`<div class="bar ${cls}"><i style="width:${Math.max(0,Math.min(1,f))*100}%"></i></div>`;
+const yl=y=>`<span class="yld">🍞${y.f} ⚙️${y.s} 💰${y.c}</span>`;
+function totals(id){let sci=0,gold=0;for(const c of civCities(id)){if(c.disorder)continue;const y=cityYield(c);sci+=y.sci;gold+=y.gold}const up=civCities(id).reduce((s,c)=>s+c.bld.reduce((t,b)=>t+BT[b].up,0),0);return{sci,gold,up,net:gold-up}}
 function renderTop(){
-  if(!S)return;$('#date').textContent=dateStr();
-  document.querySelectorAll('#speed button').forEach(b=>b.classList.toggle('on',+b.dataset.s===S.speed));
-  if(S.player<0)return;const n=S.nations[S.player];stats(n);
-  const lu=S.units.filter(u=>u.owner===n.id&&u.kind==='land').length,fu=S.units.filter(u=>u.owner===n.id&&u.kind==='fleet').length;
-  $('#res').innerHTML=ico('civ','Civiele fabrieken',n.civ)+ico('mil','Militaire fabrieken',n.milF)+ico('dock','Scheepswerven',n.docks)+ico('equip','Uitrusting',fmt(n.equip))+ico('mp','Mankracht',fmt(n.mp)+'k')+ico('div','Divisies',lu)+ico('fleet','Vloten',fu)+ico('air','Vliegtuigen',fmt(n.planes));
+  if(!G||G.player<0)return;const civ=G.civs[G.player],t=totals(G.player);
+  $('#year').textContent=yearStr();$('#gold').textContent=`💰${civ.gold} (${t.net>=0?'+':''}${t.net})`;
+  const left=civ.research?Math.max(1,Math.ceil((techCost(civ)-civ.beakers)/Math.max(1,t.sci))):null;
+  $('#sci').textContent=civ.research?`🔬${left}`:'🔬 —';
+  const need=G.units.some(u=>u.civ===G.player&&needsOrders(u));$('#endBtn').classList.toggle('pulse',!need);
 }
-const IC={civ:'<path d="M1 15V7l4 2.2V7l4 2.2V2h3.5v13z"/>',mil:'<path d="M1 11.5h9l2.5-2.5h2.5v3H12l-1.5 1.5H1z"/><circle cx="4" cy="13.5" r="1.5"/><circle cx="8" cy="13.5" r="1.5"/>',dock:'<path d="M7 1h2v2.2a2 2 0 11-2 0zM7 6h2v7.8a4 4 0 003.3-2.6l-1.3-.4 3-2 .5 3.6-1.2-.5A6 6 0 012 12l-1.2.5.5-3.6 3 2-1.3.4A4 4 0 007 13.8z"/>',equip:'<path d="M1 5l7-3 7 3v7l-7 3-7-3zm2 1.3v4.9l4 1.7V8zm10 0L9 8v4.9l4-1.7z"/>',mp:'<circle cx="8" cy="4" r="3"/><path d="M2 15.5c0-4.2 2.6-6.5 6-6.5s6 2.3 6 6.5z"/>',div:'<path d="M1 3h14v10H1zm1.5 1.5v7h11v-7zm.5.6l10 5.8v-.1L3.1 5.1zm10 0L3 10.9z"/>',fleet:'<path d="M.5 9.5h15l-2.5 5H3zM5 9.5V6h5.5v3.5zM7 6V2.5h1.2V6z"/>',air:'<path d="M8 .5l1.2 5.3L15 8.6v1.6L9 8.9l-.4 3.7 2 1.4v1.3L8 14.5l-2.6.8V14l2-1.4L7 8.9 1 10.2V8.6l5.8-2.8z"/>'};
-const ico=(k,t,v)=>`<div title="${t}" aria-label="${t}: ${v}"><svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true">${IC[k]}</svg><b>${v}</b></div>`;
-const bar=f=>`<div class="bar"><i style="width:${Math.max(0,Math.min(1,f))*100}%"></i></div>`;
-const terr={vlak:'vlakte',bos:'bos',berg:'bergen'};
-function unitRow(u){const o=S.nations[u.owner],mine=o.id===S.player,mo=u.kind==='fleet'?50:maxOrg(o);
-  const what=u.kind==='fleet'?'Vloot':S.provs[u.prov].land?'Divisie':'Divisie aan boord';
-  return`<div class="row"><div class="grow"><span class="sw" style="background:${o.color}"></span>${mine?what:o.name+', '+what.toLowerCase()} · sterkte ${Math.round(u.str)}% · organisatie ${Math.max(0,Math.round(u.org))}/${mo}${u.attack!=null?' · <b>valt aan</b>':u.move?' · onderweg':''}</div></div>`}
-function pLeger(n){
-  const my=S.units.filter(u=>u.owner===n.id&&u.kind==='land'),ok=n.equip>=100&&n.mp>=3;
-  let h=`<div class="row"><div class="grow"><b>${my.length}</b> divisies${n.train.length?`, ${n.train.length} in opleiding`:''}<div class="hint">Een divisie kost 100 uitrusting en 3k mankracht en is na 20 dagen klaar.</div>${n.train.map(t=>bar(1-t.left/20)).join('')}</div><button class="act" data-a="train" ${ok?'':'disabled'}>Train divisie</button></div>`;
-  h+=`<div class="row"><div class="grow">Automatisch front<div class="hint">Divisies en vloten handelen zelf: grens bezetten, aanvallen, invasies over zee.</div></div><button class="act ${S.auto?'on':'alt'}" data-a="auto">${S.auto?'Aan':'Uit'}</button></div>`;
-  if(S.sel==null)return h+`<p class="hint">Tik een gebied met jouw eenheden om ze te selecteren. Tik daarna een doel: een buurgebied, een ver eigen gebied, of een vijandelijke kust om over zee te landen. Knijp of gebruik + en − om te zoomen, sleep om te schuiven.</p>`;
-  const p=S.provs[S.sel];
-  if(p.land)h+=`<h3>${p.name}${S.nations[p.core].cap===p.i&&p.owner===p.core?' ★':''}</h3><div class="hint"><span class="sw" style="background:${S.nations[p.owner].color}"></span>${S.nations[p.owner].name}${p.owner!==p.core?` (bezet, van ${S.nations[p.core].name})`:''} · ${terr[p.terrain]}${coastal(p.i)?' · kust':''} · ${p.civ} civiel, ${p.mil} militair, ${p.dock} werf</div>`;
-  else h+=`<h3>Open zee</h3><div class="hint">Vloten varen hier. Divisies kunnen hier varen zolang je een vloot hebt en er geen vijandelijke vloot ligt.</div>`;
-  for(const u of S.units.filter(u=>u.prov===p.i))h+=unitRow(u);
-  if(S.selUnits.size)h+=`<div class="row"><div class="hint grow">${S.selUnits.size} geselecteerd. Tik nogmaals op dit gebied om te deselecteren.</div><button class="act alt" data-a="stop">Stop orders</button></div>`;
-  return h;
-}
-function pInd(n){
-  stats(n);const cg=Math.ceil(n.civ*n.consumer),cap=Math.max(0,n.civ-cg)*(1+.1*n.tech.ind+n.bonus.build),full=n.build.length>=5,coast=S.provs.some(p=>p.land&&p.owner===n.id&&coastal(p.i));
-  let h=`<div class="row"><div class="grow"><b>${n.civ}</b> civiele fabrieken<div class="hint">${cg} gaan naar consumptiegoederen. Bouwcapaciteit ${cap.toFixed(1)} per dag, max 15 per project.</div></div></div>
-  <div class="row"><div class="grow"><b>${n.milF}</b> militaire fabrieken<div class="hint">Leveren ${(n.milF*.9*(1+.1*n.tech.ind+n.bonus.prod)).toFixed(1)} per dag, waarvan ${Math.round(n.airShare*100)}% naar vliegtuigen.</div></div></div>
-  <div class="seg">${['civ','mil','dock'].map(t=>`<button class="act" data-a="build" data-v="${t}" ${full||(t==='dock'&&!coast)?'disabled':''}>${BNAME[t]} (${BCOST[t]})</button>`).join('')}</div>`;
-  if(!n.build.length)h+=`<p class="hint">Geen bouwprojecten. Civiele fabrieken versnellen de bouw, militaire fabrieken leveren uitrusting en vliegtuigen, werven bouwen vloten.</p>`;
-  n.build.forEach((b,k)=>h+=`<div class="row"><div class="grow">${BNAME[b.type]} ${bar(b.progress/b.cost)}</div><button class="act alt" data-a="unbuild" data-v="${k}" aria-label="Annuleer">✕</button></div>`);
-  return h;
-}
-function pMarine(n){
-  const my=S.units.filter(u=>u.owner===n.id&&u.kind==='fleet'),np=n.docks*(1+.1*n.tech.ind+.15*n.tech.nav);
-  let h=`<div class="row"><div class="grow"><b>${n.docks}</b> scheepswerven<div class="hint">${np.toFixed(1)} scheepsbouwpunten per dag. Een vloot kost 150.</div>${n.ships.map(s=>bar(s.progress/s.cost)).join('')}</div><button class="act" data-a="ship" ${n.docks&&n.ships.length<4?'':'disabled'}>Bouw vloot</button></div>`;
-  if(!n.docks)h+=`<p class="hint">Bouw eerst een scheepswerf in een kustgebied via Industrie.</p>`;
-  h+=`<h3>${my.length} ${my.length===1?'vloot':'vloten'}</h3>`;
-  if(!my.length)h+=`<p class="hint">Zonder vloot kunnen je divisies niet over zee.</p>`;
-  my.forEach(u=>h+=unitRow(u));
-  h+=`<p class="hint">Vloten bevechten vijandelijke vloten op hetzelfde zeegebied. Divisies aan boord worden vernietigd als een vijandelijke vloot hen onderschept, en vallen aan land aan met halve kracht. Beschadigde vloten herstellen langs je eigen kust.</p>`;
-  return h;
-}
-function pLucht(n){
-  const prod=n.milF*.9*(1+.1*n.tech.ind+n.bonus.prod)*n.airShare*.3*(1+.15*n.tech.air+n.bonus.air),en=enemiesOf(n.id);
-  let h=`<div class="row"><div class="grow"><b>${fmt(n.planes)}</b> vliegtuigen, +${prod.toFixed(1)} per dag<div class="hint">Deel van de militaire productie voor vliegtuigen</div><div class="seg">${[0,.15,.3,.5].map(v=>`<button class="act ${n.airShare===v?'':'alt'}" data-a="share" data-v="${v}">${v*100}%</button>`).join('')}</div></div></div><h3>Missie</h3>`;
-  for(const k in MISSION)h+=`<div class="row"><div class="grow"><b>${MISSION[k][0]}</b><div class="hint">${MISSION[k][1]}</div></div><button class="act ${n.airMission===k?'on':'alt'}" data-a="mission" data-v="${k}">${n.airMission===k?'Actief':'Kies'}</button></div>`;
-  if(n.airMission==='bomb'){h+=`<h3>Doelwit</h3>`;if(!en.length)h+=`<p class="hint">Je bent niet in oorlog. Bommenwerpers wachten op een doelwit.</p>`;
-    en.forEach(e=>h+=`<div class="row"><div class="grow"><span class="sw" style="background:${S.nations[e].color}"></span>${S.nations[e].name}</div><button class="act ${n.bombTarget===e?'on':'alt'}" data-a="bomb" data-v="${e}">${n.bombTarget===e?'Doelwit':'Kies'}</button></div>`)}
-  if(en.length){h+=`<h3>Luchtoverwicht</h3>`;en.forEach(e=>{const s=airSup(n.id,e);h+=`<div class="row"><div class="grow">Tegen ${S.nations[e].name}: ${Math.round(s*100)}%${bar(s)}</div></div>`})}
-  else h+=`<p class="hint">Luchtoverwicht geeft je divisies tot +25% kracht in gevechten, met Gevechtssteun nog meer.</p>`;
-  return h;
-}
-function pRes(n){
-  let h=n.research?'':`<p class="hint">Kies een onderzoek. Er loopt er één tegelijk.</p>`;
-  for(const k in TECH){const lv=n.tech[k],busy=n.research&&n.research.key===k;
-    h+=`<div class="row"><div class="grow"><b>${TECH[k][0]}</b> · niveau ${lv}/5<div class="hint">${TECH[k][1]}</div>${busy?bar(1-n.research.left/n.research.total):''}</div>${busy?'':`<button class="act" data-a="res" data-v="${k}" ${n.research||lv>=5?'disabled':''}>${lv>=5?'Klaar':`Onderzoek (${50+25*lv} d)`}</button>`}</div>`}
-  return h;
-}
-function pFocus(n){
-  let h=n.focus?'':`<p class="hint">Kies een nationale focus. Elke focus duurt 35 dagen.</p>`;
-  for(const f of FOCUS){const done=n.focusDone.includes(f.k),busy=n.focus&&n.focus.key===f.k,lock=f.req&&!n.focusDone.includes(f.req);
-    h+=`<div class="row ${done?'done':''}"><div class="grow"><b>${f.name}</b><div class="hint">${f.desc}${lock?' · vereist Industriële mobilisatie':''}</div>${busy?bar(1-n.focus.left/35):''}</div>${done?'✓':busy?'':`<button class="act" data-a="focus" data-v="${f.k}" ${n.focus||lock?'disabled':''}>Start</button>`}</div>`}
-  return h;
-}
-function pDip(n){
-  let h='';
-  for(const o of S.nations){if(o.id===n.id||!o.alive)continue;
-    const war=atWar(n.id,o.id),al=allied(n.id,o.id),j=n.justify&&n.justify.target===o.id,cd=(n.allyCd[o.id]||0)>S.day;
-    let btn='';
-    if(war)btn=`<button class="act alt" data-a="peace" data-v="${o.id}">Vrede voorstellen</button>`;
-    else if(al)btn='';
-    else if(j&&n.justify.left<=0)btn=`<button class="act war" data-a="war" data-v="${o.id}">Verklaar oorlog</button>`;
-    else if(j)btn=`<div class="hint">Oorlogsdoel ${n.justify.left} d</div>`;
-    else btn=`<button class="act alt" data-a="ally" data-v="${o.id}" ${cd?'disabled':''}>Bondgenoot</button><button class="act" data-a="justify" data-v="${o.id}" ${n.justify?'disabled':''}>Oorlogsdoel</button>`;
-    h+=`<div class="row"><div class="grow"><span class="sw" style="background:${o.color}"></span><b>${o.name}</b>${war?'<span class="tag war">Oorlog</span>':al?'<span class="tag ally">Bondgenoot</span>':''}<div class="hint">${o.provs} gebieden · ${S.units.filter(u=>u.owner===o.id&&u.kind==='land').length} divisies · ${S.units.filter(u=>u.owner===o.id&&u.kind==='fleet').length} vloten · ${fmt(o.planes)} vliegtuigen${isNeighbor(n.id,o.id)?' · buurland':''}</div></div><div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">${btn}</div></div>`}
-  h+=`<h3>Gebeurtenissen</h3>`+(S.log.slice(0,12).map(l=>`<div class="hint">Dag ${l.d}: ${l.t}</div>`).join('')||'<p class="hint">Nog niets gebeurd.</p>');
-  return h;
-}
-function renderPanel(){
-  lastPanel=Date.now();if(!S||S.player<0){$('#panel').innerHTML='';return}
-  S.nations.forEach(stats);const n=S.nations[S.player];
-  $('#panel').innerHTML={leger:pLeger,industrie:pInd,marine:pMarine,lucht:pLucht,onderzoek:pRes,focus:pFocus,diplomatie:pDip}[tab](n);
-}
+const needsOrders=u=>u.mp>0&&!u.fort&&!u.work&&u.goto==null&&!u.auto&&!u.skip&&u.onboard==null;
+function select(u,center){sel=u;pendingDisband=null;tab='info';syncTabs();if(u&&center&&!onScreen(u.i))centerOn(u.i);render()}
+function selectNext(){const c=G.units.filter(u=>u.civ===G.player&&needsOrders(u));if(!c.length){sel=null;render();toast('Alle eenheden hebben orders. Tik op Einde beurt.');return}
+  const from=sel&&G.units.includes(sel)?sel.i:c[0].i;c.sort((a,b)=>cheb(a.i,from)-cheb(b.i,from));select(c[0],true)}
+function afterAction(){if(sel&&!G.units.includes(sel))sel=null;if(sel&&sel.mp<=0)selectNext();else render()}
+function unitPanel(u){
+  const ut=UT[u.type],civ=G.civs[u.civ],t=T(u.i);
+  let h=`<div class="ucard"><div class="em" style="background:${civ.color}">${ut.e}</div><div class="grow"><b>${ut.n}</b>${u.vet?' · veteraan':''}<div class="hint">Aanval ${ut.a} · verdediging ${ut.d} · beweging ${Math.floor(u.mp/3)}${u.mp%3?'⅓'.repeat(1):''}/${ut.m}${ut.cap?` · lading ${cargo(u).length}/${ut.cap}`:''}</div>${bar(u.hp/maxHp(u),'f')}</div></div>`;
+  const st=u.work?`Bezig: ${({road:'weg',irr:'irrigatie',mine:'mijn'})[u.work]} (${t.job?t.job.left:'?'} beurten)`:u.fort?'Versterkt':u.auto==='explore'?'Verkent automatisch':u.auto?'Werkt automatisch':u.goto!=null?'Onderweg':u.onboard!=null?'Aan boord':'';
+  if(st)h+=`<p class="hint">${st}</p>`;
+  const A=[];
+  if(ut.settle)A.push(['found','Stad stichten',canFound(u.i,u.civ),'gold']);
+  if(ut.work){A.push(['road','Weg',canRoad(u.i)]);A.push(['irr','Irrigeren',canIrr(u.i)]);A.push(['mine','Mijn',canMine(u.i)]);A.push(['autow','Automatisch',!u.auto])}
+  if(isMil(u))A.push(['fort','Versterken',!u.fort]);
+  if(u.type==='verkenner'||ut.sea)A.push(['explore','Verkennen',u.auto!=='explore']);
+  A.push(['skip','Overslaan',u.mp>0]);
+  if(u.goto!=null||u.auto||u.work||u.fort)A.push(['stop','Wakker / stop',true,'alt']);
+  A.push(['disband',pendingDisband===u.id?'Zeker ontbinden?':'Ontbinden',true,pendingDisband===u.id?'war':'alt']);
+  h+=`<div class="btns">${A.map(([k,l,ok,cl])=>`<button class="act ${cl||''}" data-a="${k}" ${ok?'':'disabled'}>${l}</button>`).join('')}</div>`;
+  if(ut.settle&&!canFound(u.i,u.civ))h+=`<p class="hint">Een stad moet op land staan, minstens 3 vakjes van een andere stad, en niet op vreemd grondgebied.</p>`;
+  h+=`<p class="hint">Tik een vakje om erheen te gaan of aan te vallen. Tik nogmaals op de eenheid om door de stapel te bladeren.</p>`;
+  h+=tileInfo(u.i);return h}
+function tileInfo(i){const t=T(i),y=tileYield(i,cityAt(i));const imp=[t.river?'rivier':'',t.road?'weg':'',t.irr?'geïrrigeerd':'',t.mine?'mijn':''].filter(Boolean).join(', ');
+  return`<h3>${TER[t.t].n}${t.res?' · '+RES[t.res].n+' '+RES[t.res].e:''}</h3><div class="hint">${yl(y)}${imp?' · '+imp:''}${t.owner>=0?` · grondgebied van ${G.civs[t.owner].name}`:''}${TER[t.t].def?` · +${TER[t.t].def*100}% verdediging`:''}</div>`}
+function pInfo(){
+  if(sel&&G.units.includes(sel))return unitPanel(sel);
+  let h='';if(infoTile!=null&&G.explored[infoTile]){h+=tileInfo(infoTile);const us=L.vis&&L.vis[infoTile]?at(infoTile):[];for(const u of us)h+=`<div class="hint"><span class="sw" style="background:${G.civs[u.civ].color}"></span>${G.civs[u.civ].name}: ${UT[u.type].n}</div>`;const c=cityAt(infoTile);if(c)h+=`<p class="hint">${c.name}, stad van ${G.civs[c.civ].name} (${c.pop} inwoners).</p>`}
+  return h+`<p class="hint">Tik op een eenheid om haar te selecteren, of op Volgende. Tik op je stad om productie te kiezen.</p>`}
+function turnsTo(need,per){return per>0?Math.max(1,Math.ceil(need/per)):'∞'}
+function pCity(){
+  const mine=civCities(G.player);
+  let c=viewCity!=null?cityById(viewCity):null;if(!c||c.civ!==G.player)c=null;
+  if(!c){if(!mine.length)return`<p class="hint">Je hebt nog geen steden. Gebruik een kolonist en kies Stad stichten.</p>`;
+    return`<h3>Je steden</h3>`+mine.map(x=>`<div class="row"><div class="grow"><b>${x.name}</b> (${x.pop})<div class="hint">Bouwt ${buildName(x.build)}</div></div><button class="act alt" data-a="opencity" data-v="${x.id}">Open</button></div>`).join('')}
+  assignAll();const y=cityYield(c),box=foodBox(c.pop),cost=c.build?buildCost(c.build):0,civ=G.civs[c.civ];
+  let h=`<div class="row"><div class="grow"><h3 style="margin:0;border:none">${civ.capital===c.id?'★ ':''}${c.name} · ${c.pop}</h3></div><button class="act alt" data-a="citylist">Alle steden</button></div>`;
+  if(c.disorder)h+=`<p class="hint" style="color:#a8382a"><b>Onrust!</b> Geen groei, productie of handel. Bouw een tempel of plaats militaire eenheden in de stad.</p>`;
+  h+=`<div class="row"><div class="grow">Voedsel ${y.net>=0?'+':''}${y.net} per beurt · ${y.net>0?(c.pop>=8&&!has(c,'aquaduct')?'aquaduct nodig om te groeien':`groei in ${turnsTo(box-c.food,y.net)} beurten`):y.net<0?'krimpt':'stabiel'}${bar(c.food/box,'f')}</div></div>`;
+  h+=`<div class="row"><div class="grow">Bouwt: <b>${buildName(c.build)}</b> · ⚙️${y.s} per beurt${c.build?` · klaar in ${turnsTo(cost-c.prod,y.s)} beurten`:''}${c.build?bar(c.prod/cost):''}</div></div>`;
+  const buy=c.build?Math.max(0,(cost-c.prod)*(c.build.k==='w'?4:2)+(c.prod===0?cost-c.prod:0)):0;
+  h+=`<div class="btns"><button class="act gold" data-a="choose">${chooseOpen||!c.build?'Sluit lijst':'Wijzig productie'}</button>${c.build&&buy>0?`<button class="act alt" data-a="buy" ${civ.gold>=buy?'':'disabled'}>Kopen voor 💰${buy}</button>`:''}</div>`;
+  if(chooseOpen||!c.build){h+=`<h3>Kies productie</h3>`;
+    const opt=(k,id,n,cs,d)=>`<div class="row"><div class="grow"><b>${n}</b> · ⚙️${cs} (${turnsTo(cs-(c.prod||0),y.s)} b.)<div class="hint">${d}</div></div><button class="act" data-a="setbuild" data-v="${k}:${id}">Kies</button></div>`;
+    for(const u of Object.keys(UT))if(unitAvail(c,u)){const t=UT[u];h+=opt('u',u,t.e+' '+t.n,t.c,t.settle?'Sticht een nieuwe stad (kost 1 inwoner)':t.work?'Legt wegen, irrigatie en mijnen aan':t.sea?`Schip, vervoert ${t.cap} eenheden`:`Aanval ${t.a} · verdediging ${t.d} · beweging ${t.m}`)}
+    for(const b of Object.keys(BT))if(bldAvail(c,b))h+=opt('b',b,BT[b].n,BT[b].c,BT[b].d+(BT[b].up?` · onderhoud 💰${BT[b].up}`:''));
+    for(const w of Object.keys(WT))if(wonderAvail(c,w))h+=opt('w',w,'🏛️ '+WT[w].n,WT[w].c,'Wereldwonder: '+WT[w].d)}
+  h+=`<div class="row"><div class="grow">Handel 💰${y.c} → 🔬${y.sci} wetenschap, 💰${y.gold} goud</div></div>`;
+  h+=`<div class="row"><div class="grow">${y.unhappy?`${y.unhappy} ontevreden van ${c.pop}`:'Iedereen tevreden'} · cultuur ${c.culture} (+${cultureOf(c)})</div></div>`;
+  h+=`<h3>Gebouwen</h3><p class="hint">${c.bld.length?c.bld.map(b=>BT[b].n).join(', '):'Nog geen gebouwen.'}${Object.keys(G.wonders).filter(k=>G.wonders[k]===c.id).map(k=>', 🏛️ '+WT[k].n).join('')}</p>`;
+  const us=at(c.i).filter(u=>u.civ===G.player);
+  if(us.length){h+=`<h3>Eenheden in de stad</h3>`;for(const u of us)h+=`<div class="row"><div class="grow">${UT[u.type].e} ${UT[u.type].n}${u.fort?' · versterkt':''}</div><button class="act alt" data-a="selunit" data-v="${u.id}">Selecteer</button></div>`}
+  return h}
+function pResearch(){
+  const civ=G.civs[G.player],t=totals(G.player),cost=techCost(civ);
+  let h=`<div class="row"><div class="grow">${civ.research?`Onderzoekt <b>${TT[civ.research].n}</b> · ${turnsTo(cost-civ.beakers,t.sci)} beurten`:'<b>Kies een onderzoek</b>'}${bar(civ.beakers/cost)}<div class="hint">🔬${t.sci} per beurt · ${civ.techs.length} van ${Object.keys(TT).length} technologieën bekend</div></div></div>`;
+  h+=`<div class="hint">Verdeling van handel naar wetenschap</div><div class="btns">${[0,.2,.4,.6,.8,1].map(v=>`<button class="act ${Math.abs(civ.tax-v)<.01?'':'alt'}" data-a="tax" data-v="${v}">${v*100}%</button>`).join('')}</div>`;
+  h+=`<h3>Beschikbaar</h3>`;
+  for(const k of availTechs(civ)){const un=[...Object.keys(UT).filter(u=>UT[u].t===k).map(u=>UT[u].n),...Object.keys(BT).filter(b=>BT[b].t===k).map(b=>BT[b].n),...Object.keys(WT).filter(w=>WT[w].t===k).map(w=>'🏛️ '+WT[w].n)];
+    h+=`<div class="row"><div class="grow"><b>${TT[k].n}</b><div class="hint">${un.length?'Levert: '+un.join(', '):'Opstap naar latere technologie'}</div></div><button class="act ${civ.research===k?'on':''}" data-a="research" data-v="${k}">${civ.research===k?'Bezig':'Kies'}</button></div>`}
+  if(civ.techs.length)h+=`<h3>Bekend</h3><p class="hint">${civ.techs.map(k=>TT[k].n).join(', ')}</p>`;
+  return h}
+function pEmpire(){
+  const civ=G.civs[G.player],t=totals(G.player),cs=civCities(G.player);
+  let h=`<div class="row"><div class="grow">Beurt ${G.turn} van 300 · ${yearStr()}<div class="hint">Score ${score(G.player)} · ${cs.length} steden · ${G.units.filter(u=>u.civ===G.player).length} eenheden</div></div></div>`;
+  h+=`<div class="row"><div class="grow">Inkomsten 💰${t.gold}, onderhoud 💰${t.up}, netto ${t.net>=0?'+':''}${t.net} per beurt</div></div><h3>Steden</h3>`;
+  for(const c of cs){const y=cityYield(c);h+=`<div class="row"><div class="grow"><b>${c.name}</b> (${c.pop})${c.disorder?' · onrust':''}<div class="hint">${c.build?`${buildName(c.build)}, ${turnsTo(buildCost(c.build)-c.prod,y.s)} beurten`:'<b>Geen productie gekozen</b>'}</div></div><button class="act alt" data-a="opencity" data-v="${c.id}">Open</button></div>`}
+  h+=`<h3>Overwinning</h3><p class="hint">Verover alle andere rijken, voltooi de Wereldtentoonstelling (vereist Industrialisatie), of heb de hoogste score in beurt 300.</p>`;
+  return h}
+function pDiplo(){
+  let h='';for(const o of G.civs){if(o.id===G.player||!o.alive)continue;
+    if(!G.met[G.player][o.id]){h+=`<div class="row"><div class="grow hint">Onbekend rijk</div></div>`;continue}
+    const war=atWar(G.player,o.id);
+    h+=`<div class="row"><div class="grow"><span class="sw" style="background:${o.color}"></span><b>${o.name}</b><span class="tag ${war?'war':'peace'}">${war?'Oorlog':'Vrede'}</span><div class="hint">${civCities(o.id).length} steden · score ${score(o.id)} · leger ${Math.round(milPower(o.id))} (jij ${Math.round(milPower(G.player))})</div></div>
+    ${war?`<button class="act alt" data-a="peace" data-v="${o.id}">Vrede voorstellen</button>`:`<button class="act war" data-a="war" data-v="${o.id}">Oorlog verklaren</button>`}</div>`}
+  h+=`<h3>Gebeurtenissen</h3>`+(G.log.slice(0,14).map(l=>`<div class="hint">${yearStr(l.t)}: ${l.m}</div>`).join('')||'<p class="hint">Nog niets gebeurd.</p>');
+  return h}
+function renderPanel(){if(!G||G.player<0){$('#panel').innerHTML='';return}
+  $('#panel').innerHTML={info:pInfo,stad:pCity,onderzoek:pResearch,rijk:pEmpire,diplo:pDiplo}[tab]()}
+function render(){draw();renderTop();renderPanel()}
+function syncTabs(){document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab))}
+function openCity(c){viewCity=c.id;chooseOpen=false;tab='stad';syncTabs();render()}
 function act(a,v){
-  const n=S.nations[S.player],o=S.nations[+v];
-  if(a==='train'&&n.equip>=100&&n.mp>=3){n.equip-=100;n.mp-=3;n.train.push({left:20})}
-  if(a==='auto')S.auto=!S.auto;
-  if(a==='stop')S.units.forEach(u=>{if(S.selUnits.has(u.id)){u.move=null;u.attack=null;u.path=[]}});
-  if(a==='build'&&n.build.length<5)n.build.push({type:v,progress:0,cost:BCOST[v]});
-  if(a==='unbuild')n.build.splice(+v,1);
-  if(a==='ship'&&n.docks&&n.ships.length<4)n.ships.push({progress:0,cost:150});
-  if(a==='share')n.airShare=+v;
-  if(a==='mission'){n.airMission=v;if(v==='bomb'&&n.bombTarget==null)n.bombTarget=enemiesOf(n.id)[0]??null}
-  if(a==='bomb')n.bombTarget=+v;
-  if(a==='res'&&!n.research){const d=50+25*n.tech[v];n.research={key:v,left:d,total:d}}
-  if(a==='focus'&&!n.focus)n.focus={key:v,left:35};
-  if(a==='justify'&&!n.justify){n.justify={target:o.id,left:30};log(`Je rechtvaardigt een oorlogsdoel tegen ${o.name}.`)}
-  if(a==='war'){declareWar(n.id,o.id);n.justify=null}
-  if(a==='ally'){n.allyCd[o.id]=S.day+60;
-    const share=enemiesOf(o.id).some(e=>atWar(n.id,e)),bad=alliesOf(o.id).some(c=>atWar(n.id,c))||enemiesOf(n.id).some(e=>allied(o.id,e));
-    if(!bad&&(share||Math.random()<.3)){S.allies.add(key(n.id,o.id));log(`${o.name} wordt je bondgenoot.`,true)}else toast(`${o.name} weigert een bondgenootschap.`)}
-  if(a==='peace'){if(coreRatio(o.id)<.75||Math.random()<.1)makePeace(n.id,o.id);else toast(`${o.name} weigert vrede zolang het niet verliest.`)}
-  draw();renderTop();renderPanel();
-}
+  const civ=G.civs[G.player],u=sel;
+  if(a==='found'&&u&&canFound(u.i,G.player)){const c=foundCity(G.player,u.i);killUnit(u);sel=null;viewCity=c.id;chooseOpen=true;tab='stad';syncTabs();render();return}
+  if((a==='road'||a==='irr'||a==='mine')&&u){startWork(u,a);selectNext();return}
+  if(a==='autow'&&u){u.auto=true;aiWorker(u);selectNext();return}
+  if(a==='fort'&&u){u.fort=true;u.goto=null;selectNext();return}
+  if(a==='explore'&&u){u.auto='explore';const t=exploreTarget(u);if(t>=0){u.goto=t;execGoto(u);u.goto=null}selectNext();return}
+  if(a==='skip'&&u){u.skip=true;selectNext();return}
+  if(a==='stop'&&u){u.goto=null;u.auto=false;u.work=null;u.fort=false}
+  if(a==='disband'&&u){if(pendingDisband!==u.id){pendingDisband=u.id;renderPanel();return}killUnit(u);pendingDisband=null;selectNext();return}
+  if(a==='opencity'){openCity(cityById(+v));return}
+  if(a==='citylist'){viewCity=null}
+  if(a==='choose'){const c=cityById(viewCity);chooseOpen=!(chooseOpen||!c.build)}
+  if(a==='setbuild'){const c=cityById(viewCity),[k,id]=v.split(':');if(c.build&&c.build.k!==k)c.prod=Math.floor(c.prod*.5);c.build={k,id};chooseOpen=false}
+  if(a==='buy'){const c=cityById(viewCity),cost=buildCost(c.build),b=Math.max(0,(cost-c.prod)*(c.build.k==='w'?4:2)+(c.prod===0?cost-c.prod:0));if(civ.gold>=b){civ.gold-=b;c.prod=cost;toast(`${buildName(c.build)} is gekocht en is volgende beurt klaar.`)}}
+  if(a==='selunit'){const x=G.units.find(x=>x.id===+v);if(x){select(x,true);return}}
+  if(a==='tax')civ.tax=+v;
+  if(a==='research'){if(civ.research!==v){civ.research=v}}
+  if(a==='war'){declareWar(G.player,+v)}
+  if(a==='peace'){const o=G.civs[+v];const lost=civCities(o.id).filter(c=>c.orig===o.id).length<civCities(o.id).length||milPower(o.id)<milPower(G.player)*.8;
+    if(G.turn-(civ.warTurn[o.id]||0)<8)toast(`${o.name} wil nog geen vrede: de oorlog is net begonnen.`);
+    else if(lost||Math.random()<.35)makePeace(G.player,o.id);else{toast(`${o.name} weigert vrede.`);civ.warTurn[o.id]=G.turn-4}}
+  render()}
 function onTap(i){
-  const me=S.player,sel=S.units.filter(u=>S.selUnits.has(u.id));
-  if(S.sel!=null&&i===S.sel&&S.selUnits.size){S.selUnits.clear();return}
-  const ownHere=S.units.some(u=>u.prov===i&&u.owner===me);
-  if(sel.length&&i!==S.sel&&(!ownHere||NB[S.sel].includes(i))){
-    let k=0,attack=false;
-    for(const u of sel){let ok=false;if(NB[u.prov].includes(i))ok=order(u,i);else{const p=findPath(u,i);if(p&&p.length>1)ok=order(u,p[1],p.slice(2))}
-      if(ok){k++;const last=u.path&&u.path.length?u.path[u.path.length-1]:(u.move?u.move.to:u.attack);if(u.attack!=null||(S.provs[i].land&&S.provs[i].owner!==me&&atWar(me,S.provs[i].owner)))attack=true}}
-    if(k){toast(attack?`Aanval op ${nm(i)}.`:`Op weg naar ${nm(i)}.`);S.selUnits.clear();S.sel=i;return}
-    if(!ownHere){toast(!S.provs[i].land&&sel.some(u=>u.kind==='land')&&!hasFleet(me)?'Je hebt een vloot nodig om divisies over zee te verplaatsen.':S.provs[i].land&&!canEnter(me,i)?'Je bent niet in oorlog met dit land.':'Deze eenheden kunnen daar niet komen.');return}
-  }
-  S.sel=i;S.selUnits=new Set(S.units.filter(u=>u.prov===i&&u.owner===me).map(u=>u.id));
-}
-function tapAt(sx,sy){
-  if(!S||S.player<0||S.over)return;const wx=(sx-V.x)/V.z,wy=(sy-V.y)/V.z;let best=-1,bd=1e9;
-  for(let i=0;i<N;i++){const d=Math.hypot(L.cx[i]-wx,L.cy[i]-wy);if(d<bd){bd=d;best=i}}
-  if(bd>L.R*1.05)return;onTap(best);if(tab!=='leger'){tab='leger';syncTabs()}draw();renderPanel();
-}
-/* aanraking: tikken, slepen, knijpen */
-const ptrs=new Map();let gest=null;
-const pos=e=>{const b=cv.getBoundingClientRect();return{x:e.clientX-b.left,y:e.clientY-b.top}};
+  if(!G||G.over)return;const mine=at(i).filter(u=>u.civ===G.player),c=cityAt(i);pendingDisband=null;
+  if(sel&&G.units.includes(sel)&&sel.i!==i){
+    if(NB8[sel.i].includes(i)){sel.goto=null;if(tryMove(sel,i)){afterAction();return}if(!mine.length&&!(c&&c.civ===G.player)){render();return}}
+    else if(!mine.length&&!(c&&c.civ===G.player)){if(!G.explored[i]&&!findPath(sel,i)){toast('Daar kan deze eenheid niet komen.');return}
+      const p=findPath(sel,i);if(p){sel.goto=i;sel.fort=false;sel.work=null;sel.auto=false;execGoto(sel);afterAction();return}toast('Daar kan deze eenheid niet komen.');return}}
+  if(sel&&sel.i===i){if(mine.length>1){const k=mine.indexOf(sel);select(mine[(k+1)%mine.length]);return}if(c&&c.civ===G.player){sel=null;openCity(c);return}sel=null;render();return}
+  if(c&&c.civ===G.player&&(!mine.length||tab==='stad')){sel=null;openCity(c);return}
+  if(mine.length){if(c&&c.civ===G.player)viewCity=c.id;select(mine.find(needsOrders)||mine[0]);return}
+  sel=null;infoTile=i;tab='info';syncTabs();render()}
+function tileAt(sx,sy){const wx=(sx-V.x)/V.z-L.ox,wy=(sy-V.y)/V.z-L.oy;const a=wx/(TW/2),b=wy/(TH/2);const x=Math.round((a+b)/2),y=Math.round((b-a)/2);return inb(x,y)?idx(x,y):-1}
+function doEndTurn(){
+  if(!G||G.over)return;sel=null;$('#endBtn').disabled=true;
+  setTimeout(()=>{endTurn();$('#endBtn').disabled=false;if(G.over){render();return}
+    const civ=G.civs[G.player],noBuild=civCities(G.player).find(c=>!c.build);
+    toast(`${yearStr()} · beurt ${G.turn}`);
+    if(!civ.research&&availTechs(civ).length){tab='onderzoek';syncTabs();render();toast('Kies een nieuw onderzoek.');return}
+    if(noBuild){openCity(noBuild);chooseOpen=true;render();toast(`${noBuild.name} wacht op een productieopdracht.`);return}
+    selectNext()},30)}
+function endGame(win,msg){G.over=true;const o=$('#overlay');if(!o)return;o.classList.remove('hide');
+  o.innerHTML=`<div class="card"><h1>${win?'Overwinning':'Nederlaag'}</h1><p>${msg}</p><p class="hint">${yearStr()} · score ${score(G.player)}</p><button class="act gold" data-o="new">Nieuw spel</button></div>`}
+
+/* opslaan */
+const store={async set(v){if(window.storage)return window.storage.set(SAVEKEY,v,false);localStorage.setItem(SAVEKEY,v)},async get(){if(window.storage){const r=await window.storage.get(SAVEKEY,false);return r&&r.value}return localStorage.getItem(SAVEKEY)}};
+async function saveGame(){try{await store.set(JSON.stringify(G));toast(`Spel opgeslagen (${yearStr()}).`)}catch(e){toast('Opslaan is mislukt. Controleer of je browser opslag toestaat.')}}
+async function loadGame(){let raw=null;try{raw=await store.get()}catch(e){}if(!raw){toast('Geen opgeslagen spel gevonden.');return}
+  try{G=JSON.parse(raw);buildNB();rebuildOcc();sel=null;viewCity=null;startUI();toast(`Spel geladen: ${G.civs[G.player].name}, ${yearStr()}.`)}catch(e){toast('Het opgeslagen spel kan niet worden geladen.')}}
+
+/* invoer */
+const ptrs=new Map();let gest=null;const pos=e=>{const b=cv.getBoundingClientRect();return{x:e.clientX-b.left,y:e.clientY-b.top}};
 cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,pos(e));
   if(ptrs.size===1){const p=pos(e);gest={moved:false,sx:p.x,sy:p.y,vx:V.x,vy:V.y}}
   else if(ptrs.size===2){const[a,b]=[...ptrs.values()];gest={pinch:true,d:Math.hypot(a.x-b.x,a.y-b.y)||1,z:V.z,mx:(a.x+b.x)/2,my:(a.y+b.y)/2,vx:V.x,vy:V.y}}});
+let raf=0;const req=()=>{if(!raf)raf=requestAnimationFrame(()=>{raf=0;draw()})};
 cv.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,pos(e));if(!gest)return;
-  if(gest.pinch&&ptrs.size===2){const[a,b]=[...ptrs.values()];const nz=Math.max(1,Math.min(4,gest.z*Math.hypot(a.x-b.x,a.y-b.y)/gest.d));const wx=(gest.mx-gest.vx)/gest.z,wy=(gest.my-gest.vy)/gest.z;
-    V.z=nz;V.x=(a.x+b.x)/2-wx*nz;V.y=(a.y+b.y)/2-wy*nz;clampV();draw()}
-  else if(!gest.pinch){const p=pos(e),dx=p.x-gest.sx,dy=p.y-gest.sy;if(Math.hypot(dx,dy)>8)gest.moved=true;if(gest.moved){V.x=gest.vx+dx;V.y=gest.vy+dy;clampV();draw()}}});
-function endPtr(e){const had=ptrs.has(e.pointerId);ptrs.delete(e.pointerId);if(had&&gest&&!gest.pinch&&!gest.moved&&ptrs.size===0&&e.type==='pointerup'){const p=pos(e);tapAt(p.x,p.y)}if(ptrs.size===0||gest&&gest.pinch)gest=null}
+  if(gest.pinch&&ptrs.size===2){const[a,b]=[...ptrs.values()];const nz=Math.max(.35,Math.min(2.5,gest.z*Math.hypot(a.x-b.x,a.y-b.y)/gest.d)),wx=(gest.mx-gest.vx)/gest.z,wy=(gest.my-gest.vy)/gest.z;V.z=nz;V.x=(a.x+b.x)/2-wx*nz;V.y=(a.y+b.y)/2-wy*nz;clampV();req()}
+  else if(!gest.pinch){const p=pos(e),dx=p.x-gest.sx,dy=p.y-gest.sy;if(Math.hypot(dx,dy)>8)gest.moved=true;if(gest.moved){V.x=gest.vx+dx;V.y=gest.vy+dy;clampV();req()}}});
+function endPtr(e){const had=ptrs.has(e.pointerId);ptrs.delete(e.pointerId);if(had&&gest&&!gest.pinch&&!gest.moved&&ptrs.size===0&&e.type==='pointerup'){const p=pos(e),i=tileAt(p.x,p.y);if(i>=0)onTap(i)}if(ptrs.size===0||gest&&gest.pinch)gest=null}
 cv.addEventListener('pointerup',endPtr);cv.addEventListener('pointercancel',endPtr);
-cv.addEventListener('wheel',e=>{e.preventDefault();const p=pos(e);zoomAt(V.z*(e.deltaY<0?1.15:1/1.15),p.x,p.y)},{passive:false});
-$('#zoom').addEventListener('click',e=>{const b=e.target.closest('[data-z]');if(!b||!S)return;const z=b.dataset.z;if(z==='home'){homeView();draw()}else zoomAt(V.z*(z==='in'?1.4:1/1.4),L.W/2,L.H/2)});
+cv.addEventListener('wheel',e=>{e.preventDefault();const p=pos(e),f=e.deltaY<0?1.15:1/1.15,wx=(p.x-V.x)/V.z,wy=(p.y-V.y)/V.z;V.z=Math.max(.35,Math.min(2.5,V.z*f));V.x=p.x-wx*V.z;V.y=p.y-wy*V.z;clampV();draw()},{passive:false});
+$('#zoom').addEventListener('click',e=>{const b=e.target.closest('[data-z]');if(!b||!G)return;const z=b.dataset.z;
+  if(z==='home'){const t=sel?sel.i:(civCities(G.player)[0]||{}).i;if(t!=null)centerOn(t);draw();return}
+  const f=z==='in'?1.35:1/1.35,wx=(L.W/2-V.x)/V.z,wy=(L.H/2-V.y)/V.z;V.z=Math.max(.35,Math.min(2.5,V.z*f));V.x=L.W/2-wx*V.z;V.y=L.H/2-wy*V.z;clampV();draw()});
 $('#panel').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&!b.disabled)act(b.dataset.a,b.dataset.v)});
-$('#speed').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(b&&S&&S.player>=0)setSpeed(+b.dataset.s)});
-function syncTabs(){document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab))}
-$('#tabs').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;tab=b.dataset.t;syncTabs();renderPanel()});
-window.addEventListener('resize',()=>{if(!S)return;layout();draw()});
-$('#menuBtn').addEventListener('click',()=>{if(!S||S.player<0||S.over)return;setSpeed(0);const o=$('#overlay');o.classList.remove('hide');
-  o.innerHTML=`<div class="card"><h1>Menu</h1><p>${S.nations[S.player].name}, ${dateStr()}. Het spel is gepauzeerd.</p><button class="act" data-o="resume">Verder spelen</button><button class="act alt" data-o="save">Opslaan</button><button class="act alt" data-o="load">Laden</button><button class="act alt" data-o="new">Nieuw spel</button><p class="hint">Er is één opslagplek in deze browser; opslaan overschrijft het vorige spel.</p></div>`});
-
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;tab=b.dataset.t;if(tab==='stad')chooseOpen=false;syncTabs();renderPanel()});
+$('#nextBtn').addEventListener('click',()=>{if(G&&!G.over)selectNext()});
+$('#endBtn').addEventListener('click',doEndTurn);
+window.addEventListener('resize',()=>{if(!G)return;layout();draw()});
+$('#menuBtn').addEventListener('click',()=>{if(!G||G.player<0)return;const o=$('#overlay');o.classList.remove('hide');
+  o.innerHTML=`<div class="card"><h1>Menu</h1><p>${G.civs[G.player].name} · ${yearStr()} · score ${score(G.player)}</p><button class="act gold" data-o="resume">Verder spelen</button><button class="act alt" data-o="save">Opslaan</button><button class="act alt" data-o="load">Laden</button><button class="act alt" data-o="help">Hoe speel je?</button><button class="act alt" data-o="new">Nieuw spel</button></div>`});
+const HELP=`<div class="card"><h1>Hoe speel je?</h1>
+<p><b>Steden.</b> Sticht steden met kolonisten. Steden groeien met voedsel, bouwen met productie en leveren handel. Handel wordt verdeeld over wetenschap en goud.</p>
+<p><b>Eenheden.</b> Tik een eenheid, tik dan een doel. Aangrenzende vijanden val je zo aan. Versterkte eenheden verdedigen beter, en heuvels, bergen, rivieren en stadsmuren helpen ook.</p>
+<p><b>Arbeiders.</b> Wegen geven handel en snellere beweging, irrigatie geeft voedsel (bij water), mijnen geven productie op heuvels en bergen.</p>
+<p><b>Tevredenheid.</b> Boven 4 inwoners worden mensen ontevreden. Tempels, markten, kathedralen en troepen in de stad helpen. Bij te veel ontevredenheid ligt de stad stil.</p>
+<p><b>Cultuur.</b> Gebouwen en wonderen leveren cultuur, waardoor je grenzen groeien.</p>
+<p><b>Zee.</b> Schepen vervoeren landeenheden: zet een eenheid op een schip naast de kust en vaar.</p>
+<button class="act gold" data-o="resume">Terug</button></div>`;
+function startUI(){$('#overlay').classList.add('hide');const civ=G.civs[G.player];$('#cflag').style.background=civ.color;$('#cname').textContent=civ.name;
+  layout();const s=G.units.find(u=>u.civ===G.player);if(s)centerOn(s.i,1.1);tab='info';syncTabs();
+  const k=G.units.find(u=>u.civ===G.player&&UT[u.type].settle&&needsOrders(u));if(k)select(k);else selectNext();render()}
 function startScreen(){
-  clearTimeout(timer);newGame(mapSize);V={z:1,x:0,y:0};layout();draw();renderTop();renderPanel();
-  $('#res').innerHTML='';$('#flag').style.background='transparent';$('#nname').textContent='IJzeren Fronten';$('#ticker').textContent='';
   const o=$('#overlay');o.classList.remove('hide');
-  o.innerHTML=`<div class="card"><h1>IJzeren Fronten</h1><div class="sub">Opperbevel · 1 januari 1936</div><p> ${S.nations.length} naties delen een continent vol kusten en eilanden. Bouw je industrie, leger, vloot en luchtmacht, kies je bondgenoten en verover driekwart van het land. Een natie capituleert als ze minder dan 30% van haar eigen grondgebied overhoudt.</p>
-  <div class="seg" style="margin-bottom:12px">${Object.keys(SIZES).map(k=>`<button class="act ${k===mapSize?'':'alt'}" data-o="size" data-v="${k}">${SIZES[k].label} (${SIZES[k].n} naties)</button>`).join('')}</div>
-  ${S.nations.map(n=>`<button class="pick" data-pick="${n.id}"><span class="sw" style="background:${n.color}"></span><span><b>${n.name}</b>${n.provs} gebieden · ${n.civ} civiel, ${n.milF} militair, ${n.docks} ${n.docks===1?'werf':'werven'}</span></button>`).join('')}
-  <div class="seg"><button class="act alt" data-o="reroll">Andere kaart</button><button class="act alt" data-o="load">Opgeslagen spel laden</button></div></div>`;
-}
-$('#overlay').addEventListener('click',e=>{
-  const b=e.target.closest('[data-o]');
-  if(b){const a=b.dataset.o;
-    if(a==='new'||a==='reroll')startScreen();
-    if(a==='size'){mapSize=b.dataset.v;startScreen()}
-    if(a==='resume')$('#overlay').classList.add('hide');
-    if(a==='save')saveGame().then(()=>$('#overlay').classList.add('hide'));
-    if(a==='load')loadGame();
-    return}
-  const p=e.target.closest('[data-pick]');if(!p)return;
-  const n=S.nations[+p.dataset.pick];n.ai=false;S.player=n.id;
-  $('#flag').style.background=n.color;$('#nname').textContent=n.name;
-  $('#overlay').classList.add('hide');homeView();
-  log(`Je leidt ${n.name}. Druk op 1× om de tijd te starten.`,true);
-  draw();renderTop();renderPanel();
-});
+  o.innerHTML=`<div class="card"><h1>Rijken der Eeuwen</h1><p>4000 v.Chr. Je volk heeft net zijn eerste kolonisten. Sticht steden, verken de wereld, onderzoek technologie en bouw een rijk dat de tijd doorstaat.</p>
+  <div class="btns" style="margin-bottom:10px">${Object.keys(SIZES).map(k=>`<button class="act ${k===mapSize?'gold':'alt'}" data-o="size" data-v="${k}">${SIZES[k].label} (${SIZES[k].n} rijken)</button>`).join('')}</div>
+  ${CIVS.map((c,k)=>`<button class="pick" data-pick="${k}"><span class="sw" style="background:${c.color}"></span><span><b>${c.name}</b>Hoofdstad: ${c.cities[0]}</span></button>`).join('')}
+  <div class="btns"><button class="act alt" data-o="load">Opgeslagen spel laden</button><button class="act alt" data-o="help">Hoe speel je?</button></div></div>`}
+$('#overlay').addEventListener('click',e=>{const b=e.target.closest('[data-o]');
+  if(b){const a=b.dataset.o;if(a==='new')startScreen();if(a==='size'){mapSize=b.dataset.v;startScreen()}if(a==='resume'){if(G&&G.player>=0&&!G.over)$('#overlay').classList.add('hide');else startScreen()}
+    if(a==='save')saveGame().then(()=>$('#overlay').classList.add('hide'));if(a==='load')loadGame();if(a==='help')$('#overlay').innerHTML=HELP;return}
+  const p=e.target.closest('[data-pick]');if(!p)return;newGame(mapSize,+p.dataset.pick);
+  log('Sticht je eerste stad: tik op de kolonist en kies Stad stichten.');startUI()});
 startScreen();
-</script>
-</body>
-</html>
+</script></body></html>
